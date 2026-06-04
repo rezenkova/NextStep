@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Сообщения — NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #fafbff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .blur-circles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .blur-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.35;
+            z-index: 0;
+            animation: smoothFloat 24s infinite ease-in-out;
+        }
+        @keyframes smoothFloat {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(12px, -8px) scale(1.02); }
+            66% { transform: translate(-8px, 10px) scale(0.98); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+
+        .top-bar {
+            position: fixed;
+            top: 24px;
+            right: 32px;
+            display: flex;
+            gap: 16px;
+            z-index: 30;
+        }
+        .icon-btn {
+            background: rgba(255,255,255,0.94);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(68,34,202,0.12);
+            border-radius: 40px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+        .icon-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: #4422CA;
+            stroke-width: 1.8;
+            fill: none;
+        }
+        .icon-btn:hover {
+            background: rgba(68,34,202,0.08);
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 48px 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e1b4b, #2d4a5c, #4422CA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: #475569;
+            font-size: 1rem;
+        }
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+            min-height: 550px;
+        }
+
+        /* Список диалогов */
+        .dialogs-list {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            overflow-y: auto;
+            max-height: 600px;
+            border: 1px solid rgba(68,34,202,0.1);
+        }
+        .dialog-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(68,34,202,0.08);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dialog-item:hover {
+            background: rgba(68,34,202,0.05);
+            transform: translateX(4px);
+        }
+        .dialog-item.active {
+            background: rgba(68,34,202,0.1);
+            border-left: 4px solid #4422CA;
+        }
+        .dialog-avatar {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .dialog-info {
+            flex: 1;
+        }
+        .dialog-name {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .dialog-last-message {
+            font-size: 0.75rem;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+        .dialog-meta {
+            text-align: right;
+        }
+        .dialog-time {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .unread-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        /* Область чата */
+        .chat-area {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            border: 1px solid rgba(68,34,202,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            overflow: hidden;
+        }
+        .chat-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(68,34,202,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .chat-header-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+        }
+        .chat-header-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+        .chat-header-role {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+        .new-chat-btn {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(68,34,202,0.3);
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 70%;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: messageAppear 0.2s ease;
+        }
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message-outgoing {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .message-incoming {
+            background: #f1f5f9;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .message-time {
+            font-size: 0.6rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+        }
+        .chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(68,34,202,0.1);
+            display: flex;
+            gap: 12px;
+            background: rgba(255,255,255,0.9);
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+        }
+        .chat-input:focus {
+            border-color: #4422CA;
+            box-shadow: 0 0 0 3px rgba(68,34,202,0.1);
+        }
+        .send-btn {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border: none;
+            padding: 0 28px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .send-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(68,34,202,0.3);
+        }
+        .empty-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #94a3b8;
+            text-align: center;
+            gap: 16px;
+            padding: 40px;
+        }
+        .empty-chat div:first-child {
+            font-size: 3rem;
+        }
+
+        /* Модалка нового чата */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 40px;
+            padding: 28px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 24px;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .user-item:hover {
+            background: #f5f3ff;
+            border-color: #4422CA;
+        }
+        .user-avatar-modal {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        .close-modal-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 40px;
+            margin-top: 16px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .close-modal-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(68,34,202,0.2);
+            padding: 12px 28px;
+            border-radius: 50px;
+            color: #4422CA;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .back-link:hover {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            color: white;
+            transform: translateX(-6px);
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(68,34,202,0.25);
+        }
+        .back-link::before {
+            content: "←";
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .back-link:hover::before {
+            transform: translateX(-4px);
+        }
+
+        @media (max-width: 900px) {
+            .main-content { padding: 20px; }
+            .chat-layout { grid-template-columns: 1fr; }
+            .dialogs-list { max-height: 280px; }
+            .top-bar { position: relative; justify-content: flex-end; margin-bottom: 16px; display: flex; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div>
+    <div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div>
+    <div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div>
+    <div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div>
+    <div class="blur-circle circle-bottom-right-2"></div>
+</div>
+
+<div class="top-bar">
+    <div class="icon-btn" id="profileBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+</div>
+
+<main class="main-content">
+    <div class="page-header">
+        <h1>💬 Сообщения</h1>
+        <p>Общайтесь с преподавателями и студентами</p>
+    </div>
+
+    <div class="chat-layout">
+        <div class="dialogs-list" id="dialogsList"></div>
+        <div class="chat-area" id="chatArea"></div>
+    </div>
+
+    <a href="главная некст.html" class="back-link">Вернуться на главную</a>
+</main>
+
+<div id="newChatModal" class="modal">
+    <div class="modal-content">
+        <h3>➕ Новый чат</h3>
+        <div id="usersList"></div>
+        <button class="close-modal-btn" id="closeModalBtn">Закрыть</button>
+    </div>
+</div>
+
+<script>
+    // ========== ПОЛУЧЕНИЕ ДАННЫХ ==========
+    function getCurrentUser() {
+        return JSON.parse(localStorage.getItem('nextstep_current_user') || '{"email":"vika@nextstep.ru","fullName":"Резенкова Виктория","role":"student"}');
+    }
+
+    function getAllUsers() {
+        let users = JSON.parse(localStorage.getItem('nextstep_users') || '[]');
+        const defaultTeachers = [
+            { email: "roza@nextstep.ru", fullName: "Розалия Ахтямова", role: "teacher" },
+            { email: "liza@nextstep.ru", fullName: "Елизавета Лытаева", role: "teacher" },
+            { email: "nikita@nextstep.ru", fullName: "Никита Орлов", role: "teacher" }
+        ];
+        for (let t of defaultTeachers) {
+            if (!users.some(u => u.email === t.email)) users.push(t);
+        }
+        return users;
+    }
+
+    function getMessages() {
+        return JSON.parse(localStorage.getItem('nextstep_messages') || '[]');
+    }
+
+    function saveMessages(messages) {
+        localStorage.setItem('nextstep_messages', JSON.stringify(messages));
+    }
+
+    // ========== ПОЛУЧЕНИЕ ДИАЛОГОВ ==========
+    function getDialogs() {
+        const currentUser = getCurrentUser();
+        const messages = getMessages();
+        const dialogsMap = new Map();
+
+        messages.forEach(msg => {
+            let otherEmail, otherName, otherRole;
+            if (msg.from === currentUser.email) {
+                otherEmail = msg.to;
+                otherName = msg.toName;
+                otherRole = msg.toRole;
+            } else if (msg.to === currentUser.email) {
+                otherEmail = msg.from;
+                otherName = msg.fromName;
+                otherRole = msg.fromRole;
+            } else {
+                return;
+            }
+
+            const dialogId = otherEmail;
+            if (!dialogsMap.has(dialogId)) {
+                dialogsMap.set(dialogId, {
+                    id: dialogId,
+                    otherEmail: otherEmail,
+                    otherName: otherName,
+                    otherRole: otherRole,
+                    lastMessage: msg.text,
+                    lastTime: msg.timestamp,
+                    unread: 0
+                });
+            }
+            const existing = dialogsMap.get(dialogId);
+            if (new Date(msg.timestamp) > new Date(existing.lastTime)) {
+                existing.lastMessage = msg.text;
+                existing.lastTime = msg.timestamp;
+            }
+        });
+
+        dialogsMap.forEach(dialog => {
+            dialog.unread = messages.filter(m => m.from === dialog.otherEmail && m.to === currentUser.email && !m.read).length;
+        });
+
+        return Array.from(dialogsMap.values()).sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
+    }
+
+    // ========== ОТПРАВКА СООБЩЕНИЯ ==========
+    function sendMessage(toEmail, toName, toRole, text) {
+        if (!text.trim()) return;
+        const currentUser = getCurrentUser();
+        
+        const message = {
+            id: Date.now(),
+            from: currentUser.email,
+            fromName: currentUser.fullName || currentUser.email.split('@')[0],
+            fromRole: currentUser.role,
+            to: toEmail,
+            toName: toName,
+            toRole: toRole,
+            text: text.trim(),
+            timestamp: new Date().toISOString(),
+            read: false
+        };
+
+        const messages = getMessages();
+        messages.push(message);
+        saveMessages(messages);
+        
+        return message;
+    }
+
+    function markAsRead(otherEmail) {
+        const currentUser = getCurrentUser();
+        const messages = getMessages();
+        let updated = false;
+        messages.forEach(m => {
+            if (m.from === otherEmail && m.to === currentUser.email && !m.read) {
+                m.read = true;
+                updated = true;
+            }
+        });
+        if (updated) saveMessages(messages);
+    }
+
+    // ========== ОТРИСОВКА ==========
+    let currentChatUser = null;
+
+    function renderDialogs() {
+        const dialogs = getDialogs();
+        const container = document.getElementById('dialogsList');
+        
+        if (dialogs.length === 0) {
+            container.innerHTML = `<div style="padding: 60px 20px; text-align: center; color: #94a3b8;">📭 Нет диалогов<br><span style="font-size:0.7rem;">Нажмите "Новый чат" чтобы начать</span></div>`;
+            return;
+        }
+
+        container.innerHTML = dialogs.map(d => `
+            <div class="dialog-item ${currentChatUser?.email === d.otherEmail ? 'active' : ''}" data-email="${d.otherEmail}" data-name="${d.otherName}" data-role="${d.otherRole}">
+                <div class="dialog-avatar">${d.otherRole === 'teacher' ? '👩‍🏫' : '👩‍🎓'}</div>
+                <div class="dialog-info">
+                    <div class="dialog-name">${escapeHtml(d.otherName)}</div>
+                    <div class="dialog-last-message">${escapeHtml(d.lastMessage.length > 45 ? d.lastMessage.slice(0,45)+'...' : d.lastMessage)}</div>
+                </div>
+                <div class="dialog-meta">
+                    <div class="dialog-time">${new Date(d.lastTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                    ${d.unread > 0 ? `<div class="unread-badge">${d.unread}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.dialog-item').forEach(el => {
+            el.addEventListener('click', () => {
+                currentChatUser = {
+                    email: el.dataset.email,
+                    name: el.dataset.name,
+                    role: el.dataset.role
+                };
+                markAsRead(currentChatUser.email);
+                renderDialogs();
+                renderChatArea();
+            });
+        });
+    }
+
+    function renderChatArea() {
+        const container = document.getElementById('chatArea');
+        
+        if (!currentChatUser) {
+            container.innerHTML = `
+                <div class="empty-chat">
+                    <div>💬</div>
+                    <p>Выберите диалог или начните новый</p>
+                    <button class="new-chat-btn" id="newChatBtnEmpty">➕ Новый чат</button>
+                </div>
+            `;
+            document.getElementById('newChatBtnEmpty')?.addEventListener('click', openNewChatModal);
+            return;
+        }
+
+        const messages = getMessages().filter(m => 
+            (m.from === currentChatUser.email && m.to === getCurrentUser().email) ||
+            (m.from === getCurrentUser().email && m.to === currentChatUser.email)
+        ).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        const currentUser = getCurrentUser();
+
+        container.innerHTML = `
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-header-avatar">${currentChatUser.role === 'teacher' ? '👩‍🏫' : '👩‍🎓'}</div>
+                    <div>
+                        <div class="chat-header-name">${escapeHtml(currentChatUser.name)}</div>
+                        <div class="chat-header-role">${currentChatUser.role === 'teacher' ? 'Преподаватель' : 'Студент'}</div>
+                    </div>
+                </div>
+                <button class="new-chat-btn" id="newChatBtnHeader">➕ Новый чат</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                ${messages.map(m => `
+                    <div class="message ${m.from === currentUser.email ? 'message-outgoing' : 'message-incoming'}">
+                        ${m.text}
+                        <div class="message-time">${new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                    </div>
+                `).join('')}
+                ${messages.length === 0 ? '<div style="text-align:center; color:#94a3b8; padding:40px;">Напишите первое сообщение</div>' : ''}
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="messageInput" placeholder="Напишите сообщение...">
+                <button class="send-btn" id="sendBtn">→</button>
+            </div>
+        `;
+
+        const messagesDiv = document.getElementById('chatMessages');
+        if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        const send = () => {
+            if (!input.value.trim()) return;
+            sendMessage(currentChatUser.email, currentChatUser.name, currentChatUser.role, input.value);
+            input.value = '';
+            renderChatArea();
+            renderDialogs();
+        };
+        
+        sendBtn?.addEventListener('click', send);
+        input?.addEventListener('keypress', (e) => { if (e.key === 'Enter') send(); });
+        input?.focus();
+        
+        document.getElementById('newChatBtnHeader')?.addEventListener('click', openNewChatModal);
+    }
+
+    // ========== НОВЫЙ ЧАТ ==========
+    function openNewChatModal() {
+        const currentUser = getCurrentUser();
+        const allUsers = getAllUsers().filter(u => u.email !== currentUser.email);
+        const modal = document.getElementById('newChatModal');
+        const usersList = document.getElementById('usersList');
+
+        usersList.innerHTML = allUsers.map(u => `
+            <div class="user-item" data-email="${u.email}" data-name="${u.fullName}" data-role="${u.role}">
+                <div class="user-avatar-modal">${u.role === 'teacher' ? '👩‍🏫' : '👩‍🎓'}</div>
+                <div>
+                    <div style="font-weight:600;">${escapeHtml(u.fullName)}</div>
+                    <div style="font-size:0.7rem; color:#64748b;">${u.role === 'teacher' ? 'Преподаватель' : 'Студент'}</div>
+                </div>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.user-item').forEach(el => {
+            el.addEventListener('click', () => {
+                currentChatUser = {
+                    email: el.dataset.email,
+                    name: el.dataset.name,
+                    role: el.dataset.role
+                };
+                modal.style.display = 'none';
+                renderDialogs();
+                renderChatArea();
+            });
+        });
+
+        modal.style.display = 'flex';
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ========== ЗАКРЫТИЕ МОДАЛКИ ==========
+    document.getElementById('closeModalBtn')?.addEventListener('click', () => {
+        document.getElementById('newChatModal').style.display = 'none';
+    });
+    window.onclick = (e) => {
+        const modal = document.getElementById('newChatModal');
+        if (e.target === modal) modal.style.display = 'none';
+    };
+
+    // ========== ПРОФИЛЬ ==========
+    document.getElementById('profileBtn')?.addEventListener('click', () => {
+        const user = getCurrentUser();
+        if (user.role === 'teacher') window.location.href = 'панель преподавателя.html';
+        else window.location.href = 'панель студента.html';
+    });
+
+    // ========== ЗАПУСК ==========
+    renderDialogs();
+    renderChatArea();
+</script>
+</body>
+</html>

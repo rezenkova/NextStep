@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Высшая математика — курс NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #fafbff; font-family: 'Inter', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+        
+        .blur-circles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .blur-circle { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: 0; animation: smoothFloat 24s infinite ease-in-out; }
+        @keyframes smoothFloat { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(12px, -8px) scale(1.02); } 66% { transform: translate(-8px, 10px) scale(0.98); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+        
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 32px 48px 80px; position: relative; z-index: 10; }
+        .course-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+        .title-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e1b4b, #2d4a5c, #4422CA); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 8px; }
+        .title-section p { color: #475569; font-size: 1rem; }
+        .progress-overview { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 32px; padding: 16px 28px; border: 1px solid rgba(68,34,202,0.15); min-width: 280px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+        .progress-stats { display: flex; gap: 32px; justify-content: space-between; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #4422CA, #22B9CA); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.7rem; color: #64748b; letter-spacing: 0.5px; }
+        
+        .blocks-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 60px; padding: 8px 20px; border: 1px solid rgba(68,34,202,0.1); }
+        .block-tab { background: transparent; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: #334155; }
+        .block-tab.active { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; box-shadow: 0 6px 14px rgba(68,34,202,0.25); }
+        .block-tab.locked { opacity: 0.5; cursor: not-allowed; background: #e2e8f0; color: #94a3b8; }
+        .block-tab.completed { background: #10b98120; border: 1px solid #10b981; color: #065f46; }
+        
+        .block-container { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 48px; padding: 40px 44px; border: 1px solid rgba(68,34,202,0.15); margin-bottom: 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05); }
+        .block-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; letter-spacing: -0.3px; }
+        .block-subtitle { color: #64748b; margin-bottom: 32px; border-left: 4px solid #4422CA; padding-left: 18px; font-size: 0.9rem; }
+        
+        h3 { font-size: 1.4rem; font-weight: 600; margin: 32px 0 20px 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        h3:first-of-type { margin-top: 0; }
+        
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 20px; }
+        .video-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid #eef2ff; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(68,34,202,0.15); border-color: rgba(68,34,202,0.3); }
+        .video-preview { background: linear-gradient(145deg, #1e1b4b, #0f172a); height: 190px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem; position: relative; border-radius: 24px 24px 0 0; }
+        .preview-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 24px 24px 0 0; }
+        .video-card:hover .preview-overlay { background: rgba(68,34,202,0.6); }
+        .play-icon-big { width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4422CA; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.2s; }
+        .video-card:hover .play-icon-big { transform: scale(1.1); background: white; }
+        .video-info { padding: 18px; }
+        .video-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; }
+        .watch-status { display: inline-block; font-size: 0.7rem; padding: 4px 12px; border-radius: 30px; background: #f1f5f9; color: #475569; }
+        .watch-status.watched { background: #10b98115; color: #059669; }
+        
+        .lectures-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .lecture-item { background: #f8fafc; border-radius: 20px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #eef2ff; }
+        .lecture-item:hover { border-color: #4422CA; background: white; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .lecture-name { font-weight: 500; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .lecture-badge { background: #4422CA10; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; color: #4422CA; font-weight: 600; }
+        .lecture-download { color: #4422CA; font-size: 0.8rem; font-weight: 500; }
+        
+        .quiz-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .quiz-question { font-weight: 700; font-size: 1.05rem; margin-bottom: 18px; color: #0f172a; }
+        .quiz-option { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 60px; background: #fafcff; margin-bottom: 8px; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .quiz-option.selected { border-color: #4422CA; background: #f5f3ff; box-shadow: 0 2px 6px rgba(68,34,202,0.05); }
+        .quiz-option:hover { border-color: #22B9CA; background: #f0fdfe; }
+        .quiz-actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+        .quiz-submit { background: #4422CA; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .quiz-submit:hover { background: #361aa3; transform: translateY(-2px); }
+        .quiz-cancel { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 9px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .quiz-cancel:hover { background: #eef2ff; }
+        .quiz-feedback { margin-top: 16px; font-size: 0.85rem; padding: 10px 16px; border-radius: 24px; display: none; }
+        
+        .assignment-card { background: white; border-radius: 32px; padding: 28px; margin-bottom: 24px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .assignment-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: #0f172a; }
+        .tz-block { background: #f8fafc; border-radius: 20px; padding: 18px; margin: 12px 0; border-left: 4px solid #4422CA; font-size: 0.85rem; line-height: 1.5; color: #334155; }
+        .upload-area { border: 2px dashed #cbd5e1; border-radius: 28px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s; margin: 16px 0; background: #fafcff; }
+        .upload-area:hover { border-color: #4422CA; background: #f5f3ff; }
+        .assignment-buttons { display: flex; gap: 12px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
+        .submit-assignment { background: #22B9CA; border: none; padding: 10px 24px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .submit-assignment:hover:not(:disabled) { background: #1a9aaa; transform: translateY(-2px); }
+        .submit-assignment:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; }
+        .cancel-assignment { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 9px 22px; border-radius: 40px; color: #475569; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .cancel-assignment:hover:not(:disabled) { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        .cancel-assignment:disabled { opacity: 0.5; cursor: not-allowed; background: #f1f5f9; }
+        .assignment-status { display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.75rem; background: #f1f5f9; color: #475569; }
+        .assignment-status.approved { background: #10b98120; color: #065f46; }
+        .assignment-status.pending { background: #fef3c7; color: #92400e; }
+        
+        .complete-block-btn { background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 16px 32px; border-radius: 60px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 32px; width: 100%; transition: 0.2s; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+        .complete-block-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; box-shadow: none; }
+        .complete-block-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16,185,129,0.35); }
+        
+        .certificate-section { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #f0f9ff, #f5f3ff); border-radius: 24px; border: 2px solid rgba(68,34,202,0.2); text-align: center; display: none; }
+        .certificate-section.visible { display: block; animation: fadeInUp 0.5s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .certificate-icon { font-size: 4rem; margin-bottom: 16px; }
+        .certificate-title { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; margin-bottom: 8px; }
+        .certificate-description { color: #64748b; margin-bottom: 20px; font-size: 0.95rem; }
+        .certificate-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 14px 32px; border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(68,34,202,0.3); margin: 0 8px; }
+        .certificate-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(68,34,202,0.4); }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 40px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 28px; position: relative; box-shadow: 0 25px 40px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eef2ff; }
+        .modal-header h3 { margin: 0; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .close-modal:hover { color: #dc2626; }
+        .modal-body { white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+        
+        .back-to-courses { display: inline-flex; align-items: center; gap: 10px; background: white; backdrop-filter: blur(8px); border: 1px solid rgba(68,34,202,0.2); padding: 12px 28px; border-radius: 50px; color: #4422CA; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.3s ease; margin-top: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .back-to-courses:hover { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; transform: translateX(-6px); border-color: transparent; box-shadow: 0 8px 20px rgba(68,34,202,0.25); }
+        .back-to-courses::before { content: "←"; font-size: 1.2rem; transition: transform 0.2s; }
+        .back-to-courses:hover::before { transform: translateX(-4px); }
+        
+        .file-status { margin-top: 8px; font-size: 0.8rem; }
+        .file-status.success { color: #059669; }
+        .file-status.pending { color: #d97706; }
+        
+        .sync-container { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        .sync-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); border: none; padding: 10px 24px; border-radius: 40px; color: white; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif; box-shadow: 0 4px 12px rgba(68,34,202,0.2); }
+        .sync-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(68,34,202,0.3); }
+        .sync-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .sync-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @media (max-width: 780px) { .main-content { padding: 24px; } .block-container { padding: 24px; } .blocks-nav { overflow-x: auto; flex-wrap: nowrap; } .video-grid { grid-template-columns: 1fr; } .sync-container { justify-content: center; } }
+    </style>
+</head>
+<body>
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div>
+    <div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div>
+    <div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div>
+    <div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div>
+    <div class="blur-circle circle-bottom-right-2"></div>
+</div>
+
+<div class="main-content">
+    <div class="course-header">
+        <div class="title-section">
+            <h1>📐 Высшая математика</h1>
+            <p>Матанализ • Линейная алгебра • 6 недель</p>
+        </div>
+        <div class="progress-overview">
+            <div class="progress-stats">
+                <div class="stat-item"><div class="stat-number" id="totalProgress">0</div><div class="stat-label">% курса</div></div>
+                <div class="stat-item"><div class="stat-number" id="passedBlocks">0</div><div class="stat-label">блоков</div></div>
+                <div class="stat-item"><div class="stat-number" id="quizAvg">0</div><div class="stat-label">ср. балл</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sync-container">
+        <button class="sync-btn" id="syncStatusBtn">
+            <span>🔄</span>
+            <span>Обновить статус заданий</span>
+        </button>
+    </div>
+
+    <div class="blocks-nav" id="blocksNav"></div>
+    <div id="blockContent"></div>
+    
+    <div class="certificate-section" id="certificateSection">
+        <div class="certificate-icon">🏆</div>
+        <div class="certificate-title">Поздравляем с завершением курса!</div>
+        <div class="certificate-description">Все блоки успешно пройдены. Вы можете получить сертификат об окончании курса «Высшая математика».</div>
+        <button class="certificate-btn" onclick="window.location.href='сертификаты.html'">📜 Просмотреть сертификат</button>
+    </div>
+    
+    <a href="мои курсы некст.html" class="back-to-courses">Вернуться в мои курсы</a>
+</div>
+
+<div id="lectureModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">📄 Конспект</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">Загрузка...</div>
+    </div>
+</div>
+
+<script>
+    // ==================== ПРОВЕРКА АВТОРИЗАЦИИ ====================
+    function getCurrentUser() {
+        return JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+    }
+    
+    // Проверяем авторизацию с повторными попытками
+    function checkAuthAndStart() {
+        const user = getCurrentUser();
+        
+        if (user.email && user.role === 'student') {
+            console.log('✅ Авторизация успешна:', user.email);
+            startCourse(user);
+            return;
+        }
+        
+        // Если нет пользователя, пробуем ещё раз через 200мс
+        console.log('🔄 Данные пользователя не найдены, повторяем через 200мс...');
+        setTimeout(checkAuthAndStart, 200);
+    }
+    
+    function startCourse(currentUser) {
+        // ==================== ПОЛНЫЕ ТЕКСТЫ КОНСПЕКТОВ ====================
+        const lectureTexts = {
+            lecture1: "📘 КОНСПЕКТ 1: Пределы и непрерывность\n\nПредел функции — фундаментальное понятие математического анализа.\n\n🔹 Определение предела:\nlim_{x→a} f(x) = L, если для любого ε>0 существует δ>0 такое, что |f(x)−L|<ε при 0<|x−a|<δ.\n\n🔹 Пример 1:\nНайти lim_{x→2} (3x+1).\nРешение: Подставляем x=2 → 3·2+1 = 7.\n\n🔹 Пример 2 (замечательный предел):\nlim_{x→0} sin(x)/x = 1.",
+            lecture2: "📘 КОНСПЕКТ 2: Производная функции\n\nПроизводная показывает скорость изменения функции.\n\n🔹 Определение:\nf'(x) = lim_{h→0} [f(x+h)−f(x)] / h.\n\n🔹 Пример 1:\nf(x)=x³ → f'(x)=3x².\n\n🔹 Пример 2 (правило произведения):\n(u·v)' = u'·v + u·v'.\nf(x)=x·sin x → f'(x)=1·sin x + x·cos x.",
+            lecture3: "📘 КОНСПЕКТ 3: Неопределённый интеграл\n\nИнтегрирование — операция, обратная дифференцированию.\n\n🔹 Основная формула:\n∫xⁿ dx = xⁿ⁺¹/(n+1) + C (n≠−1).\n\n🔹 Пример:\n∫(3x²+2x)dx = x³ + x² + C.",
+            lecture4: "📘 КОНСПЕКТ 4: Определённый интеграл\n\nФормула Ньютона-Лейбница:\n∫ₐᵇ f(x)dx = F(b) − F(a).\n\n🔹 Пример:\n∫₀² x dx = [x²/2]₀² = 4/2 − 0 = 2.",
+            lecture5: "📘 КОНСПЕКТ 5: Матрицы и действия с ними\n\n🔹 Сложение матриц:\nA+B = (aᵢⱼ + bᵢⱼ).\nПример: [1 2; 3 4] + [5 6; 7 8] = [6 8; 10 12].\n\n🔹 Умножение матриц:\n(AB)ᵢⱼ = Σₖ aᵢₖ·bₖⱼ.",
+            lecture6: "📘 КОНСПЕКТ 6: Определители\n\n🔹 Для матрицы 2×2:\ndet([[a,b],[c,d]]) = ad−bc.\nПример: det([[3,2],[1,4]]) = 3·4 − 2·1 = 10.",
+            lecture7: "📘 КОНСПЕКТ 7: Системы линейных уравнений\n\n🔹 Метод Крамера:\nx = det(Aₓ)/det(A), y = det(Aᵧ)/det(A).\nПример: 2x+y=5, x−y=1 → x=2, y=1.",
+            lecture8: "📘 КОНСПЕКТ 8: Векторные пространства\n\n🔹 Базис: линейно независимые векторы, порождающие пространство.\nПример: В ℝ² базис e₁=(1,0), e₂=(0,1).",
+            lecture9: "📘 КОНСПЕКТ 9: Собственные значения\n\n🔹 Av = λv.\nПример: A=[[2,1],[1,2]] → λ₁=3, λ₂=1.",
+            lecture10: "📘 КОНСПЕКТ 10: Числовые ряды\n\n🔹 Геометрический ряд: Σ arⁿ сходится при |r|<1.\nПример: Σ (1/2)ⁿ от n=0 = 1/(1−1/2) = 2.",
+            lecture11: "📘 КОНСПЕКТ 11: Дифференциальные уравнения\n\n🔹 dy/dx = ky → y = Ceᵏˣ.\nПример: dy/dx = 3y, y(0)=2 → y=2e³ˣ.",
+            lecture12: "📘 КОНСПЕКТ 12: Кратные интегралы\n\n🔹 ∬ (x+y)dxdy по [0,1]×[0,1] = 1.",
+            lecture13: "📘 КОНСПЕКТ 13: Теория вероятностей\n\n🔹 P(A∪B) = P(A)+P(B)−P(A∩B).\nПример: Бросок кубика. P(чётное ∪ >4) = 2/3.",
+            lecture14: "📘 КОНСПЕКТ 14: Комплексные числа\n\n🔹 z = a+bi, i²=−1.\nПример: (1+i)² = 2i.",
+            lecture15: "📘 КОНСПЕКТ 15: Прикладная математика\n\n🔹 Оптимизация: min f(x)=x² → x=0."
+        };
+
+        function getLectureContent(blockIndex, lectureIndex) {
+            const blockNumbers = [1, 6, 11];
+            const globalLectureNum = blockNumbers[blockIndex] + lectureIndex;
+            return lectureTexts['lecture' + globalLectureNum] || `Конспект ${globalLectureNum}\n\nСодержание скоро появится...`;
+        }
+
+        function showModal(title, content) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalBody').innerHTML = content.replace(/\n/g, '<br>');
+            document.getElementById('lectureModal').style.display = 'flex';
+        }
+
+        window.closeModal = function() {
+            document.getElementById('lectureModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('lectureModal')) {
+                document.getElementById('lectureModal').style.display = 'none';
+            }
+        }
+
+        // ==================== ДАННЫЕ КУРСА ====================
+        const blocks = [
+            {
+                id: 0, name: "Математический анализ", completed: false, unlocked: true,
+                tests: [
+                    { question: "📉 Чему равен lim_{x→0} sin(x)/x?", options: ["0", "1", "∞", "Не существует"], correct: 1, userAnswer: null, answered: false },
+                    { question: "📐 Производная f(x)=x⁴ равна:", options: ["4x³", "x³", "4x⁴", "x⁵"], correct: 0, userAnswer: null, answered: false },
+                    { question: "🧮 ∫ 3x² dx = ?", options: ["x³", "x³+C", "3x³+C", "6x"], correct: 1, userAnswer: null, answered: false },
+                    { question: "🔢 Определённый интеграл ∫₀¹ 2x dx равен:", options: ["0", "1", "2", "½"], correct: 1, userAnswer: null, answered: false }
+                ],
+                assignments: [
+                    { id: "ma1", title: "Вычисление пределов", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                        tz: "📋 ТЗ: Вычислить 5 пределов (включая замечательный предел). Оформить в PDF с подробным решением." }
+                ],
+                videos: [
+                    { id: "mv1", title: "Пределы функций", url: "https://rutube.ru/video/5fbc356fab206c8c9588cabc1e855c53/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                    { id: "mv2", title: "Техника дифференцирования", url: "https://rutube.ru/video/3824210c4b667b54f8dee218dd941884/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+                ],
+                lectures: [
+                    { title: "Конспект 1: Пределы и непрерывность", downloaded: false },
+                    { title: "Конспект 2: Производная функции", downloaded: false },
+                    { title: "Конспект 3: Неопределённый интеграл", downloaded: false },
+                    { title: "Конспект 4: Определённый интеграл", downloaded: false },
+                    { title: "Конспект 5: Матрицы и действия", downloaded: false }
+                ]
+            },
+            {
+                id: 1, name: "Линейная алгебра", completed: false, unlocked: false,
+                tests: [
+                    { question: "🔢 Определитель матрицы [[2,0],[0,3]] равен:", options: ["0", "5", "6", "1"], correct: 2, userAnswer: null, answered: false },
+                    { question: "📊 Ранг единичной матрицы 3×3 равен:", options: ["0", "1", "2", "3"], correct: 3, userAnswer: null, answered: false },
+                    { question: "🔣 Собственные значения [[1,0],[0,1]]:", options: ["0,0", "1,1", "1,0", "−1,1"], correct: 1, userAnswer: null, answered: false }
+                ],
+                assignments: [
+                    { id: "ma2", title: "Решение СЛАУ методами Крамера и Гаусса", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                        tz: "📋 ТЗ: Решить систему 3 уравнений двумя методами. Сравнить ответы." }
+                ],
+                videos: [
+                    { id: "mv3", title: "Операции над матрицами", url: "https://rutube.ru/video/a7255dc103b4f25b3274afcb2098aabc/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" }
+                ],
+                lectures: [
+                    { title: "Конспект 6: Определители", downloaded: false },
+                    { title: "Конспект 7: Системы линейных уравнений", downloaded: false },
+                    { title: "Конспект 8: Векторные пространства", downloaded: false },
+                    { title: "Конспект 9: Собственные значения", downloaded: false },
+                    { title: "Конспект 10: Числовые ряды", downloaded: false }
+                ]
+            },
+            {
+                id: 2, name: "Дифф. уравнения и ряды", completed: false, unlocked: false,
+                tests: [
+                    { question: "📈 Общее решение y'=2y:", options: ["Ce²ˣ", "Ceˣ", "Cx²", "e²ˣ"], correct: 0, userAnswer: null, answered: false },
+                    { question: "🔢 Геометрический ряд Σ (1/2)ⁿ от n=0 сходится к:", options: ["1", "2", "∞", "½"], correct: 1, userAnswer: null, answered: false }
+                ],
+                assignments: [
+                    { id: "ma3", title: "Решение дифференциальных уравнений", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                        tz: "📋 ТЗ: Решить 3 ДУ первого порядка (с разделяющимися переменными и линейные)." }
+                ],
+                videos: [
+                    { id: "mv4", title: "Дифференциальные уравнения", url: "https://rutube.ru/plst/482456?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" }
+                ],
+                lectures: [
+                    { title: "Конспект 11: Дифференциальные уравнения", downloaded: false },
+                    { title: "Конспект 12: Кратные интегралы", downloaded: false },
+                    { title: "Конспект 13: Теория вероятностей", downloaded: false },
+                    { title: "Конспект 14: Комплексные числа", downloaded: false },
+                    { title: "Конспект 15: Прикладная математика", downloaded: false }
+                ]
+            },
+            {
+                id: 3, name: "Прикладная математика", completed: false, unlocked: false,
+                tests: [
+                    { question: "🎲 Бросок кубика. P(чётное ∪ >4) = ?", options: ["1/2", "2/3", "1/3", "5/6"], correct: 1, userAnswer: null, answered: false },
+                    { question: "🔮 (1+i)² = ?", options: ["2i", "2", "1+i", "0"], correct: 0, userAnswer: null, answered: false }
+                ],
+                assignments: [
+                    { id: "ma4", title: "Финальный проект", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                        tz: "📋 ТЗ: Решить комплексную задачу: ДУ + вероятность + оптимизация. Оформить как презентацию." }
+                ],
+                videos: [
+                    { id: "mv5", title: "Комплексные числа и формула Эйлера", url: "https://rutube.ru/video/854be1dcd05f3c42bc6e22256d6b5b74/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" }
+                ],
+                lectures: []
+            }
+        ];
+
+        let currentBlock = 0;
+
+        // ==================== ФУНКЦИИ СОХРАНЕНИЯ И ЗАГРУЗКИ ====================
+        function saveProgress() {
+            const saveData = blocks.map(b => ({
+                completed: b.completed,
+                unlocked: b.unlocked,
+                tests: b.tests.map(t => ({ userAnswer: t.userAnswer, answered: t.answered })),
+                assignments: b.assignments.map(a => ({ submitted: a.submitted, reviewed: a.reviewed, feedback: a.feedback, grade: a.grade })),
+                videos: b.videos.map(v => ({ watched: v.watched })),
+                lectures: b.lectures.map(l => ({ downloaded: l.downloaded }))
+            }));
+            localStorage.setItem('courseMath_final', JSON.stringify(saveData));
+            checkAllBlocksCompleted();
+        }
+
+        function checkAllBlocksCompleted() {
+            const allCompleted = blocks.every(b => b.completed === true);
+            const certSection = document.getElementById('certificateSection');
+            if (allCompleted) {
+                certSection.classList.add('visible');
+            } else {
+                certSection.classList.remove('visible');
+            }
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('courseMath_final');
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                for (let i = 0; i < blocks.length && i < data.length; i++) {
+                    if (data[i]) {
+                        blocks[i].completed = data[i].completed || false;
+                        blocks[i].unlocked = data[i].unlocked || (i === 0);
+                        if (data[i].tests) {
+                            for (let t = 0; t < blocks[i].tests.length; t++) {
+                                if (data[i].tests[t]) {
+                                    blocks[i].tests[t].userAnswer = data[i].tests[t].userAnswer;
+                                    blocks[i].tests[t].answered = data[i].tests[t].answered;
+                                }
+                            }
+                        }
+                        if (data[i].assignments) {
+                            for (let a = 0; a < blocks[i].assignments.length; a++) {
+                                if (data[i].assignments[a]) {
+                                    blocks[i].assignments[a].submitted = data[i].assignments[a].submitted || false;
+                                    blocks[i].assignments[a].reviewed = data[i].assignments[a].reviewed || false;
+                                    blocks[i].assignments[a].feedback = data[i].assignments[a].feedback || '';
+                                    blocks[i].assignments[a].grade = data[i].assignments[a].grade || null;
+                                }
+                            }
+                        }
+                        if (data[i].videos) {
+                            for (let v = 0; v < blocks[i].videos.length; v++) {
+                                if (data[i].videos[v]) blocks[i].videos[v].watched = data[i].videos[v].watched || false;
+                            }
+                        }
+                        if (data[i].lectures) {
+                            for (let l = 0; l < blocks[i].lectures.length; l++) {
+                                if (data[i].lectures[l]) blocks[i].lectures[l].downloaded = data[i].lectures[l].downloaded || false;
+                            }
+                        }
+                    }
+                }
+                for (let i = 1; i < blocks.length; i++) {
+                    if (blocks[i - 1].completed && !blocks[i].unlocked) blocks[i].unlocked = true;
+                }
+            } catch (e) { console.warn(e); }
+            updateStats();
+            loadSubmissionStatuses();
+            checkAllBlocksCompleted();
+        }
+
+        function loadSubmissionStatuses() {
+            const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+            let updated = false;
+            for (let b of blocks) {
+                for (let a of b.assignments) {
+                    const submission = submissions.find(s =>
+                        s.userEmail === currentUser.email &&
+                        s.assignmentTitle === a.title &&
+                        s.courseName === "Высшая математика"
+                    );
+                    if (submission) {
+                        if (submission.reviewed && !a.reviewed) {
+                            a.reviewed = true;
+                            a.submitted = true;
+                            a.feedback = submission.feedback || '';
+                            a.grade = submission.grade;
+                            updated = true;
+                        } else if (submission.submitted && !a.submitted) {
+                            a.submitted = true;
+                            updated = true;
+                        }
+                    }
+                }
+            }
+            if (updated) saveProgress();
+        }
+
+        function updateStats() {
+            let completedCount = blocks.filter(b => b.completed).length;
+            document.getElementById('totalProgress').innerText = Math.round((completedCount / blocks.length) * 100);
+            document.getElementById('passedBlocks').innerText = completedCount + '/' + blocks.length;
+            let totalScore = 0, testCount = 0;
+            for (let b of blocks) {
+                for (let t of b.tests) {
+                    if (t.answered) {
+                        testCount++;
+                        if (t.userAnswer === t.correct) totalScore++;
+                    }
+                }
+            }
+            document.getElementById('quizAvg').innerText = testCount > 0 ? Math.round((totalScore / testCount) * 100) : 0;
+        }
+
+        function checkBlockCompletion(blockIdx) {
+            const block = blocks[blockIdx];
+            const allVideosWatched = block.videos.every(v => v.watched === true);
+            const allLecturesRead = block.lectures.length === 0 || block.lectures.every(l => l.downloaded === true);
+            const allTestsPassed = block.tests.every(t => t.answered === true && t.userAnswer === t.correct);
+            const allAssignmentsReviewed = block.assignments.every(a => a.reviewed === true);
+            
+            if (allVideosWatched && allLecturesRead && allTestsPassed && allAssignmentsReviewed) {
+                if (!block.completed) {
+                    block.completed = true;
+                    if (blockIdx + 1 < blocks.length) {
+                        blocks[blockIdx + 1].unlocked = true;
+                    }
+                    saveProgress();
+                    updateStats();
+                    renderBlocksNav();
+                    if (currentBlock === blockIdx) renderCurrentBlock();
+                    showFloatingNotification(`🎉 Поздравляем! Блок "${block.name}" пройден!`);
+                    return true;
+                }
+            }
+            saveProgress();
+            updateStats();
+            return false;
+        }
+
+        function renderBlocksNav() {
+            const nav = document.getElementById('blocksNav');
+            nav.innerHTML = blocks.map((b, idx) => {
+                let classes = 'block-tab';
+                if (idx === currentBlock) classes += ' active';
+                if (b.completed) classes += ' completed';
+                else if (!b.unlocked && idx !== 0) classes += ' locked';
+                return `<button class="${classes}" data-idx="${idx}" ${(!b.unlocked && idx !== 0) ? 'disabled' : ''}>${b.name} ${b.completed ? '✓' : ''}</button>`;
+            }).join('');
+            document.querySelectorAll('.block-tab:not([disabled])').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    let idx = parseInt(this.dataset.idx);
+                    if (blocks[idx].unlocked || idx === 0) {
+                        currentBlock = idx;
+                        renderCurrentBlock();
+                        renderBlocksNav();
+                    }
+                });
+            });
+        }
+
+        function resetQuiz(block, qi, cardDiv) {
+            block.tests[qi].userAnswer = null;
+            block.tests[qi].answered = false;
+            const options = cardDiv.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            const feedbackDiv = document.getElementById(`quizFeedback-${qi}`);
+            if (feedbackDiv) feedbackDiv.style.display = 'none';
+            saveProgress();
+        }
+
+        function showFloatingNotification(msg, isError = false) {
+            let div = document.getElementById('floating-notification');
+            if (!div) {
+                div = document.createElement('div');
+                div.id = 'floating-notification';
+                div.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#1e293b;color:white;padding:12px 24px;border-radius:40px;z-index:10000;font-size:0.85rem;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:opacity 0.3s;opacity:0;pointer-events:none;';
+                document.body.appendChild(div);
+            }
+            div.style.backgroundColor = isError ? '#dc2626' : '#1e293b';
+            div.textContent = msg;
+            div.style.opacity = '1';
+            setTimeout(() => { div.style.opacity = '0'; }, 3000);
+        }
+
+        function renderCurrentBlock() {
+            const block = blocks[currentBlock];
+            const container = document.getElementById('blockContent');
+            
+            let videosHtml = '';
+            if (block.videos.length > 0) {
+                videosHtml = '<div class="video-grid">' + block.videos.map((v, vi) => `
+                    <div class="video-card" data-video-url="${v.url}" data-video-idx="${vi}">
+                        <div class="video-preview" style="background: ${v.previewColor || 'linear-gradient(135deg, #1e293b, #0f172a)'}">
+                            <div class="preview-overlay">
+                                <div class="play-icon-big">▶️</div>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${v.title}</div>
+                            <span class="watch-status ${v.watched ? 'watched' : ''}">${v.watched ? '✓ Просмотрено' : '📹 Не просмотрено'}</span>
+                        </div>
+                    </div>
+                `).join('') + '</div>';
+            }
+            
+            let lecturesHtml = '';
+            if (block.lectures.length > 0) {
+                lecturesHtml = '<div class="lectures-list">' + block.lectures.map((l, li) => `
+                    <div class="lecture-item" data-lecture-idx="${li}" data-block-idx="${currentBlock}">
+                        <div class="lecture-name"><span class="lecture-badge">📄 ${l.title}</span></div>
+                        <div class="lecture-download">${l.downloaded ? '✅ Прочитан' : '📥 Открыть'}</div>
+                    </div>
+                `).join('') + '</div>';
+            }
+            
+            let testsHtml = block.tests.map((q, qi) => `
+                <div class="quiz-card" data-quiz-idx="${qi}">
+                    <div class="quiz-question">${qi + 1}. ${q.question}</div>
+                    ${q.options.map((opt, oi) => `<div class="quiz-option" data-opt="${oi}"><span>${String.fromCharCode(65 + oi)}.</span> ${opt}</div>`).join('')}
+                    <div class="quiz-feedback" id="quizFeedback-${qi}"></div>
+                    <div class="quiz-actions">
+                        <button class="quiz-submit" data-quiz-idx="${qi}">✅ Ответить</button>
+                        <button class="quiz-cancel" data-quiz-cancel="${qi}">↺ Сбросить ответ</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            let assignmentsHtml = block.assignments.map((a, ai) => `
+                <div class="assignment-card">
+                    <div class="assignment-title">📎 Задание ${ai + 1}: ${a.title}</div>
+                    <div class="tz-block"><strong>📋 Техническое задание:</strong><br>${a.tz}</div>
+                    <div class="upload-area" data-assign-idx="${ai}">
+                        ${a.file ? `📁 Файл: ${a.file.name}` : (a.submitted ? '✅ Файл отправлен' : '➕ Нажмите, чтобы загрузить файл')}
+                    </div>
+                    <div class="file-status ${a.reviewed ? 'success' : (a.submitted ? 'pending' : '')}">
+                        ${a.reviewed ? '✅ Проверено преподавателем' : (a.submitted ? '⏳ Отправлено на проверку' : '📭 Файл не загружен')}
+                    </div>
+                    ${a.grade ? `<div style="margin-top:8px; font-weight:600; color:#4422CA;">⭐ Оценка: ${a.grade}/100</div>` : ''}
+                    <div class="assignment-buttons">
+                        ${!a.submitted ? `<button class="submit-assignment" data-assign-idx="${ai}" ${!a.file ? 'disabled' : ''}>📨 Отправить на проверку</button>` : ''}
+                        ${a.submitted && !a.reviewed ? `<button class="cancel-assignment" data-cancel-idx="${ai}" style="background:#fee2e2; color:#dc2626; border-color:#fecaca;">🗑 Отменить отправку</button>` : ''}
+                        ${!a.submitted && a.file ? `<button class="cancel-assignment" data-cancel-idx="${ai}">🗑 Удалить файл</button>` : ''}
+                        <span class="assignment-status ${a.reviewed ? 'approved' : (a.submitted ? 'pending' : '')}">
+                            ${a.reviewed ? '★ Зачтено' : (a.submitted ? 'Ожидает проверки' : 'Черновик')}
+                        </span>
+                    </div>
+                    ${a.feedback ? `<div style="margin-top:16px; background:#eef2ff; border-radius:20px; padding:10px 16px;">📝 Комментарий преподавателя: ${a.feedback}</div>` : ''}
+                </div>
+            `).join('');
+            
+            const allVideosDone = block.videos.every(v => v.watched);
+            const allLecturesDone = block.lectures.length === 0 || block.lectures.every(l => l.downloaded);
+            const allTestsDone = block.tests.every(t => t.answered === true && t.userAnswer === t.correct);
+            const allAssignmentsReviewed = block.assignments.every(a => a.reviewed === true);
+            const canComplete = allVideosDone && allLecturesDone && allTestsDone && allAssignmentsReviewed;
+            
+            let completeBtn = `<button class="complete-block-btn" id="completeBlockBtn" ${block.completed || !canComplete ? 'disabled' : ''}>${block.completed ? '✅ Блок пройден' : '🎉 Завершить блок'}</button>`;
+            
+            let warningHtml = '';
+            if (!canComplete && !block.completed) {
+                warningHtml = `
+                    <div style="margin-top:12px; padding:12px; background:#fef3c7; border-radius:16px; font-size:0.85rem; color:#92400e;">
+                        ⚠️ Чтобы завершить блок, необходимо: 
+                        ${!allVideosDone ? '• посмотреть все видео ' : ''}
+                        ${!allLecturesDone ? '• прочитать все конспекты ' : ''}
+                        ${!allTestsDone ? '• правильно ответить на все тесты ' : ''}
+                        ${!allAssignmentsReviewed ? '• получить проверку всех заданий ' : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = `
+                <div class="block-container">
+                    <div class="block-title">${block.name}</div>
+                    <div class="block-subtitle">✅ Просмотрите видео | ✅ Прочитайте конспекты | ✅ Ответьте на тесты | ✅ Отправьте задания</div>
+                    ${videosHtml ? '<h3>🎥 Видеоуроки</h3>' + videosHtml : ''}
+                    ${lecturesHtml ? '<h3>📚 Конспекты</h3>' + lecturesHtml : ''}
+                    <h3>📝 Тесты</h3>${testsHtml}
+                    <h3>📂 Итоговые задания</h3>${assignmentsHtml}
+                    ${completeBtn}
+                    ${warningHtml}
+                </div>
+            `;
+            
+            // Видео
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.videoIdx);
+                    const url = this.dataset.videoUrl;
+                    if (url) window.open(url, '_blank');
+                    if (!block.videos[idx].watched) {
+                        block.videos[idx].watched = true;
+                        checkBlockCompletion(currentBlock);
+                        renderCurrentBlock();
+                    }
+                });
+            });
+            
+            // Конспекты
+            document.querySelectorAll('.lecture-item').forEach(lec => {
+                lec.addEventListener('click', function() {
+                    let idx = parseInt(this.dataset.lectureIdx);
+                    let blockIdx = parseInt(this.dataset.blockIdx);
+                    let lecture = blocks[blockIdx].lectures[idx];
+                    let content = getLectureContent(blockIdx, idx);
+                    showModal(lecture.title, content);
+                    if (!lecture.downloaded) {
+                        lecture.downloaded = true;
+                        checkBlockCompletion(currentBlock);
+                        renderCurrentBlock();
+                    }
+                });
+            });
+            
+            // Тесты
+            for (let qi = 0; qi < block.tests.length; qi++) {
+                const q = block.tests[qi];
+                const cardDiv = document.querySelector(`.quiz-card[data-quiz-idx="${qi}"]`);
+                if (!cardDiv) continue;
+                
+                const options = cardDiv.querySelectorAll('.quiz-option');
+                options.forEach(opt => {
+                    opt.addEventListener('click', function() {
+                        const val = parseInt(this.dataset.opt);
+                        q.userAnswer = val;
+                        q.answered = false;
+                        options.forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        const fbDiv = document.getElementById(`quizFeedback-${qi}`);
+                        if (fbDiv) fbDiv.style.display = 'none';
+                    });
+                });
+                
+                const submitBtn = cardDiv.querySelector('.quiz-submit');
+                submitBtn.addEventListener('click', function() {
+                    if (q.userAnswer === undefined || q.userAnswer === null) {
+                        alert("Выберите вариант ответа!");
+                        return;
+                    }
+                    const isCorrect = (q.userAnswer === q.correct);
+                    q.answered = true;
+                    const feedbackDiv = document.getElementById(`quizFeedback-${qi}`);
+                    feedbackDiv.style.display = "block";
+                    if (isCorrect) {
+                        feedbackDiv.innerHTML = "✅ Верно! Отличный ответ!";
+                        feedbackDiv.style.background = "#d1fae5";
+                        feedbackDiv.style.color = "#065f46";
+                    } else {
+                        feedbackDiv.innerHTML = `❌ Неправильно. Правильный ответ: ${q.options[q.correct]}`;
+                        feedbackDiv.style.background = "#fee2e2";
+                        feedbackDiv.style.color = "#991b1b";
+                    }
+                    saveProgress();
+                    checkBlockCompletion(currentBlock);
+                    renderCurrentBlock();
+                });
+                
+                const cancelBtn = cardDiv.querySelector('.quiz-cancel');
+                cancelBtn.addEventListener('click', function() {
+                    resetQuiz(block, qi, cardDiv);
+                });
+                
+                if (q.userAnswer !== undefined && q.userAnswer !== null) {
+                    const selectedOpt = cardDiv.querySelector(`.quiz-option[data-opt="${q.userAnswer}"]`);
+                    if (selectedOpt) selectedOpt.classList.add('selected');
+                    if (q.answered) {
+                        const isCorrect = (q.userAnswer === q.correct);
+                        const feedbackDiv = document.getElementById(`quizFeedback-${qi}`);
+                        feedbackDiv.style.display = "block";
+                        if (isCorrect) {
+                            feedbackDiv.innerHTML = "✅ Верно! Отличный ответ!";
+                            feedbackDiv.style.background = "#d1fae5";
+                            feedbackDiv.style.color = "#065f46";
+                        } else {
+                            feedbackDiv.innerHTML = `❌ Неправильно. Правильный ответ: ${q.options[q.correct]}`;
+                            feedbackDiv.style.background = "#fee2e2";
+                            feedbackDiv.style.color = "#991b1b";
+                        }
+                    }
+                }
+            }
+            
+            // Задания
+            for (let ai = 0; ai < block.assignments.length; ai++) {
+                const assign = block.assignments[ai];
+                const uploadArea = document.querySelector(`.upload-area[data-assign-idx="${ai}"]`);
+                
+                if (uploadArea && !assign.submitted) {
+                    uploadArea.addEventListener('click', function() {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = '.pdf,.zip,.png,.jpg,.doc,.docx';
+                        input.onchange = function(e) {
+                            const file = e.target.files[0];
+                            if (file) {
+                                assign.file = file;
+                                assign.submitted = false;
+                                assign.reviewed = false;
+                                uploadArea.innerHTML = `📁 Файл: ${file.name}`;
+                                saveProgress();
+                                renderCurrentBlock();
+                            }
+                        };
+                        input.click();
+                    });
+                }
+                
+                const submitBtn = document.querySelector(`.submit-assignment[data-assign-idx="${ai}"]`);
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', function() {
+                        if (!assign.file) {
+                            alert("Сначала загрузите файл");
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+                            
+                            const filteredSubmissions = submissions.filter(s =>
+                                !(s.userEmail === currentUser.email &&
+                                    s.assignmentTitle === assign.title &&
+                                    s.courseName === "Высшая математика")
+                            );
+                            
+                            filteredSubmissions.push({
+                                id: Date.now(),
+                                userEmail: currentUser.email,
+                                studentName: currentUser.fullName || currentUser.email,
+                                courseName: "Высшая математика",
+                                blockName: block.name,
+                                assignmentTitle: assign.title,
+                                fileName: assign.file.name,
+                                fileData: e.target.result,
+                                submitted: true,
+                                submittedAt: new Date().toISOString(),
+                                reviewed: false,
+                                grade: null,
+                                feedback: null
+                            });
+                            
+                            localStorage.setItem('nextstep_submissions', JSON.stringify(filteredSubmissions));
+                            
+                            assign.submitted = true;
+                            assign.file = null;
+                            saveProgress();
+                            renderCurrentBlock();
+                            alert("✅ Работа отправлена на проверку преподавателю! Ожидайте оценки.");
+                        };
+                        reader.readAsDataURL(assign.file);
+                    });
+                }
+                
+                const cancelAssignBtn = document.querySelector(`.cancel-assignment[data-cancel-idx="${ai}"]`);
+                if (cancelAssignBtn) {
+                    cancelAssignBtn.addEventListener('click', function() {
+                        if (assign.submitted && !assign.reviewed) {
+                            if (confirm('Вы уверены, что хотите отменить отправку этого задания? Вы сможете загрузить файл заново.')) {
+                                const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+                                const updatedSubmissions = submissions.filter(s =>
+                                    !(s.userEmail === currentUser.email &&
+                                        s.assignmentTitle === assign.title &&
+                                        s.courseName === "Высшая математика")
+                                );
+                                localStorage.setItem('nextstep_submissions', JSON.stringify(updatedSubmissions));
+                                
+                                assign.submitted = false;
+                                assign.reviewed = false;
+                                assign.file = null;
+                                assign.feedback = '';
+                                assign.grade = null;
+                                saveProgress();
+                                renderCurrentBlock();
+                                alert('✅ Отправка отменена. Вы можете загрузить новый файл.');
+                            }
+                        } else if (!assign.submitted && assign.file) {
+                            assign.file = null;
+                            saveProgress();
+                            renderCurrentBlock();
+                        }
+                    });
+                }
+            }
+            
+            const completeBtnElem = document.getElementById('completeBlockBtn');
+            if (completeBtnElem && !block.completed) {
+                completeBtnElem.addEventListener('click', function() {
+                    const allV = block.videos.every(v => v.watched);
+                    const allL = block.lectures.length === 0 || block.lectures.every(l => l.downloaded);
+                    const allQ = block.tests.every(t => t.answered === true && t.userAnswer === t.correct);
+                    const allA = block.assignments.every(a => a.reviewed === true);
+                    if (allV && allL && allQ && allA) {
+                        block.completed = true;
+                        if (currentBlock + 1 < blocks.length) blocks[currentBlock + 1].unlocked = true;
+                        saveProgress();
+                        updateStats();
+                        renderBlocksNav();
+                        renderCurrentBlock();
+                        showFloatingNotification(`🎉 Поздравляем! Блок "${block.name}" пройден!`);
+                    } else {
+                        let msg = "❌ Невозможно завершить блок:\n";
+                        if (!allV) msg += "• Посмотрите все видео\n";
+                        if (!allL) msg += "• Прочитайте все конспекты\n";
+                        if (!allQ) msg += "• Ответьте правильно на все тесты\n";
+                        if (!allA) msg += "• Дождитесь проверки всех заданий от преподавателя\n";
+                        alert(msg);
+                    }
+                });
+            }
+            updateStats();
+        }
+        
+        // ==================== СИНХРОНИЗАЦИЯ ====================
+        function syncSubmissionStatus() {
+            const btn = document.getElementById('syncStatusBtn');
+            if (!btn) return;
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="sync-spinner"></span> Синхронизация...';
+            btn.disabled = true;
+            
+            try {
+                loadSubmissionStatuses();
+                updateStats();
+                renderCurrentBlock();
+                showFloatingNotification('✅ Статус заданий обновлён');
+            } catch(e) {
+                console.error('Ошибка синхронизации:', e);
+                showFloatingNotification('❌ Ошибка синхронизации', true);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // Слушаем события
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'nextstep_submissions') {
+                syncSubmissionStatus();
+            }
+        });
+        
+        window.addEventListener('focus', () => {
+            syncSubmissionStatus();
+        });
+        
+        // Инициализация
+        loadProgress();
+        renderBlocksNav();
+        renderCurrentBlock();
+        
+        document.getElementById('syncStatusBtn')?.addEventListener('click', syncSubmissionStatus);
+        setInterval(syncSubmissionStatus, 30000);
+    }
+    
+    // Запускаем проверку авторизации
+    checkAuthAndStart();
+</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Оптимизация приложений — курс NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #fafbff; font-family: 'Inter', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+        .blur-circles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .blur-circle { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: 0; animation: smoothFloat 24s infinite ease-in-out; }
+        @keyframes smoothFloat { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(12px, -8px) scale(1.02); } 66% { transform: translate(-8px, 10px) scale(0.98); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 32px 48px 80px; position: relative; z-index: 10; }
+        .course-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+        .title-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e1b4b, #2d4a5c, #4422CA); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 8px; }
+        .title-section p { color: #475569; font-size: 1rem; }
+        .progress-overview { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 32px; padding: 16px 28px; border: 1px solid rgba(68,34,202,0.15); min-width: 280px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+        .progress-stats { display: flex; gap: 32px; justify-content: space-between; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #4422CA, #22B9CA); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.7rem; color: #64748b; letter-spacing: 0.5px; }
+        .blocks-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 60px; padding: 8px 20px; border: 1px solid rgba(68,34,202,0.1); }
+        .block-tab { background: transparent; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: #334155; }
+        .block-tab.active { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; box-shadow: 0 6px 14px rgba(68,34,202,0.25); }
+        .block-tab.locked { opacity: 0.5; cursor: not-allowed; background: #e2e8f0; color: #94a3b8; }
+        .block-tab.completed { background: #10b98120; border: 1px solid #10b981; color: #065f46; }
+        .block-container { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 48px; padding: 40px 44px; border: 1px solid rgba(68,34,202,0.15); margin-bottom: 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05); }
+        .block-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; letter-spacing: -0.3px; }
+        .block-subtitle { color: #64748b; margin-bottom: 32px; border-left: 4px solid #4422CA; padding-left: 18px; font-size: 0.9rem; }
+        h3 { font-size: 1.4rem; font-weight: 600; margin: 32px 0 20px 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        h3:first-of-type { margin-top: 0; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 20px; }
+        .video-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid #eef2ff; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(68,34,202,0.15); border-color: rgba(68,34,202,0.3); }
+        .video-preview { background: linear-gradient(145deg, #1e1b4b, #0f172a); height: 190px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem; position: relative; border-radius: 24px 24px 0 0; }
+        .preview-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 24px 24px 0 0; }
+        .video-card:hover .preview-overlay { background: rgba(68,34,202,0.6); }
+        .play-icon-big { width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4422CA; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.2s; }
+        .video-card:hover .play-icon-big { transform: scale(1.1); background: white; }
+        .video-info { padding: 18px; }
+        .video-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; }
+        .watch-status { display: inline-block; font-size: 0.7rem; padding: 4px 12px; border-radius: 30px; background: #f1f5f9; color: #475569; }
+        .watch-status.watched { background: #10b98115; color: #059669; }
+        .lectures-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .lecture-item { background: #f8fafc; border-radius: 20px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #eef2ff; }
+        .lecture-item:hover { border-color: #4422CA; background: white; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .lecture-name { font-weight: 500; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .lecture-badge { background: #4422CA10; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; color: #4422CA; font-weight: 600; }
+        .lecture-download { color: #4422CA; font-size: 0.8rem; font-weight: 500; }
+        .quiz-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .quiz-question { font-weight: 700; font-size: 1.05rem; margin-bottom: 18px; color: #0f172a; }
+        .quiz-option { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 60px; background: #fafcff; margin-bottom: 8px; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .quiz-option.selected { border-color: #4422CA; background: #f5f3ff; }
+        .quiz-option:hover { border-color: #22B9CA; background: #f0fdfe; }
+        .quiz-actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+        .quiz-submit { background: #4422CA; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .quiz-submit:hover { background: #361aa3; }
+        .quiz-cancel { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 9px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .quiz-cancel:hover { background: #eef2ff; }
+        .quiz-feedback { margin-top: 16px; font-size: 0.85rem; padding: 10px 16px; border-radius: 24px; display: none; }
+
+        /* ИНТЕРАКТИВНОЕ ЗАДАНИЕ */
+        .optimization-task { background: white; border-radius: 32px; padding: 28px; margin-bottom: 24px; border: 1px solid #eef2ff; }
+        .task-scenario { background: #f8fafc; border-radius: 20px; padding: 20px; margin-bottom: 24px; border-left: 4px solid #4422CA; }
+        .task-scenario h4 { font-size: 1.1rem; margin-bottom: 8px; color: #0f172a; }
+        .task-scenario p { color: #64748b; font-size: 0.9rem; }
+        .metrics-display { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .metric-card { background: #f1f5f9; border-radius: 16px; padding: 14px; text-align: center; transition: all 0.5s ease; }
+        .metric-card.good { background: #d1fae5; border: 2px solid #10b981; }
+        .metric-card.warning { background: #fef3c7; border: 2px solid #f59e0b; }
+        .metric-card.bad { background: #fee2e2; border: 2px solid #ef4444; }
+        .metric-value { font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+        .metric-label { font-size: 0.7rem; color: #64748b; margin-top: 4px; }
+        .steps-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .step-slot { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 16px; border: 2px dashed #cbd5e1; min-height: 54px; transition: all 0.2s; cursor: pointer; }
+        .step-slot:hover { border-color: #4422CA; background: #fafbff; }
+        .step-slot.filled { border-style: solid; border-color: #e2e8f0; background: white; }
+        .step-number { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; background: #e2e8f0; color: #64748b; flex-shrink: 0; }
+        .step-slot.filled .step-number { background: #4422CA; color: white; }
+        .step-content { flex: 1; font-size: 0.9rem; color: #334155; }
+        .step-indicator { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; transition: all 0.3s; }
+        .step-indicator.correct { background: #10b981; box-shadow: 0 0 12px rgba(16,185,129,0.5); }
+        .step-indicator.partial { background: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.5); }
+        .step-indicator.wrong { background: #ef4444; box-shadow: 0 0 12px rgba(239,68,68,0.5); }
+        .available-steps { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .available-step { padding: 10px 16px; border-radius: 40px; border: 1px solid #e2e8f0; background: white; cursor: grab; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; user-select: none; }
+        .available-step:hover { border-color: #4422CA; background: #f5f3ff; transform: translateY(-2px); }
+        .available-step.used { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+        .task-buttons { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
+        .check-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(68,34,202,0.3); }
+        .reset-btn { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 11px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .reset-btn:hover { background: #eef2ff; }
+        .submit-btn { background: #22B9CA; color: white; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .submit-btn:hover:not(:disabled) { background: #1a9aaa; transform: translateY(-2px); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; }
+        .task-result { margin-top: 16px; padding: 16px; border-radius: 20px; display: none; font-size: 0.9rem; line-height: 1.5; }
+        .task-result.show { display: block; }
+
+        .complete-block-btn { background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 16px 32px; border-radius: 60px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 32px; width: 100%; transition: 0.2s; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+        .complete-block-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; box-shadow: none; }
+        .complete-block-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16,185,129,0.35); }
+        .certificate-section { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #f0f9ff, #f5f3ff); border-radius: 24px; border: 2px solid rgba(68,34,202,0.2); text-align: center; display: none; }
+        .certificate-section.visible { display: block; animation: fadeInUp 0.5s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .certificate-icon { font-size: 4rem; margin-bottom: 16px; }
+        .certificate-title { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; margin-bottom: 8px; }
+        .certificate-description { color: #64748b; margin-bottom: 20px; font-size: 0.95rem; }
+        .certificate-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 14px 32px; border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(68,34,202,0.3); }
+        .certificate-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(68,34,202,0.4); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 40px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 28px; position: relative; box-shadow: 0 25px 40px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eef2ff; }
+        .modal-header h3 { margin: 0; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .close-modal:hover { color: #dc2626; }
+        .modal-body { white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+        .back-to-courses { display: inline-flex; align-items: center; gap: 10px; background: white; backdrop-filter: blur(8px); border: 1px solid rgba(68,34,202,0.2); padding: 12px 28px; border-radius: 50px; color: #4422CA; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.3s ease; margin-top: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .back-to-courses:hover { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; transform: translateX(-6px); border-color: transparent; box-shadow: 0 8px 20px rgba(68,34,202,0.25); }
+        .back-to-courses::before { content: "←"; font-size: 1.2rem; }
+        @media (max-width: 780px) { .main-content { padding: 24px; } .block-container { padding: 24px; } .blocks-nav { overflow-x: auto; flex-wrap: nowrap; } .video-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div><div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div><div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div><div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div><div class="blur-circle circle-bottom-right-2"></div>
+</div>
+
+<div class="main-content">
+    <div class="course-header">
+        <div class="title-section"><h1>⚡ Оптимизация приложений</h1><p>Производительность • Кэширование • Профилирование • 8 недель</p></div>
+        <div class="progress-overview"><div class="progress-stats">
+            <div class="stat-item"><div class="stat-number" id="totalProgress">0</div><div class="stat-label">% курса</div></div>
+            <div class="stat-item"><div class="stat-number" id="passedBlocks">0</div><div class="stat-label">блоков</div></div>
+            <div class="stat-item"><div class="stat-number" id="quizAvg">0</div><div class="stat-label">ср. балл</div></div>
+        </div></div>
+    </div>
+    <div class="blocks-nav" id="blocksNav"></div>
+    <div id="blockContent"></div>
+    <div class="certificate-section" id="certificateSection">
+        <div class="certificate-icon">🏆</div>
+        <div class="certificate-title">Поздравляем с завершением курса!</div>
+        <div class="certificate-description">Все блоки успешно пройдены. Получите сертификат «Оптимизация приложений».</div>
+        <button class="certificate-btn" onclick="window.location.href='сертификаты.html'">📜 Просмотреть сертификат</button>
+    </div>
+    <a href="мои курсы некст.html" class="back-to-courses">Вернуться в мои курсы</a>
+</div>
+<div id="lectureModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 id="modalTitle">📄 Конспект</h3><button class="close-modal" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modalBody"></div></div></div>
+
+<script>
+    const lectureTexts = {
+        lecture1: "КОНСПЕКТ 1: Введение в оптимизацию\n\nОптимизация — процесс улучшения характеристик приложения: скорости загрузки, отзывчивости, потребления памяти.\n\nЗолотые правила:\n1. Не оптимизируй преждевременно (Дональд Кнут)\n2. Сначала измерь — потом оптимизируй\n3. 80/20: 80% времени занимает 20% кода\n\nКлючевые метрики веб-производительности:\n• LCP (Largest Contentful Paint) — загрузка основного контента (хорошо < 2.5с)\n• FID (First Input Delay) — отзывчивость (хорошо < 100мс)\n• CLS (Cumulative Layout Shift) — стабильность вёрстки (хорошо < 0.1)\n• TTFB (Time to First Byte) — ответ сервера (хорошо < 800мс)\n\nИнструменты: Lighthouse, Chrome DevTools, WebPageTest.",
+        lecture2: "КОНСПЕКТ 2: Оптимизация фронтенда\n\nСжатие и минификация:\n• Gzip/Brotli на сервере\n• Минификация HTML, CSS, JS\n• Tree Shaking — удаление неиспользуемого кода\n\nИзображения:\n• Формат WebP/AVIF\n• Lazy Loading: loading='lazy'\n• CDN для статики\n\nJavaScript:\n• defer/async для скриптов\n• Code Splitting\n\nКритический CSS — стили первого экрана в <head>, остальное асинхронно.",
+        lecture3: "КОНСПЕКТ 3: Оптимизация бэкенда\n\nБазы данных:\n• Индексы (B-tree, Hash)\n• EXPLAIN ANALYZE\n• Пул соединений (pgbouncer)\n\nКэширование:\n• Redis/Memcached\n• HTTP-кэш: ETag, Cache-Control\n\nАсинхронность:\n• Очереди (RabbitMQ, Kafka)\n• Фоновая обработка",
+        lecture4: "КОНСПЕКТ 4: Профилирование кода\n\nИнструменты:\n• Python: cProfile, py-spy\n• JS: Chrome DevTools Performance\n• Java: JProfiler, VisualVM\n\nFlame Graph — визуализация стека вызовов:\n• Ширина = время\n• Ищем самые широкие блоки\n\nВсегда профилируйте перед оптимизацией!",
+        lecture5: "КОНСПЕКТ 5: Big O и структуры данных\n\nСложность алгоритмов:\n• O(1) — константная (HashMap)\n• O(log n) — логарифмическая (бинарный поиск)\n• O(n) — линейная\n• O(n²) — квадратичная (избегать!)\n\nСтруктуры данных:\n• Хеш-таблица: поиск O(1)\n• Массив: поиск O(n)\n• Set/Map вместо массивов для поиска",
+        lecture6: "КОНСПЕКТ 6: Кэширование стратегии\n\nУровни:\n1. Браузер (HTTP Cache)\n2. CDN\n3. Приложение (In-Memory)\n4. Redis (распределённый)\n\nСтратегии:\n• Cache-aside — приложение управляет\n• Write-through — синхронная запись\n• TTL — устаревание по времени",
+        lecture7: "КОНСПЕКТ 7: Нагрузочное тестирование\n\nВиды:\n• Load — ожидаемая нагрузка\n• Stress — превышение нормы\n• Spike — резкие скачки\n\nИнструменты: k6, JMeter, wrk\n\nМетрики: RPS, P50/P95/P99 latency, Error rate",
+        lecture8: "КОНСПЕКТ 8: Мониторинг и алерты\n\nИнструменты:\n• Grafana + Prometheus\n• New Relic, Datadog\n• Sentry (ошибки)\n\nКлючевые метрики:\n• Response time\n• Error rate\n• CPU/Memory usage\n• Алерты при отклонениях"
+    };
+
+    function getLectureContent(bi, li) { const nums=[1,4,7]; return lectureTexts['lecture'+(nums[bi]+li)]||'Содержание появится позже...'; }
+    function showModal(t,c){ document.getElementById('modalTitle').innerText=t; document.getElementById('modalBody').innerHTML=c.replace(/\n/g,'<br>'); document.getElementById('lectureModal').style.display='flex'; }
+    window.closeModal=()=>document.getElementById('lectureModal').style.display='none';
+    window.onclick=e=>{if(e.target===document.getElementById('lectureModal'))closeModal();};
+
+    // Интерактивные задания для каждого блока
+    const optimizationTasks = [
+        { // Блок 0
+            scenario: "У вас интернет-магазин на WordPress. Страница товара загружается 6.2 секунды. Пользователи жалуются на скорость.",
+            initialMetrics: { lcp: 5800, fid: 250, cls: 0.18, ttfb: 1200 },
+            steps: [
+                { id: "img", text: "Сжать изображения в WebP", lcp: -1800, fid: 0, cls: 0, ttfb: 0, explanation: "WebP сжимает изображения на 30% лучше JPEG. LCP улучшается, так как основной контент (фото товара) загружается быстрее." },
+                { id: "cdn", text: "Подключить CDN для статики", lcp: -800, fid: 0, cls: 0, ttfb: -200, explanation: "CDN раздаёт файлы с серверов, ближайших к пользователю. TTFB снижается, статика загружается быстрее." },
+                { id: "cache", text: "Включить кэширование страниц (Redis)", lcp: -1200, fid: 0, cls: 0, ttfb: -500, explanation: "Кэширование снижает нагрузку на сервер. TTFB резко падает, так как страница отдаётся из кэша без обращения к БД." },
+                { id: "lazy", text: "Добавить Lazy Loading для изображений", lcp: -400, fid: 0, cls: 0, ttfb: 0, explanation: "Изображения загружаются только при прокрутке. Это ускоряет первоначальную загрузку." },
+                { id: "minify", text: "Минифицировать CSS и JavaScript", lcp: -300, fid: 0, cls: 0, ttfb: 0, explanation: "Удаление лишних пробелов и комментариев уменьшает размер файлов. Ускорение загрузки ресурсов." }
+            ],
+            correctOrder: ["img", "minify", "cdn", "cache", "lazy"]
+        },
+        { // Блок 1
+            scenario: "У вас API на Node.js, который обрабатывает 50 запросов/сек. При 200 запросах/сек сервер падает. Нужно оптимизировать бэкенд.",
+            initialMetrics: { lcp: 0, fid: 0, cls: 0, ttfb: 2500 },
+            steps: [
+                { id: "index", text: "Добавить индексы в БД (PostgreSQL)", lcp: 0, fid: 0, cls: 0, ttfb: -700, explanation: "Индексы ускоряют SELECT-запросы в десятки раз. TTFB снижается, так как данные извлекаются быстрее." },
+                { id: "pool", text: "Настроить пул соединений (pgbouncer)", lcp: 0, fid: 0, cls: 0, ttfb: -400, explanation: "Пул переиспользует соединения с БД, снижая накладные расходы на подключение." },
+                { id: "redis", text: "Кэшировать частые запросы в Redis", lcp: 0, fid: 0, cls: 0, ttfb: -800, explanation: "Redis хранит данные в памяти. Частые запросы обслуживаются мгновенно, без обращения к БД." },
+                { id: "async", text: "Вынести тяжёлые задачи в очередь", lcp: 0, fid: 0, cls: 0, ttfb: -300, explanation: "Очередь (RabbitMQ) обрабатывает задачи асинхронно. API отвечает быстрее, не дожидаясь завершения." }
+            ],
+            correctOrder: ["index", "pool", "redis", "async"]
+        },
+        { // Блок 2
+            scenario: "У вас SPA на React. Lighthouse показывает Performance 38/100. Первая отрисовка — 4.5 секунды.",
+            initialMetrics: { lcp: 4200, fid: 180, cls: 0.22, ttfb: 600 },
+            steps: [
+                { id: "split", text: "Разделить код (Code Splitting + lazy)", lcp: -1500, fid: -50, cls: 0, ttfb: 0, explanation: "Code Splitting загружает только нужный JS. FCP и LCP улучшаются, так как меньше кода для первого экрана." },
+                { id: "critical", text: "Выделить критический CSS", lcp: -800, fid: 0, cls: 0, ttfb: 0, explanation: "Критический CSS в <head> позволяет браузеру отрисовать первый экран без загрузки всего CSS." },
+                { id: "font", text: "Оптимизировать шрифты (font-display: swap)", lcp: -400, fid: 0, cls: -0.12, ttfb: 0, explanation: "font-display: swap предотвращает невидимый текст при загрузке шрифтов. CLS снижается." },
+                { id: "imgopt", text: "Сжать и конвертировать изображения в WebP", lcp: -600, fid: 0, cls: 0, ttfb: 0, explanation: "WebP сжимает изображения без потери качества. LCP улучшается за счёт быстрой загрузки изображений." },
+                { id: "bundle", text: "Оптимизировать бандл (Tree Shaking)", lcp: -500, fid: -30, cls: 0, ttfb: 0, explanation: "Tree Shaking удаляет неиспользуемый код из бандла. Меньше JS = быстрее загрузка и парсинг." }
+            ],
+            correctOrder: ["bundle", "split", "critical", "imgopt", "font"]
+        }
+    ];
+
+    const blocks = [
+        { id: 0, name: "Основы оптимизации", completed: false, unlocked: true,
+            tests: [
+                { question: "Как расшифровывается LCP?", options: ["Largest Contentful Paint", "Last Content Process", "Loading Core Paint", "Large Content Protocol"], correct: 0, userAnswer: null, answered: false },
+                { question: "Какой атрибут скрипта не блокирует парсинг HTML?", options: ["defer", "sync", "block", "inline"], correct: 0, userAnswer: null, answered: false },
+                { question: "Какой формат изображений даёт лучшее сжатие?", options: ["PNG", "JPEG", "WebP", "BMP"], correct: 2, userAnswer: null, answered: false }
+            ],
+            optimizationTask: optimizationTasks[0],
+            videos: [
+                { id: "ov1", title: "Введение в оптимизацию", url: "https://rutube.ru/video/7765ff99ad9ece1bf7d2f5365a6092c1/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "ov2", title: "Оптимизация фронтенда", url: "https://rutube.ru/video/84441597394bfaad2e0d35bc523ae350/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+            ],
+            lectures: [
+                { title: "Введение в оптимизацию", textKey: 0, downloaded: false },
+                { title: "Оптимизация фронтенда", textKey: 1, downloaded: false },
+                { title: "Оптимизация бэкенда", textKey: 2, downloaded: false }
+            ]
+        },
+        { id: 1, name: "Профилирование и алгоритмы", completed: false, unlocked: false,
+            tests: [
+                { question: "Какая сложность у бинарного поиска?", options: ["O(1)", "O(log n)", "O(n)", "O(n²)"], correct: 1, userAnswer: null, answered: false },
+                { question: "Какой инструмент для профилирования Python?", options: ["Chrome DevTools", "cProfile", "JProfiler", "pprof"], correct: 1, userAnswer: null, answered: false },
+                { question: "Какова сложность поиска в HashMap (в среднем)?", options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"], correct: 0, userAnswer: null, answered: false }
+            ],
+            optimizationTask: optimizationTasks[1],
+            videos: [
+                { id: "ov3", title: "Профилирование кода", url: "https://rutube.ru/video/bf7754f60d8273d7e7e6704c36395cda/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "ov4", title: "Big O и структуры данных", url: "https://rutube.ru/video/c3e027867487866aea5d7c1240e205d1/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+            ],
+            lectures: [
+                { title: "Профилирование кода", textKey: 3, downloaded: false },
+                { title: "Big O и структуры данных", textKey: 4, downloaded: false },
+                { title: "Кэширование стратегии", textKey: 5, downloaded: false }
+            ]
+        },
+        { id: 2, name: "Кэширование и нагрузка", completed: false, unlocked: false,
+            tests: [
+                { question: "Какой инструмент для кэширования key-value?", options: ["PostgreSQL", "Redis", "Nginx", "Docker"], correct: 1, userAnswer: null, answered: false },
+                { question: "Что означает P99 latency?", options: ["Средняя задержка", "99% запросов быстрее этого", "1% запросов быстрее", "Минимальная задержка"], correct: 1, userAnswer: null, answered: false },
+                { question: "Что проверяет Stress testing?", options: ["Ожидаемую нагрузку", "Систему при превышении нормы", "Длительную работу", "Функциональность"], correct: 1, userAnswer: null, answered: false }
+            ],
+            optimizationTask: optimizationTasks[2],
+            videos: [
+                { id: "ov5", title: "Кэширование", url: "https://rutube.ru/video/d2588b02db85f0b92dba9c38971913c4/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "ov6", title: "Нагрузочное тестирование", url: "https://rutube.ru/video/fd79768084b30de9681a90024dcdccf5/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #4422CA, #22B9CA)" }
+            ],
+            lectures: [
+                { title: "Кэширование стратегии", textKey: 6, downloaded: false },
+                { title: "Нагрузочное тестирование", textKey: 7, downloaded: false }
+            ]
+        }
+    ];
+
+    let currentBlock = 0;
+
+    function saveProgress() {
+        localStorage.setItem('courseOptimization_v2', JSON.stringify(blocks.map(b => ({
+            completed: b.completed, unlocked: b.unlocked,
+            tests: b.tests.map(t => ({ userAnswer: t.userAnswer, answered: t.answered })),
+            taskSubmitted: b.taskSubmitted || false, taskReviewed: b.taskReviewed || false,
+            videos: b.videos.map(v => ({ watched: v.watched })),
+            lectures: b.lectures.map(l => ({ downloaded: l.downloaded }))
+        }))));
+        checkAllBlocksCompleted();
+    }
+    function checkAllBlocksCompleted() { document.getElementById('certificateSection').classList.toggle('visible', blocks.every(b => b.completed)); }
+   function loadProgress() {
+    // ========== ПРОВЕРКА АВТОРИЗАЦИИ (с повторной проверкой) ==========
+    let currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+    
+    function doRedirect() {
+        window.location.href = 'вход некст.html';
+    }
+    
+    if (!currentUser.email || currentUser.role !== 'student') {
+        setTimeout(() => {
+            let user2 = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+            if (!user2.email || user2.role !== 'student') {
+                doRedirect();
+            }
+        }, 20);
+        return;
+    }
+    // ========== КОНЕЦ ПРОВЕРКИ ==========
+    
+    const saved = localStorage.getItem('courseOptimization_v2');
+    if(!saved) return;
+    try {
+        const data = JSON.parse(saved);
+        for(let i=0; i<blocks.length && i<data.length; i++) {
+            if(data[i]) {
+                blocks[i].completed = data[i].completed || false;
+                blocks[i].unlocked = data[i].unlocked || (i===0);
+                if(data[i].tests) {
+                    for(let t=0; t<blocks[i].tests.length; t++) {
+                        if(data[i].tests[t]) {
+                            blocks[i].tests[t].userAnswer = data[i].tests[t].userAnswer;
+                            blocks[i].tests[t].answered = data[i].tests[t].answered;
+                        }
+                    }
+                }
+                if(data[i].assignments) {
+                    for(let a=0; a<blocks[i].assignments.length; a++) {
+                        if(data[i].assignments[a]) {
+                            blocks[i].assignments[a].submitted = data[i].assignments[a].submitted || false;
+                            blocks[i].assignments[a].reviewed = data[i].assignments[a].reviewed || false;
+                            blocks[i].assignments[a].feedback = data[i].assignments[a].feedback || '';
+                            blocks[i].assignments[a].grade = data[i].assignments[a].grade || null;
+                        }
+                    }
+                }
+                if(data[i].videos) {
+                    for(let v=0; v<blocks[i].videos.length; v++) {
+                        if(data[i].videos[v]) blocks[i].videos[v].watched = data[i].videos[v].watched || false;
+                    }
+                }
+                if(data[i].lectures) {
+                    for(let l=0; l<blocks[i].lectures.length; l++) {
+                        if(data[i].lectures[l]) blocks[i].lectures[l].downloaded = data[i].lectures[l].downloaded || false;
+                    }
+                }
+            }
+        }
+        for(let i=1; i<blocks.length; i++) {
+            if(blocks[i-1].completed && !blocks[i].unlocked) blocks[i].unlocked = true;
+        }
+    } catch(e) { console.warn(e); }
+    updateStats();
+    loadSubmissionStatuses();
+    checkAllBlocksCompleted();
+}
+    function loadSubmissionStatuses() {
+        const subs = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+        const user = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        blocks.forEach(b => {
+            const sub = subs.find(s => s.userEmail === user.email && s.assignmentTitle === 'Интерактивное задание: '+b.name && s.courseName === "Оптимизация приложений");
+            if (sub) {
+                if (sub.reviewed) { b.taskReviewed = true; b.taskSubmitted = true; }
+                else if (sub.submitted) { b.taskSubmitted = true; b.taskReviewed = false; }
+            }
+        });
+        saveProgress();
+    }
+    function updateStats() {
+        const completed = blocks.filter(b => b.completed).length;
+        document.getElementById('totalProgress').innerText = Math.round((completed / blocks.length) * 100);
+        document.getElementById('passedBlocks').innerText = completed + '/' + blocks.length;
+        let score = 0, cnt = 0;
+        blocks.forEach(b => b.tests.forEach(t => { if (t.answered) { cnt++; if (t.userAnswer === t.correct) score++; } }));
+        document.getElementById('quizAvg').innerText = cnt ? Math.round((score / cnt) * 100) : 0;
+    }
+    function checkBlockCompletion(idx) {
+        const b = blocks[idx];
+        const ok = b.videos.every(v => v.watched) && b.lectures.every(l => l.downloaded) && b.tests.every(t => t.answered && t.userAnswer === t.correct) && b.taskReviewed;
+        if (ok && !b.completed) { b.completed = true; if (idx + 1 < blocks.length) blocks[idx + 1].unlocked = true; saveProgress(); updateStats(); renderBlocksNav(); if (currentBlock === idx) renderCurrentBlock(); }
+        saveProgress(); updateStats();
+    }
+    function renderBlocksNav() {
+        document.getElementById('blocksNav').innerHTML = blocks.map((b, i) => {
+            let cls = 'block-tab'; if (i === currentBlock) cls += ' active'; if (b.completed) cls += ' completed'; else if (!b.unlocked && i) cls += ' locked';
+            return `<button class="${cls}" data-idx="${i}" ${!b.unlocked && i ? 'disabled' : ''}>${b.name} ${b.completed ? '✓' : ''}</button>`;
+        }).join('');
+        document.querySelectorAll('.block-tab:not([disabled])').forEach(btn => btn.onclick = () => { currentBlock = +btn.dataset.idx; renderCurrentBlock(); renderBlocksNav(); });
+    }
+
+    function renderCurrentBlock() {
+        const b = blocks[currentBlock];
+        const c = document.getElementById('blockContent');
+        const vids = b.videos.length ? '<div class="video-grid">' + b.videos.map((v, i) => `<div class="video-card" data-vidx="${i}"><div class="video-preview" style="background:${v.previewColor}"><div class="preview-overlay"><div class="play-icon-big">▶️</div></div></div><div class="video-info"><div class="video-title">${v.title}</div><span class="watch-status ${v.watched?'watched':''}">${v.watched?'✓ Просмотрено':'📹 Новое'}</span></div></div>`).join('') + '</div>' : '';
+        const lecs = b.lectures.length ? '<div class="lectures-list">' + b.lectures.map((l, i) => `<div class="lecture-item" data-lidx="${i}"><div class="lecture-name"><span class="lecture-badge">📄 ${l.title}</span></div><div class="lecture-download">${l.downloaded?'✅ Прочитан':'📥 Открыть'}</div></div>`).join('') + '</div>' : '';
+        const tests = b.tests.map((q, i) => `<div class="quiz-card" data-qidx="${i}"><div class="quiz-question">${i+1}. ${q.question}</div>${q.options.map((o, j) => `<div class="quiz-option" data-opt="${j}"><span>${String.fromCharCode(65+j)}.</span> ${o}</div>`).join('')}<div class="quiz-feedback" id="fb-${i}"></div><div class="quiz-actions"><button class="quiz-submit">✅ Ответить</button><button class="quiz-cancel">↺ Сбросить</button></div></div>`).join('');
+
+        const tsk = b.optimizationTask;
+        const taskHtml = `<div class="optimization-task" id="optTask"><h3>⚡ Интерактивное задание: Расставь шаги оптимизации</h3>
+            <div class="task-scenario"><h4>📋 Ситуация</h4><p>${tsk.scenario}</p></div>
+            <h4>📊 Текущие метрики сайта:</h4>
+            <div class="metrics-display" id="metricsDisplay">
+                ${Object.entries(tsk.initialMetrics).filter(([k])=>tsk.initialMetrics[k]>0).map(([k,v]) => `<div class="metric-card" id="metric-${k}"><div class="metric-value">${k.toUpperCase()}: ${v<10?v.toFixed(2):Math.round(v)}${k==='cls'?'':(k==='fid'?'мс':'мс')}</div><div class="metric-label">${k==='lcp'?'Загрузка контента':k==='fid'?'Задержка ввода':k==='cls'?'Стабильность':'Ответ сервера'}</div></div>`).join('')}
+            </div>
+            <h4>🔄 Расставьте действия в правильном порядке:</h4>
+            <div class="steps-container" id="stepsContainer">${tsk.correctOrder.map((_,i) => `<div class="step-slot" data-slot="${i}" onclick="removeFromSlot(${i})"><span class="step-number">${i+1}</span><span class="step-content">Перетащите шаг сюда</span><span class="step-indicator"></span></div>`).join('')}</div>
+            <h4>📦 Доступные шаги:</h4>
+            <div class="available-steps" id="availableSteps">${tsk.steps.map(s => `<div class="available-step" data-step-id="${s.id}" draggable="true" onclick="addToSlot('${s.id}')">${s.text}</div>`).join('')}</div>
+            <div class="task-buttons">
+                <button class="check-btn" onclick="checkOptimizationTask()">🔍 Проверить</button>
+                <button class="reset-btn" onclick="resetTask()">↺ Сбросить</button>
+                <button class="submit-btn" id="taskSubmitBtn" disabled onclick="submitTask()">📨 Отправить преподавателю</button>
+                ${b.taskReviewed ? '<span style="color:#059669;font-weight:600;">✅ Задание проверено</span>' : (b.taskSubmitted ? '<span style="color:#d97706;font-weight:600;">⏳ На проверке</span>' : '')}
+            </div>
+            <div class="task-result" id="taskResult"></div></div>`;
+
+        const canComplete = b.videos.every(v => v.watched) && b.lectures.every(l => l.downloaded) && b.tests.every(t => t.answered && t.userAnswer === t.correct) && b.taskReviewed;
+        c.innerHTML = `<div class="block-container"><div class="block-title">${b.name}</div><div class="block-subtitle">✅ Видео | ✅ Конспекты | ✅ Тесты | ✅ Интерактивное задание</div>${vids?'<h3>🎥 Видеоуроки</h3>'+vids:''}${lecs?'<h3>📚 Конспекты</h3>'+lecs:''}<h3>📝 Тесты</h3>${tests}${taskHtml}<button class="complete-block-btn" id="completeBtn" ${b.completed||!canComplete?'disabled':''}>${b.completed?'✅ Блок пройден':'🎉 Завершить блок'}</button></div>`;
+
+        c.querySelectorAll('.video-card').forEach(card => card.onclick = () => {
+            const i = +card.dataset.vidx; window.open(b.videos[i].url, '_blank');
+            if (!b.videos[i].watched) { b.videos[i].watched = true; checkBlockCompletion(currentBlock); renderCurrentBlock(); }
+        });
+        c.querySelectorAll('.lecture-item').forEach(lec => lec.onclick = () => {
+            const i = +lec.dataset.lidx; showModal(b.lectures[i].title, getLectureContent(currentBlock, i));
+            if (!b.lectures[i].downloaded) { b.lectures[i].downloaded = true; checkBlockCompletion(currentBlock); renderCurrentBlock(); }
+        });
+        b.tests.forEach((q, qi) => {
+            const card = c.querySelector(`.quiz-card[data-qidx="${qi}"]`); if (!card) return;
+            card.querySelectorAll('.quiz-option').forEach(o => o.onclick = () => {
+                q.userAnswer = +o.dataset.opt; q.answered = false;
+                card.querySelectorAll('.quiz-option').forEach(x => x.classList.remove('selected')); o.classList.add('selected');
+            });
+            card.querySelector('.quiz-submit').onclick = () => {
+                if (q.userAnswer == null) return alert('Выберите ответ'); q.answered = true;
+                const fb = document.getElementById(`fb-${qi}`); fb.style.display = 'block';
+                fb.innerHTML = q.userAnswer === q.correct ? '✅ Верно!' : `❌ Правильно: ${q.options[q.correct]}`;
+                fb.style.background = q.userAnswer === q.correct ? '#d1fae5' : '#fee2e2';
+                saveProgress(); checkBlockCompletion(currentBlock); renderCurrentBlock();
+            };
+            card.querySelector('.quiz-cancel').onclick = () => { q.userAnswer = null; q.answered = false; saveProgress(); renderCurrentBlock(); };
+            if (q.userAnswer != null) {
+                card.querySelector(`.quiz-option[data-opt="${q.userAnswer}"]`)?.classList.add('selected');
+                if (q.answered) { const fb = document.getElementById(`fb-${qi}`); fb.style.display = 'block'; fb.innerHTML = q.userAnswer === q.correct ? '✅ Верно!' : `❌ Правильно: ${q.options[q.correct]}`; fb.style.background = q.userAnswer === q.correct ? '#d1fae5' : '#fee2e2'; }
+            }
+        });
+
+        // Инициализация интерактивного задания
+        window.currentSlots = new Array(tsk.correctOrder.length).fill(null);
+        window.usedSteps = new Set();
+        window.taskChecked = false;
+        window.taskScore = 0;
+        updateSlotsUI();
+        updateAvailableUI();
+
+        document.getElementById('completeBtn')?.addEventListener('click', () => {
+            if (canComplete) { b.completed = true; if (currentBlock + 1 < blocks.length) blocks[currentBlock + 1].unlocked = true; saveProgress(); updateStats(); renderBlocksNav(); renderCurrentBlock(); alert(`🎉 Блок "${b.name}" пройден!`); }
+        });
+        updateStats();
+    }
+
+    function addToSlot(stepId) {
+        if (window.usedSteps.has(stepId) || window.taskChecked) return;
+        const emptySlot = window.currentSlots.findIndex(s => s === null);
+        if (emptySlot === -1) return;
+        window.currentSlots[emptySlot] = stepId;
+        window.usedSteps.add(stepId);
+        updateSlotsUI();
+        updateAvailableUI();
+    }
+
+    function removeFromSlot(slotIdx) {
+        if (window.taskChecked || !window.currentSlots[slotIdx]) return;
+        window.usedSteps.delete(window.currentSlots[slotIdx]);
+        window.currentSlots[slotIdx] = null;
+        updateSlotsUI();
+        updateAvailableUI();
+    }
+
+    function updateSlotsUI() {
+        const container = document.getElementById('stepsContainer');
+        if (!container) return;
+        const tsk = blocks[currentBlock].optimizationTask;
+        container.querySelectorAll('.step-slot').forEach((slot, i) => {
+            const stepId = window.currentSlots[i];
+            const contentEl = slot.querySelector('.step-content');
+            const indicator = slot.querySelector('.step-indicator');
+            if (stepId) {
+                slot.classList.add('filled');
+                const stepData = tsk.steps.find(s => s.id === stepId);
+                contentEl.textContent = stepData ? stepData.text : stepId;
+                indicator.className = 'step-indicator';
+                if (window.taskChecked) {
+                    if (stepId === tsk.correctOrder[i]) indicator.classList.add('correct');
+                    else if (tsk.correctOrder.includes(stepId)) indicator.classList.add('partial');
+                    else indicator.classList.add('wrong');
+                }
+            } else {
+                slot.classList.remove('filled');
+                contentEl.textContent = 'Перетащите шаг сюда';
+                indicator.className = 'step-indicator';
+            }
+        });
+    }
+
+    function updateAvailableUI() {
+        const container = document.getElementById('availableSteps');
+        if (!container) return;
+        container.querySelectorAll('.available-step').forEach(el => {
+            if (window.usedSteps.has(el.dataset.stepId)) el.classList.add('used');
+            else el.classList.remove('used');
+        });
+    }
+
+    function resetTask() {
+        window.currentSlots = new Array(blocks[currentBlock].optimizationTask.correctOrder.length).fill(null);
+        window.usedSteps = new Set();
+        window.taskChecked = false;
+        window.taskScore = 0;
+        document.getElementById('taskSubmitBtn').disabled = true;
+        document.getElementById('taskResult').classList.remove('show');
+        document.getElementById('taskResult').style.background = '';
+        resetMetrics();
+        updateSlotsUI();
+        updateAvailableUI();
+    }
+
+    function resetMetrics() {
+        const tsk = blocks[currentBlock].optimizationTask;
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.classList.remove('good', 'warning', 'bad');
+        });
+        Object.entries(tsk.initialMetrics).forEach(([key, val]) => {
+            const el = document.getElementById(`metric-${key}`);
+            if (el) {
+                const valueEl = el.querySelector('.metric-value');
+                if (valueEl) valueEl.textContent = `${key.toUpperCase()}: ${val<10?val.toFixed(2):Math.round(val)}${key==='cls'?'':(key==='fid'?'мс':'мс')}`;
+            }
+        });
+    }
+
+    function checkOptimizationTask() {
+        const tsk = blocks[currentBlock].optimizationTask;
+        let score = 0;
+        const total = tsk.correctOrder.length;
+        const explanations = [];
+        const appliedMetrics = { ...tsk.initialMetrics };
+
+        for (let i = 0; i < total; i++) {
+            if (window.currentSlots[i] === tsk.correctOrder[i]) {
+                score++;
+                const stepData = tsk.steps.find(s => s.id === window.currentSlots[i]);
+                if (stepData) {
+                    Object.keys(appliedMetrics).forEach(k => { appliedMetrics[k] += (stepData[k] || 0); });
+                    explanations.push(`✅ ${i+1}. "${stepData.text}" — верно! ${stepData.explanation}`);
+                }
+            } else if (window.currentSlots[i] && tsk.correctOrder.includes(window.currentSlots[i])) {
+                const stepData = tsk.steps.find(s => s.id === window.currentSlots[i]);
+                if (stepData) {
+                    Object.keys(appliedMetrics).forEach(k => { appliedMetrics[k] += (stepData[k] || 0) * 0.5; });
+                    explanations.push(`🟠 ${i+1}. "${stepData.text}" — неплохо, но лучше поставить на позицию ${tsk.correctOrder.indexOf(window.currentSlots[i])+1}. ${stepData.explanation}`);
+                }
+            } else if (window.currentSlots[i]) {
+                explanations.push(`🔴 ${i+1}. Этот шаг здесь не подходит.`);
+            } else {
+                explanations.push(`⚪ ${i+1}. Пропущено. Нужно: "${tsk.steps.find(s=>s.id===tsk.correctOrder[i]).text}"`);
+            }
+        }
+
+        window.taskScore = score;
+        window.taskChecked = true;
+        updateSlotsUI();
+
+        // Обновляем метрики
+        document.querySelectorAll('.metric-card').forEach(card => card.classList.remove('good', 'warning', 'bad'));
+        Object.entries(appliedMetrics).forEach(([key, val]) => {
+            const el = document.getElementById(`metric-${key}`);
+            if (el) {
+                const valueEl = el.querySelector('.metric-value');
+                val = Math.max(0, val);
+                if (valueEl) valueEl.textContent = `${key.toUpperCase()}: ${val<10?val.toFixed(2):Math.round(val)}${key==='cls'?'':(key==='fid'?'мс':'мс')}`;
+                const thresholds = { lcp: 2500, fid: 100, cls: 0.1, ttfb: 800 };
+                if (val <= thresholds[key]) el.classList.add('good');
+                else if (val <= thresholds[key] * 1.5) el.classList.add('warning');
+                else el.classList.add('bad');
+            }
+        });
+
+        const resultDiv = document.getElementById('taskResult');
+        resultDiv.classList.add('show');
+        const percent = Math.round((score / total) * 100);
+        if (percent === 100) {
+            resultDiv.style.background = '#d1fae5'; resultDiv.style.color = '#065f46';
+            resultDiv.innerHTML = `<strong>🎉 Отлично! ${percent}% — все шаги в правильном порядке!</strong><br><br>${explanations.join('<br>')}<br><br>Метрики сайта значительно улучшились!`;
+            document.getElementById('taskSubmitBtn').disabled = false;
+        } else if (percent >= 60) {
+            resultDiv.style.background = '#fef3c7'; resultDiv.style.color = '#92400e';
+            resultDiv.innerHTML = `<strong>🟠 Хорошо! ${percent}% — но порядок можно улучшить.</strong><br><br>${explanations.join('<br>')}<br><br>Попробуйте переставить шаги для лучшего результата.`;
+            document.getElementById('taskSubmitBtn').disabled = true;
+        } else {
+            resultDiv.style.background = '#fee2e2'; resultDiv.style.color = '#991b1b';
+            resultDiv.innerHTML = `<strong>🔴 Нужно подумать! ${percent}% — порядок неоптимален.</strong><br><br>${explanations.join('<br>')}<br><br>Сбросьте и попробуйте снова, опираясь на конспекты.`;
+            document.getElementById('taskSubmitBtn').disabled = true;
+        }
+    }
+
+    function submitTask() {
+        if (!window.taskChecked || window.taskScore < blocks[currentBlock].optimizationTask.correctOrder.length) return;
+        const b = blocks[currentBlock];
+        const cu = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        if (!cu.email) return alert('Войдите в аккаунт');
+        const subs = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+        const filt = subs.filter(s => !(s.userEmail === cu.email && s.assignmentTitle === 'Интерактивное задание: '+b.name && s.courseName === "Оптимизация приложений"));
+        filt.push({ id: Date.now(), userEmail: cu.email, studentName: cu.fullName || cu.email, courseName: "Оптимизация приложений", blockName: b.name, assignmentTitle: 'Интерактивное задание: '+b.name, taskData: { slots: window.currentSlots, score: window.taskScore }, submitted: true, submittedAt: new Date().toISOString(), reviewed: false, grade: null, feedback: null });
+        localStorage.setItem('nextstep_submissions', JSON.stringify(filt));
+        b.taskSubmitted = true; saveProgress(); renderCurrentBlock();
+        alert('✅ Задание отправлено на проверку!');
+    }
+
+    loadProgress(); renderBlocksNav(); renderCurrentBlock();
+</script>
+</body>
+</html>

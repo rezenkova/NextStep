@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Основы философии — курс NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #fafbff; font-family: 'Inter', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+
+        .blur-circles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .blur-circle { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: 0; animation: smoothFloat 24s infinite ease-in-out; }
+        @keyframes smoothFloat { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(12px, -8px) scale(1.02); } 66% { transform: translate(-8px, 10px) scale(0.98); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 32px 48px 80px; position: relative; z-index: 10; }
+        .course-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+        .title-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e1b4b, #2d4a5c, #4422CA); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 8px; }
+        .title-section p { color: #475569; font-size: 1rem; }
+        .progress-overview { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 32px; padding: 16px 28px; border: 1px solid rgba(68,34,202,0.15); min-width: 280px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+        .progress-stats { display: flex; gap: 32px; justify-content: space-between; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #4422CA, #22B9CA); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.7rem; color: #64748b; letter-spacing: 0.5px; }
+
+        .blocks-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 60px; padding: 8px 20px; border: 1px solid rgba(68,34,202,0.1); }
+        .block-tab { background: transparent; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: #334155; }
+        .block-tab.active { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; box-shadow: 0 6px 14px rgba(68,34,202,0.25); }
+        .block-tab.locked { opacity: 0.5; cursor: not-allowed; background: #e2e8f0; color: #94a3b8; }
+        .block-tab.completed { background: #10b98120; border: 1px solid #10b981; color: #065f46; }
+
+        .block-container { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 48px; padding: 40px 44px; border: 1px solid rgba(68,34,202,0.15); margin-bottom: 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05); }
+        .block-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; letter-spacing: -0.3px; }
+        .block-subtitle { color: #64748b; margin-bottom: 32px; border-left: 4px solid #4422CA; padding-left: 18px; font-size: 0.9rem; }
+
+        h3 { font-size: 1.4rem; font-weight: 600; margin: 32px 0 20px 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        h3:first-of-type { margin-top: 0; }
+
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 20px; }
+        .video-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid #eef2ff; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(68,34,202,0.15); border-color: rgba(68,34,202,0.3); }
+        .video-preview { background: linear-gradient(145deg, #1e1b4b, #0f172a); height: 190px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem; position: relative; border-radius: 24px 24px 0 0; }
+        .preview-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 24px 24px 0 0; }
+        .video-card:hover .preview-overlay { background: rgba(68,34,202,0.6); }
+        .play-icon-big { width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4422CA; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.2s; }
+        .video-card:hover .play-icon-big { transform: scale(1.1); background: white; }
+        .video-info { padding: 18px; }
+        .video-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; }
+        .watch-status { display: inline-block; font-size: 0.7rem; padding: 4px 12px; border-radius: 30px; background: #f1f5f9; color: #475569; }
+        .watch-status.watched { background: #10b98115; color: #059669; }
+
+        .lectures-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .lecture-item { background: #f8fafc; border-radius: 20px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #eef2ff; }
+        .lecture-item:hover { border-color: #4422CA; background: white; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .lecture-name { font-weight: 500; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .lecture-badge { background: #4422CA10; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; color: #4422CA; font-weight: 600; }
+        .lecture-download { color: #4422CA; font-size: 0.8rem; font-weight: 500; }
+
+        .quiz-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .quiz-question { font-weight: 700; font-size: 1.05rem; margin-bottom: 18px; color: #0f172a; }
+        .quiz-option { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 60px; background: #fafcff; margin-bottom: 8px; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .quiz-option.selected { border-color: #4422CA; background: #f5f3ff; box-shadow: 0 2px 6px rgba(68,34,202,0.05); }
+        .quiz-option:hover { border-color: #22B9CA; background: #f0fdfe; }
+        .quiz-actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+        .quiz-submit { background: #4422CA; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .quiz-submit:hover { background: #361aa3; transform: translateY(-2px); }
+        .quiz-cancel { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 9px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .quiz-cancel:hover { background: #eef2ff; }
+        .quiz-feedback { margin-top: 16px; font-size: 0.85rem; padding: 10px 16px; border-radius: 24px; display: none; }
+
+        .assignment-card { background: white; border-radius: 32px; padding: 28px; margin-bottom: 24px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .assignment-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: #0f172a; }
+        .tz-block { background: #f8fafc; border-radius: 20px; padding: 18px; margin: 12px 0; border-left: 4px solid #4422CA; font-size: 0.85rem; line-height: 1.5; color: #334155; }
+        .upload-area { border: 2px dashed #cbd5e1; border-radius: 28px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s; margin: 16px 0; background: #fafcff; }
+        .upload-area:hover { border-color: #4422CA; background: #f5f3ff; }
+        .assignment-buttons { display: flex; gap: 12px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
+        .submit-assignment { background: #22B9CA; border: none; padding: 10px 24px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .submit-assignment:hover:not(:disabled) { background: #1a9aaa; transform: translateY(-2px); }
+        .submit-assignment:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; }
+        .cancel-assignment { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 9px 22px; border-radius: 40px; color: #475569; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .cancel-assignment:hover:not(:disabled) { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        .cancel-assignment:disabled { opacity: 0.5; cursor: not-allowed; background: #f1f5f9; }
+        .assignment-status { display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.75rem; background: #f1f5f9; color: #475569; }
+        .assignment-status.approved { background: #10b98120; color: #065f46; }
+        .assignment-status.pending { background: #fef3c7; color: #92400e; }
+
+        .complete-block-btn { background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 16px 32px; border-radius: 60px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 32px; width: 100%; transition: 0.2s; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+        .complete-block-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; box-shadow: none; }
+        .complete-block-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16,185,129,0.35); }
+
+        .certificate-section { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #f0f9ff, #f5f3ff); border-radius: 24px; border: 2px solid rgba(68,34,202,0.2); text-align: center; display: none; }
+        .certificate-section.visible { display: block; animation: fadeInUp 0.5s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .certificate-icon { font-size: 4rem; margin-bottom: 16px; }
+        .certificate-title { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; margin-bottom: 8px; }
+        .certificate-description { color: #64748b; margin-bottom: 20px; font-size: 0.95rem; }
+        .certificate-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 14px 32px; border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(68,34,202,0.3); margin: 0 8px; }
+        .certificate-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(68,34,202,0.4); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 40px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 28px; position: relative; box-shadow: 0 25px 40px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eef2ff; }
+        .modal-header h3 { margin: 0; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .close-modal:hover { color: #dc2626; }
+        .modal-body { white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+
+        .back-to-courses {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: white; backdrop-filter: blur(8px);
+            border: 1px solid rgba(68,34,202,0.2); padding: 12px 28px;
+            border-radius: 50px; color: #4422CA; font-weight: 600;
+            font-size: 0.9rem; text-decoration: none; transition: all 0.3s ease;
+            margin-top: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .back-to-courses:hover {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            color: white; transform: translateX(-6px);
+            border-color: transparent; box-shadow: 0 8px 20px rgba(68,34,202,0.25);
+        }
+        .back-to-courses::before { content: "←"; font-size: 1.2rem; transition: transform 0.2s; }
+        .back-to-courses:hover::before { transform: translateX(-4px); }
+
+        .file-status { margin-top: 8px; font-size: 0.8rem; }
+        .file-status.success { color: #059669; }
+        .file-status.pending { color: #d97706; }
+
+        @media (max-width: 780px) { .main-content { padding: 24px; } .block-container { padding: 24px; } .blocks-nav { overflow-x: auto; flex-wrap: nowrap; } .video-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div><div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div><div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div><div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div><div class="blur-circle circle-bottom-right-2"></div>
+</div>
+
+<div class="main-content">
+    <div class="course-header">
+        <div class="title-section">
+            <h1>📖 Основы философии</h1>
+            <p>Античность • Новое время • 5 недель</p>
+        </div>
+        <div class="progress-overview">
+            <div class="progress-stats">
+                <div class="stat-item"><div class="stat-number" id="totalProgress">0</div><div class="stat-label">% курса</div></div>
+                <div class="stat-item"><div class="stat-number" id="passedBlocks">0</div><div class="stat-label">блоков</div></div>
+                <div class="stat-item"><div class="stat-number" id="quizAvg">0</div><div class="stat-label">ср. балл</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="blocks-nav" id="blocksNav"></div>
+    <div id="blockContent"></div>
+
+    <div class="certificate-section" id="certificateSection">
+        <div class="certificate-icon">🏆</div>
+        <div class="certificate-title">Поздравляем с завершением курса!</div>
+        <div class="certificate-description">Все блоки успешно пройдены. Вы можете получить сертификат об окончании курса «Основы философии».</div>
+        <button class="certificate-btn" onclick="window.location.href='сертификаты.html'">📜 Просмотреть сертификат</button>
+    </div>
+
+    <a href="мои курсы некст.html" class="back-to-courses">Вернуться в мои курсы</a>
+</div>
+
+<div id="lectureModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">📄 Конспект</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">Загрузка...</div>
+    </div>
+</div>
+
+<script>
+    const lectureTexts = {
+        lecture1: "📜 КОНСПЕКТ 1: Что такое философия?\n\n" +
+            "Философия (греч. φιλοσοφία — «любовь к мудрости») — особая форма познания мира, вырабатывающая систему знаний о наиболее общих характеристиках, предельно-обобщающих понятиях и фундаментальных принципах реальности и познания.\n\n" +
+            "🔹 Основные разделы философии:\n" +
+            "• Онтология — учение о бытии.\n" +
+            "• Гносеология — учение о познании.\n" +
+            "• Этика — учение о морали.\n" +
+            "• Логика — учение о законах мышления.\n\n" +
+            "🔹 Отличие от науки: наука изучает конкретные явления, философия — предельные основания.\n\n" +
+            "💡 «Философия начинается с удивления» — Аристотель.",
+
+        lecture2: "📜 КОНСПЕКТ 2: Досократики и Милетская школа\n\n" +
+            "Первые философы (VII–VI вв. до н.э.) искали первоначало (архэ) всего сущего.\n\n" +
+            "🔹 Фалес Милетский: первоначало — вода.\n" +
+            "🔹 Анаксимандр: первоначало — апейрон (беспредельное).\n" +
+            "🔹 Анаксимен: первоначало — воздух.\n\n" +
+            "🔹 Пифагор: мир есть число, гармония.\n" +
+            "🔹 Гераклит: «Всё течёт, всё изменяется». Первоначало — огонь.\n\n" +
+            "💡 Досократики заложили основу для всей западной философии.",
+
+        lecture3: "📜 КОНСПЕКТ 3: Сократ, Платон и Аристотель\n\n" +
+            "🔹 Сократ (469–399 до н.э.):\n" +
+            "• Метод майевтики — рождение истины через диалог.\n" +
+            "• «Я знаю, что ничего не знаю».\n\n" +
+            "🔹 Платон (427–347 до н.э.):\n" +
+            "• Учение об идеях (эйдосах).\n" +
+            "• Миф о пещере.\n\n" +
+            "🔹 Аристотель (384–322 до н.э.):\n" +
+            "• Учение о форме и материи.\n" +
+            "• Логика, этика, политика.\n\n" +
+            "💡 Эти три мыслителя определили облик всей западной философии.",
+
+        lecture4: "📜 КОНСПЕКТ 4: Эллинистическая философия\n\n" +
+            "Эллинизм — период после завоеваний Александра Македонского (III в. до н.э. – VI в. н.э.).\n\n" +
+            "🔹 Стоицизм (Зенон Китийский):\n" +
+            "• Жить в согласии с природой.\n" +
+            "• Апатия — свобода от страстей.\n\n" +
+            "🔹 Эпикуреизм (Эпикур):\n" +
+            "• Высшее благо — удовольствие (отсутствие страдания).\n" +
+            "• Атараксия — безмятежность духа.\n\n" +
+            "🔹 Скептицизм (Пиррон):\n" +
+            "• Воздержание от суждений (эпохе).",
+
+        lecture5: "📜 КОНСПЕКТ 5: Средневековая философия\n\n" +
+            "Патристика и схоластика — попытка синтеза веры и разума.\n\n" +
+            "🔹 Аврелий Августин (354–430):\n" +
+            "• «Верю, чтобы понимать».\n" +
+            "• Учение о двух градах.\n\n" +
+            "🔹 Фома Аквинский (1225–1274):\n" +
+            "• Пять доказательств бытия Бога.\n" +
+            "• Гармония веры и разума.\n\n" +
+            "💡 Схоластика довела логику до совершенства, но оставалась в рамках теологии.",
+
+        lecture6: "📜 КОНСПЕКТ 6: Философия Возрождения\n\n" +
+            "Гуманизм и антропоцентризм.\n\n" +
+            "🔹 Пико делла Мирандола: «Речь о достоинстве человека».\n" +
+            "🔹 Николай Кузанский: учение о совпадении противоположностей.\n" +
+            "🔹 Джордано Бруно: бесконечность Вселенной.\n\n" +
+            "💡 Возрождение вернуло интерес к человеку и природе после Средневековья.",
+
+        lecture7: "📜 КОНСПЕКТ 7: Новое время. Рационализм\n\n" +
+            "XVII век — спор эмпиризма и рационализма.\n\n" +
+            "🔹 Рене Декарт (1596–1650):\n" +
+            "• «Мыслю, следовательно, существую» (Cogito ergo sum).\n" +
+            "• Дуализм души и тела.\n\n" +
+            "🔹 Барух Спиноза (1632–1677):\n" +
+            "• Пантеизм: Бог = Природа.\n\n" +
+            "🔹 Готфрид Лейбниц (1646–1716):\n" +
+            "• Учение о монадах.\n" +
+            "• «Наш мир — лучший из возможных».",
+
+        lecture8: "📜 КОНСПЕКТ 8: Новое время. Эмпиризм\n\n" +
+            "🔹 Фрэнсис Бэкон (1561–1626):\n" +
+            "• Метод индукции.\n" +
+            "• «Знание — сила».\n\n" +
+            "🔹 Джон Локк (1632–1704):\n" +
+            "• Tabula rasa — сознание как чистый лист.\n\n" +
+            "🔹 Джордж Беркли (1685–1753):\n" +
+            "• «Существовать — значит быть воспринимаемым».\n\n" +
+            "🔹 Дэвид Юм (1711–1776):\n" +
+            "• Критика причинности.\n" +
+            "• Скептицизм в познании.",
+
+        lecture9: "📜 КОНСПЕКТ 9: Немецкая классическая философия\n\n" +
+            "🔹 Иммануил Кант (1724–1804):\n" +
+            "• «Критика чистого разума».\n" +
+            "• Вещь-в-себе (ноумен) и явление (феномен).\n" +
+            "• Категорический императив.\n\n" +
+            "🔹 Георг Гегель (1770–1831):\n" +
+            "• Диалектика: тезис → антитезис → синтез.\n" +
+            "• Абсолютная идея.\n\n" +
+            "💡 Кант и Гегель — вершина немецкой классики.",
+
+        lecture10: "📜 КОНСПЕКТ 10: Философия XIX века\n\n" +
+            "🔹 Артур Шопенгауэр (1788–1860):\n" +
+            "• Мир как воля и представление.\n" +
+            "• Пессимизм.\n\n" +
+            "🔹 Фридрих Ницше (1844–1900):\n" +
+            "• «Бог умер».\n" +
+            "• Воля к власти.\n" +
+            "• Сверхчеловек.\n\n" +
+            "🔹 Карл Маркс (1818–1883):\n" +
+            "• Диалектический материализм.\n" +
+            "• «Философы лишь объясняли мир, но дело в том, чтобы изменить его».",
+
+        lecture11: "📜 КОНСПЕКТ 11: Экзистенциализм\n\n" +
+            "Направление философии XX века, ставящее в центр уникальность человеческого бытия.\n\n" +
+            "🔹 Жан-Поль Сартр (1905–1980):\n" +
+            "• «Существование предшествует сущности».\n" +
+            "• Человек обречён на свободу.\n\n" +
+            "🔹 Альбер Камю (1913–1960):\n" +
+            "• Абсурд: конфликт между желанием смысла и бессмысленностью мира.\n" +
+            "• Миф о Сизифе.\n\n" +
+            "🔹 Мартин Хайдеггер (1889–1976):\n" +
+            "• Бытие-к-смерти.\n" +
+            "• Dasein (вот-бытие).",
+
+        lecture12: "📜 КОНСПЕКТ 12: Русская философия\n\n" +
+            "🔹 Владимир Соловьёв (1853–1900):\n" +
+            "• София — душа мира.\n" +
+            "• Всеединство.\n\n" +
+            "🔹 Николай Бердяев (1874–1948):\n" +
+            "• Философия свободы.\n" +
+            "• Смысл творчества.\n\n" +
+            "💡 Русская философия искала ответ на вопрос о смысле жизни и истории.",
+
+        lecture13: "📜 КОНСПЕКТ 13: Современная философия\n\n" +
+            "🔹 Аналитическая философия:\n" +
+            "• Людвиг Витгенштейн: «Границы моего языка — границы моего мира».\n" +
+            "• Бертран Рассел: логический атомизм.\n\n" +
+            "🔹 Постмодернизм:\n" +
+            "• Мишель Фуко: власть и знание.\n" +
+            "• Жак Деррида: деконструкция.\n\n" +
+            "💡 Современная философия тесно связана с наукой и политикой."
+    };
+
+    function getLectureContent(blockIndex, lectureIndex) {
+        const blockNumbers = [1, 5, 9];
+        const globalLectureNum = blockNumbers[blockIndex] + lectureIndex;
+        const key = `lecture${globalLectureNum}`;
+        return lectureTexts[key] || `Конспект ${globalLectureNum}\n\nСодержание скоро появится...`;
+    }
+
+    function showModal(title, content) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerHTML = content.replace(/\n/g, '<br>');
+        document.getElementById('lectureModal').style.display = 'flex';
+    }
+
+    window.closeModal = function() {
+        document.getElementById('lectureModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target === document.getElementById('lectureModal')) {
+            document.getElementById('lectureModal').style.display = 'none';
+        }
+    }
+
+    // 3 блока (уникальное количество)
+    const blocks = [
+        {
+            id: 0, name: "Античная философия", completed: false, unlocked: true,
+            tests: [
+                { question: "🏛️ Кто из философов считал первоначалом воду?", options: ["Анаксимандр", "Фалес", "Гераклит", "Пифагор"], correct: 1, userAnswer: null, answered: false },
+                { question: "💡 Как называется метод Сократа?", options: ["Диалектика", "Майевтика", "Логика", "Риторика"], correct: 1, userAnswer: null, answered: false },
+                { question: "📖 Кто написал «Государство»?", options: ["Сократ", "Аристотель", "Платон", "Эпикур"], correct: 2, userAnswer: null, answered: false },
+                { question: "🔥 Что считал первоначалом Гераклит?", options: ["Воду", "Воздух", "Огонь", "Землю"], correct: 2, userAnswer: null, answered: false }
+            ],
+            assignments: [
+                { id: "ph1", title: "Эссе: Миф о пещере Платона", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                    tz: "📋 ТЗ: Напишите эссе на тему «Актуален ли миф о пещере сегодня?». Объём: 2-3 страницы." },
+                { id: "ph2", title: "Сравнение стоиков и эпикурейцев", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                    tz: "📋 ТЗ: Сравните учения стоиков и эпикурейцев. Что ближе вам? Ответ обоснуйте." }
+            ],
+            videos: [
+                { id: "pv1", title: "Что такое философия?", url: "https://rutube.ru/video/7765ff99ad9ece1bf7d2f5365a6092c1/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "pv2", title: "Сократ и Платон", url: "https://rutube.ru/video/84441597394bfaad2e0d35bc523ae350/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" },
+                { id: "pv3", title: "Аристотель и эллинизм", url: "https://rutube.ru/video/bf7754f60d8273d7e7e6704c36395cda/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #4422CA, #22B9CA)" }
+            ],
+            lectures: [
+                { title: "Конспект 1: Что такое философия?", textKey: 0, downloaded: false },
+                { title: "Конспект 2: Досократики и Милетская школа", textKey: 1, downloaded: false },
+                { title: "Конспект 3: Сократ, Платон, Аристотель", textKey: 2, downloaded: false },
+                { title: "Конспект 4: Эллинистическая философия", textKey: 3, downloaded: false }
+            ]
+        },
+        {
+            id: 1, name: "Средневековье и Новое время", completed: false, unlocked: false,
+            tests: [
+                { question: "✝️ Кто написал «О граде Божьем»?", options: ["Фома Аквинский", "Августин", "Боэций", "Ориген"], correct: 1, userAnswer: null, answered: false },
+                { question: "🤔 Cogito ergo sum — чей принцип?", options: ["Спиноза", "Лейбниц", "Декарт", "Бэкон"], correct: 2, userAnswer: null, answered: false },
+                { question: "📜 Кто говорил о «чистом листе» сознания?", options: ["Локк", "Беркли", "Юм", "Гоббс"], correct: 0, userAnswer: null, answered: false }
+            ],
+            assignments: [
+                { id: "ph3", title: "Дебаты: вера vs разум", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                    tz: "📋 ТЗ: Подготовьте аргументы «за» и «против» утверждения «Философия — служанка богословия»." }
+            ],
+            videos: [
+                { id: "pv4", title: "Средневековая философия", url: "https://rutube.ru/video/c3e027867487866aea5d7c1240e205d1/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "pv5", title: "Декарт и рационализм", url: "https://rutube.ru/video/d2588b02db85f0b92dba9c38971913c4/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+            ],
+            lectures: [
+                { title: "Конспект 5: Средневековая философия", textKey: 4, downloaded: false },
+                { title: "Конспект 6: Философия Возрождения", textKey: 5, downloaded: false },
+                { title: "Конспект 7: Рационализм", textKey: 6, downloaded: false },
+                { title: "Конспект 8: Эмпиризм", textKey: 7, downloaded: false }
+            ]
+        },
+        {
+            id: 2, name: "Новейшая философия", completed: false, unlocked: false,
+            tests: [
+                { question: "🔍 Кант различал:", options: ["Феномен и ноумен", "Душу и тело", "Материю и форму", "Веру и разум"], correct: 0, userAnswer: null, answered: false },
+                { question: "💬 «Бог умер» — слова:", options: ["Шопенгауэра", "Ницше", "Маркса", "Гегеля"], correct: 1, userAnswer: null, answered: false },
+                { question: "📚 Экзистенциализм — это философия:", options: ["Разума", "Существования", "Природы", "Языка"], correct: 1, userAnswer: null, answered: false }
+            ],
+            assignments: [
+                { id: "ph4", title: "Финальное эссе", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+                    tz: "📋 ТЗ: Напишите эссе «Что я понял о философии?». Объём: 3-4 страницы." }
+            ],
+            videos: [
+                { id: "pv6", title: "Кант и Гегель", url: "https://rutube.ru/video/fd79768084b30de9681a90024dcdccf5/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "pv7", title: "Ницше и экзистенциализм", url: "https://rutube.ru/video/59232a75d90bb76adedb4a05a0a9f38f/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+            ],
+            lectures: [
+                { title: "Конспект 9: Немецкая классика", textKey: 8, downloaded: false },
+                { title: "Конспект 10: Философия XIX века", textKey: 9, downloaded: false },
+                { title: "Конспект 11: Экзистенциализм", textKey: 10, downloaded: false },
+                { title: "Конспект 12: Русская философия", textKey: 11, downloaded: false },
+                { title: "Конспект 13: Современная философия", textKey: 12, downloaded: false }
+            ]
+        }
+    ];
+
+    let currentBlock = 0;
+
+    function saveProgress() {
+        const saveData = blocks.map(b => ({
+            completed: b.completed,
+            unlocked: b.unlocked,
+            tests: b.tests.map(t => ({ userAnswer: t.userAnswer, answered: t.answered })),
+            assignments: b.assignments.map(a => ({ submitted: a.submitted, reviewed: a.reviewed, feedback: a.feedback, grade: a.grade, fileName: a.file ? a.file.name : null })),
+            videos: b.videos.map(v => ({ watched: v.watched })),
+            lectures: b.lectures.map(l => ({ downloaded: l.downloaded }))
+        }));
+        localStorage.setItem('coursePhilo_final', JSON.stringify(saveData));
+        checkAllBlocksCompleted();
+    }
+
+    function checkAllBlocksCompleted() {
+        const allCompleted = blocks.every(b => b.completed === true);
+        const certSection = document.getElementById('certificateSection');
+        if (allCompleted) certSection.classList.add('visible');
+        else certSection.classList.remove('visible');
+    }
+
+    function loadProgress() {
+    // ========== ПРОВЕРКА АВТОРИЗАЦИИ (с повторной проверкой) ==========
+    let currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+    
+    function doRedirect() {
+        window.location.href = 'вход некст.html';
+    }
+    
+    if (!currentUser.email || currentUser.role !== 'student') {
+        setTimeout(() => {
+            let user2 = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+            if (!user2.email || user2.role !== 'student') {
+                doRedirect();
+            }
+        }, 20);
+        return;
+    }
+    // ========== КОНЕЦ ПРОВЕРКИ ==========
+    
+    const saved = localStorage.getItem('coursePhilo_final');
+    if(!saved) return;
+    try {
+        const data = JSON.parse(saved);
+        for(let i=0; i<blocks.length && i<data.length; i++) {
+            if(data[i]) {
+                blocks[i].completed = data[i].completed || false;
+                blocks[i].unlocked = data[i].unlocked || (i===0);
+                if(data[i].tests) {
+                    for(let t=0; t<blocks[i].tests.length; t++) {
+                        if(data[i].tests[t]) {
+                            blocks[i].tests[t].userAnswer = data[i].tests[t].userAnswer;
+                            blocks[i].tests[t].answered = data[i].tests[t].answered;
+                        }
+                    }
+                }
+                if(data[i].assignments) {
+                    for(let a=0; a<blocks[i].assignments.length; a++) {
+                        if(data[i].assignments[a]) {
+                            blocks[i].assignments[a].submitted = data[i].assignments[a].submitted || false;
+                            blocks[i].assignments[a].reviewed = data[i].assignments[a].reviewed || false;
+                            blocks[i].assignments[a].feedback = data[i].assignments[a].feedback || '';
+                            blocks[i].assignments[a].grade = data[i].assignments[a].grade || null;
+                        }
+                    }
+                }
+                if(data[i].videos) {
+                    for(let v=0; v<blocks[i].videos.length; v++) {
+                        if(data[i].videos[v]) blocks[i].videos[v].watched = data[i].videos[v].watched || false;
+                    }
+                }
+                if(data[i].lectures) {
+                    for(let l=0; l<blocks[i].lectures.length; l++) {
+                        if(data[i].lectures[l]) blocks[i].lectures[l].downloaded = data[i].lectures[l].downloaded || false;
+                    }
+                }
+            }
+        }
+        for(let i=1; i<blocks.length; i++) {
+            if(blocks[i-1].completed && !blocks[i].unlocked) blocks[i].unlocked = true;
+        }
+    } catch(e) { console.warn(e); }
+    updateStats();
+    loadSubmissionStatuses();
+    checkAllBlocksCompleted();
+}
+
+    function loadSubmissionStatuses() {
+        const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+        const currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        for (let b of blocks) {
+            for (let a of b.assignments) {
+                const submission = submissions.find(s =>
+                    s.userEmail === currentUser.email &&
+                    s.assignmentTitle === a.title &&
+                    s.courseName === "Основы философии"
+                );
+                if (submission) {
+                    if (submission.reviewed) { a.reviewed = true; a.submitted = true; a.feedback = submission.feedback || ''; a.grade = submission.grade; }
+                    else if (submission.submitted) { a.submitted = true; a.reviewed = false; }
+                }
+            }
+        }
+        saveProgress();
+    }
+
+    function updateStats() {
+        let completedCount = blocks.filter(b => b.completed).length;
+        document.getElementById('totalProgress').innerText = Math.round((completedCount / blocks.length) * 100);
+        document.getElementById('passedBlocks').innerText = completedCount + '/' + blocks.length;
+        let totalScore = 0, testCount = 0;
+        for (let b of blocks) for (let t of b.tests) {
+            if (t.answered) { testCount++; if (t.userAnswer === t.correct) totalScore++; }
+        }
+        document.getElementById('quizAvg').innerText = testCount > 0 ? Math.round((totalScore / testCount) * 100) : 0;
+    }
+
+    function checkBlockCompletion(blockIdx) {
+        const block = blocks[blockIdx];
+        const allVideosWatched = block.videos.every(v => v.watched === true);
+        const allLecturesRead = block.lectures.length === 0 || block.lectures.every(l => l.downloaded === true);
+        const allTestsPassed = block.tests.every(t => t.answered === true && t.userAnswer === t.correct);
+        const allAssignmentsReviewed = block.assignments.every(a => a.reviewed === true);
+        if (allVideosWatched && allLecturesRead && allTestsPassed && allAssignmentsReviewed) {
+            if (!block.completed) {
+                block.completed = true;
+                if (blockIdx + 1 < blocks.length) blocks[blockIdx + 1].unlocked = true;
+                saveProgress(); updateStats(); renderBlocksNav();
+                if (currentBlock === blockIdx) renderCurrentBlock();
+                return true;
+            }
+        }
+        saveProgress(); updateStats(); return false;
+    }
+
+    function renderBlocksNav() {
+        const nav = document.getElementById('blocksNav');
+        nav.innerHTML = blocks.map((b, idx) => {
+            let classes = 'block-tab';
+            if (idx === currentBlock) classes += ' active';
+            if (b.completed) classes += ' completed';
+            else if (!b.unlocked && idx !== 0) classes += ' locked';
+            return `<button class="${classes}" data-idx="${idx}" ${(!b.unlocked && idx !== 0) ? 'disabled' : ''}>${b.name} ${b.completed ? '✓' : ''}</button>`;
+        }).join('');
+        document.querySelectorAll('.block-tab:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function() {
+                let idx = parseInt(this.dataset.idx);
+                if (blocks[idx].unlocked || idx === 0) { currentBlock = idx; renderCurrentBlock(); renderBlocksNav(); }
+            });
+        });
+    }
+
+    function resetQuiz(block, qi, cardDiv) {
+        block.tests[qi].userAnswer = null; block.tests[qi].answered = false;
+        cardDiv.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+        const fb = document.getElementById(`quizFeedback-${qi}`); if (fb) fb.style.display = 'none';
+        saveProgress();
+    }
+
+    function renderCurrentBlock() {
+        const block = blocks[currentBlock];
+        const container = document.getElementById('blockContent');
+        let videosHtml = '';
+        if (block.videos.length > 0) {
+            videosHtml = '<div class="video-grid">' + block.videos.map((v, vi) => `
+                <div class="video-card" data-video-url="${v.url}" data-video-idx="${vi}">
+                    <div class="video-preview" style="background: ${v.previewColor || 'linear-gradient(135deg, #1e293b, #0f172a)'}"><div class="preview-overlay"><div class="play-icon-big">▶️</div></div></div>
+                    <div class="video-info"><div class="video-title">${v.title}</div><span class="watch-status ${v.watched ? 'watched' : ''}">${v.watched ? '✓ Просмотрено' : '📹 Не просмотрено'}</span></div>
+                </div>`).join('') + '</div>';
+        }
+        let lecturesHtml = '';
+        if (block.lectures.length > 0) {
+            lecturesHtml = '<div class="lectures-list">' + block.lectures.map((l, li) => `
+                <div class="lecture-item" data-lecture-idx="${li}" data-block-idx="${currentBlock}">
+                    <div class="lecture-name"><span class="lecture-badge">📄 ${l.title}</span></div>
+                    <div class="lecture-download">${l.downloaded ? '✅ Прочитан' : '📥 Открыть'}</div>
+                </div>`).join('') + '</div>';
+        }
+        let testsHtml = block.tests.map((q, qi) => `
+            <div class="quiz-card" data-quiz-idx="${qi}"><div class="quiz-question">${qi + 1}. ${q.question}</div>
+                ${q.options.map((opt, oi) => `<div class="quiz-option" data-opt="${oi}"><span>${String.fromCharCode(65 + oi)}.</span> ${opt}</div>`).join('')}
+                <div class="quiz-feedback" id="quizFeedback-${qi}"></div><div class="quiz-actions"><button class="quiz-submit">✅ Ответить</button><button class="quiz-cancel">↺ Сбросить</button></div></div>`).join('');
+        let assignmentsHtml = block.assignments.map((a, ai) => `
+            <div class="assignment-card"><div class="assignment-title">📎 Задание ${ai + 1}: ${a.title}</div>
+                <div class="tz-block"><strong>📋 Техническое задание:</strong><br>${a.tz}</div>
+                <div class="upload-area" data-assign-idx="${ai}">${a.file ? `📁 Файл: ${a.file.name}` : (a.submitted ? '✅ Файл отправлен' : '➕ Нажмите, чтобы загрузить файл')}</div>
+                <div class="file-status ${a.reviewed ? 'success' : (a.submitted ? 'pending' : '')}">${a.reviewed ? '✅ Проверено преподавателем' : (a.submitted ? '⏳ Отправлено на проверку' : '📭 Файл не загружен')}</div>
+                ${a.grade ? `<div style="margin-top:8px; font-weight:600; color:#4422CA;">⭐ Оценка: ${a.grade}/100</div>` : ''}
+                <div class="assignment-buttons">
+                    ${!a.submitted ? `<button class="submit-assignment" data-assign-idx="${ai}" ${!a.file ? 'disabled' : ''}>📨 Отправить на проверку</button>` : ''}
+                    ${a.submitted && !a.reviewed ? `<button class="cancel-assignment" data-cancel-idx="${ai}" style="background:#fee2e2; color:#dc2626; border-color:#fecaca;">🗑 Отменить отправку</button>` : ''}
+                    ${!a.submitted && a.file ? `<button class="cancel-assignment" data-cancel-idx="${ai}">🗑 Удалить файл</button>` : ''}
+                    <span class="assignment-status ${a.reviewed ? 'approved' : (a.submitted ? 'pending' : '')}">${a.reviewed ? '★ Зачтено' : (a.submitted ? 'Ожидает проверки' : 'Черновик')}</span>
+                </div></div>`).join('');
+        const allV = block.videos.every(v => v.watched);
+        const allL = block.lectures.length === 0 || block.lectures.every(l => l.downloaded);
+        const allQ = block.tests.every(t => t.answered && t.userAnswer === t.correct);
+        const allA = block.assignments.every(a => a.reviewed);
+        const canComplete = allV && allL && allQ && allA;
+        container.innerHTML = `<div class="block-container"><div class="block-title">${block.name}</div>
+            <div class="block-subtitle">✅ Просмотрите видео | ✅ Прочитайте конспекты | ✅ Ответьте на тесты | ✅ Отправьте задания</div>
+            ${videosHtml ? '<h3>🎥 Видеоуроки</h3>' + videosHtml : ''}
+            ${lecturesHtml ? '<h3>📚 Конспекты</h3>' + lecturesHtml : ''}
+            <h3>📝 Тесты</h3>${testsHtml}
+            <h3>📂 Итоговые задания</h3>${assignmentsHtml}
+            <button class="complete-block-btn" id="completeBlockBtn" ${block.completed || !canComplete ? 'disabled' : ''}>${block.completed ? '✅ Блок пройден' : '🎉 Завершить блок'}</button>
+            ${!canComplete && !block.completed ? `<div style="margin-top:12px;padding:12px;background:#fef3c7;border-radius:16px;font-size:0.85rem;color:#92400e;">⚠️ Чтобы завершить блок: ${!allV ? '• видео ' : ''}${!allL ? '• конспекты ' : ''}${!allQ ? '• тесты ' : ''}${!allA ? '• проверка заданий ' : ''}</div>` : ''}</div>`;
+
+        document.querySelectorAll('.video-card').forEach(card => card.addEventListener('click', function() {
+            const idx = parseInt(this.dataset.videoIdx);
+            window.open(block.videos[idx].url, '_blank');
+            if (!block.videos[idx].watched) { block.videos[idx].watched = true; checkBlockCompletion(currentBlock); renderCurrentBlock(); }
+        }));
+        document.querySelectorAll('.lecture-item').forEach(lec => lec.addEventListener('click', function() {
+            let idx = parseInt(this.dataset.lectureIdx);
+            let lecture = blocks[currentBlock].lectures[idx];
+            showModal(lecture.title, getLectureContent(currentBlock, idx));
+            if (!lecture.downloaded) { lecture.downloaded = true; checkBlockCompletion(currentBlock); renderCurrentBlock(); }
+        }));
+        for (let qi = 0; qi < block.tests.length; qi++) {
+            const q = block.tests[qi];
+            const cardDiv = document.querySelector(`.quiz-card[data-quiz-idx="${qi}"]`);
+            if (!cardDiv) continue;
+            cardDiv.querySelectorAll('.quiz-option').forEach(opt => opt.addEventListener('click', function() {
+                q.userAnswer = parseInt(this.dataset.opt); q.answered = false;
+                cardDiv.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            }));
+            cardDiv.querySelector('.quiz-submit').addEventListener('click', () => {
+                if (q.userAnswer === null) return alert("Выберите ответ");
+                q.answered = true;
+                const fb = document.getElementById(`quizFeedback-${qi}`); fb.style.display = 'block';
+                if (q.userAnswer === q.correct) { fb.innerHTML = "✅ Верно!"; fb.style.background = "#d1fae5"; }
+                else { fb.innerHTML = `❌ Правильно: ${q.options[q.correct]}`; fb.style.background = "#fee2e2"; }
+                saveProgress(); checkBlockCompletion(currentBlock); renderCurrentBlock();
+            });
+            cardDiv.querySelector('.quiz-cancel').addEventListener('click', () => resetQuiz(block, qi, cardDiv));
+            if (q.userAnswer !== null) {
+                cardDiv.querySelector(`.quiz-option[data-opt="${q.userAnswer}"]`)?.classList.add('selected');
+                if (q.answered) {
+                    const fb = document.getElementById(`quizFeedback-${qi}`); fb.style.display = 'block';
+                    if (q.userAnswer === q.correct) { fb.innerHTML = "✅ Верно!"; fb.style.background = "#d1fae5"; }
+                    else { fb.innerHTML = `❌ Правильно: ${q.options[q.correct]}`; fb.style.background = "#fee2e2"; }
+                }
+            }
+        }
+        for (let ai = 0; ai < block.assignments.length; ai++) {
+            const a = block.assignments[ai];
+            const ua = document.querySelector(`.upload-area[data-assign-idx="${ai}"]`);
+            if (ua && !a.submitted) ua.addEventListener('click', () => {
+                const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.pdf,.zip,.png,.jpg';
+                inp.onchange = e => { const f = e.target.files[0]; if (f) { a.file = f; ua.innerHTML = `📁 ${f.name}`; saveProgress(); renderCurrentBlock(); } };
+                inp.click();
+            });
+            const sb = document.querySelector(`.submit-assignment[data-assign-idx="${ai}"]`);
+            if (sb) sb.addEventListener('click', () => {
+                if (!a.file) return alert("Загрузите файл");
+                const cu = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+                if (!cu.email) return alert("Войдите в аккаунт");
+                const r = new FileReader();
+                r.onload = function(e) {
+                    const subs = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+                    const filt = subs.filter(s => !(s.userEmail === cu.email && s.assignmentTitle === a.title && s.courseName === "Основы философии"));
+                    filt.push({ id: Date.now(), userEmail: cu.email, studentName: cu.fullName || cu.email, courseName: "Основы философии", blockName: block.name, assignmentTitle: a.title, fileName: a.file.name, fileData: e.target.result, submitted: true, submittedAt: new Date().toISOString(), reviewed: false, grade: null, feedback: null });
+                    localStorage.setItem('nextstep_submissions', JSON.stringify(filt));
+                    a.submitted = true; a.file = null; saveProgress(); renderCurrentBlock();
+                    alert("✅ Работа отправлена!");
+                };
+                r.readAsDataURL(a.file);
+            });
+            const cb = document.querySelector(`.cancel-assignment[data-cancel-idx="${ai}"]`);
+            if (cb) cb.addEventListener('click', () => {
+                const cu = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+                if (a.submitted && !a.reviewed && confirm('Отменить отправку?')) {
+                    const subs = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+                    localStorage.setItem('nextstep_submissions', JSON.stringify(subs.filter(s => !(s.userEmail === cu.email && s.assignmentTitle === a.title && s.courseName === "Основы философии"))));
+                    a.submitted = false; a.reviewed = false; a.file = null; a.feedback = ''; a.grade = null;
+                    saveProgress(); renderCurrentBlock(); alert('✅ Отменено');
+                } else if (!a.submitted && a.file) { a.file = null; saveProgress(); renderCurrentBlock(); }
+            });
+        }
+        document.getElementById('completeBlockBtn')?.addEventListener('click', () => {
+            if (canComplete) { block.completed = true; if (currentBlock + 1 < blocks.length) blocks[currentBlock + 1].unlocked = true; saveProgress(); updateStats(); renderBlocksNav(); renderCurrentBlock(); alert(`🎉 Блок "${block.name}" пройден!`); }
+        });
+        updateStats();
+    }
+
+    loadProgress(); renderBlocksNav(); renderCurrentBlock();
+</script>
+</body>
+</html>

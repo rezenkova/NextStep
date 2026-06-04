@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Каталог курсов — NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .blur-circles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .blur-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.45;
+            z-index: 0;
+            animation: smoothFloat 24s infinite ease-in-out;
+        }
+
+        @keyframes smoothFloat {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(12px, -8px) scale(1.02); }
+            66% { transform: translate(-8px, 10px) scale(0.98); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+        .circle-center-1 { top: 40%; left: 15%; width: 380px; height: 380px; background: #4422CA; opacity: 0.2; filter: blur(130px); animation-delay: -5s; }
+        .circle-center-2 { bottom: 25%; right: 10%; width: 420px; height: 420px; background: #22B9CA; opacity: 0.18; filter: blur(140px); animation-delay: -8s; }
+
+        .sidebar {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            width: 280px;
+            background: rgba(255,255,255,0.94);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 28px 20px 32px;
+            box-shadow: 0 20px 38px -12px rgba(0,0,0,0.08);
+            border: 1px solid rgba(68,34,202,0.12);
+            z-index: 30;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 36px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #edf2f7;
+            cursor: pointer;
+        }
+
+        .logo-area img {
+            height: 44px;
+            width: auto;
+        }
+
+        .logo-area span {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            border-radius: 24px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #1a2c3e;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(68,34,202,0.08);
+            color: #4422CA;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(68,34,202,0.12), rgba(34,185,202,0.08));
+            color: #4422CA;
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 28px;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .sidebar-footer {
+            margin-top: 40px;
+            padding-top: 16px;
+            border-top: 1px solid #eef2f8;
+            font-size: 0.7rem;
+            color: #8a99b0;
+            text-align: center;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 24px;
+            right: 32px;
+            display: flex;
+            gap: 16px;
+            z-index: 30;
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.94);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(68,34,202,0.12);
+            border-radius: 40px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+
+        .icon-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: #4422CA;
+            stroke-width: 1.8;
+            fill: none;
+        }
+
+        .main-content {
+            margin-left: 320px;
+            padding: 40px 48px 100px 32px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .catalog-story {
+            background: linear-gradient(125deg, rgba(68,34,202,0.08), rgba(34,185,202,0.05));
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 48px 48px 56px;
+            margin-bottom: 56px;
+            border: 1px solid rgba(68,34,202,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .story-badge {
+            display: inline-block;
+            background: rgba(68,34,202,0.2);
+            backdrop-filter: blur(4px);
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #4422CA;
+            margin-bottom: 20px;
+        }
+        .story-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #1e1b4b, #2d4a5c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 24px;
+        }
+        .story-grid {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .story-text {
+            flex: 2;
+            font-size: 1.05rem;
+            color: #334155;
+            line-height: 1.5;
+        }
+        .story-highlight {
+            flex: 1;
+            background: rgba(255,255,255,0.7);
+            border-radius: 32px;
+            padding: 28px;
+            text-align: center;
+            border: 1px solid rgba(68,34,202,0.2);
+        }
+        .highlight-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .interactive-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border-radius: 60px;
+            padding: 8px 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .interactive-chip:hover {
+            border-color: #4422CA;
+            transform: translateY(-2px);
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 40px;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 80px;
+            padding: 10px 20px;
+            border: 1px solid rgba(68,34,202,0.1);
+        }
+        .filter-chip {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        .filter-chip.active {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(68,34,202,0.2);
+        }
+
+        .courses-catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 60px;
+            align-items: stretch;
+        }
+        .course-fancy-card {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(68,34,202,0.2);
+            cursor: pointer;
+            box-shadow: 0 20px 35px -15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .course-fancy-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(68,34,202,0.5);
+            box-shadow: 0 30px 45px -15px rgba(68,34,202,0.25);
+            background: rgba(255,255,255,0.98);
+        }
+        .card-media {
+            height: 210px;
+            background: linear-gradient(145deg, #f0f4fc, #e2e8f2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .course-fancy-card:hover .card-media img {
+            transform: scale(1.04);
+        }
+        .card-badge {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+        }
+        .card-content {
+            padding: 24px 24px 28px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .course-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #1e1b4b, #2d4a5c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .course-desc {
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 16px;
+            line-height: 1.45;
+        }
+        .course-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #64748b;
+            flex-wrap: wrap;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .details-btn {
+            background: white;
+            border: 1px solid #4422CA;
+            border-radius: 60px;
+            padding: 12px 0;
+            flex: 1;
+            font-weight: 600;
+            color: #4422CA;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+        .details-btn:hover {
+            background: rgba(68,34,202,0.05);
+            transform: translateY(-2px);
+        }
+        .enroll-btn {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border: none;
+            border-radius: 60px;
+            padding: 12px 0;
+            flex: 1;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+        .enroll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(68,34,202,0.3);
+        }
+
+        .course-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            max-width: 700px;
+            width: 90%;
+            border-radius: 48px;
+            padding: 32px;
+            position: relative;
+            border: 1px solid rgba(68,34,202,0.2);
+            animation: fadeUp 0.3s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #64748b;
+        }
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+        .modal-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 24px;
+            margin-bottom: 24px;
+        }
+        .modal-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .stat-infocard {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .stat-number-modal {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #4422CA;
+        }
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 10px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #4422CA, #22B9CA);
+            border-radius: 20px;
+        }
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .feature-tag {
+            background: rgba(68,34,202,0.1);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #4422CA;
+        }
+        .modal-enroll-btn {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .modal-enroll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(68,34,202,0.3);
+        }
+
+        .assistant-btn {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border: none;
+            border-radius: 60px;
+            padding: 14px 24px;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            z-index: 40;
+            box-shadow: 0 8px 20px rgba(68,34,202,0.3);
+            transition: transform 0.2s;
+        }
+        .assistant-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 28px;
+            width: 380px;
+            height: 550px;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            z-index: 45;
+            overflow: hidden;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            border: 1px solid rgba(68,34,202,0.15);
+        }
+        .chat-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header span {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        .close-chat:hover {
+            opacity: 1;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255,255,255,0.6);
+        }
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            animation: fadeInMsg 0.3s ease;
+        }
+        .user-message {
+            background: #4422CA;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .bot-message {
+            background: #f1f5f9;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 18px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+        .typing-indicator span {
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+        .quick-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover {
+            background: #e2e8f0;
+            transform: scale(1.02);
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+        .chat-input:focus {
+            border-color: #4422CA;
+        }
+        .send-btn {
+            background: #4422CA;
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            animation: fadeInUp 0.3s ease;
+        }
+        .popup-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #4422CA;
+        }
+        .popup-content p {
+            color: #475569;
+            margin-bottom: 24px;
+        }
+        .popup-close {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        @keyframes fadeInMsg {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        @media (max-width: 1000px) {
+            .courses-catalog-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+        @media (max-width: 680px) {
+            .sidebar {
+                position: relative;
+                width: auto;
+                margin: 16px;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 24px;
+            }
+            .top-bar {
+                position: relative;
+                justify-content: flex-end;
+                margin: 16px;
+            }
+            .catalog-story {
+                padding: 28px;
+            }
+            .story-title {
+                font-size: 1.8rem;
+            }
+            .chat-modal {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                bottom: 100px;
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blur-circles-container">
+        <div class="blur-circle circle-top-left-1"></div>
+        <div class="blur-circle circle-top-left-2"></div>
+        <div class="blur-circle circle-top-right-1"></div>
+        <div class="blur-circle circle-top-right-2"></div>
+        <div class="blur-circle circle-bottom-left-1"></div>
+        <div class="blur-circle circle-bottom-left-2"></div>
+        <div class="blur-circle circle-bottom-right-1"></div>
+        <div class="blur-circle circle-bottom-right-2"></div>
+        <div class="blur-circle circle-center-1"></div>
+        <div class="blur-circle circle-center-2"></div>
+    </div>
+
+    <div class="top-bar">
+        <div class="icon-btn" id="profileBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="icon-btn" id="messagesBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+    </div>
+
+    <aside class="sidebar">
+        <div class="logo-area" id="logoHome">
+            <img src="логотип.png" alt="NextStep" style="height:44px" onerror="this.style.display='none'">
+            <span>NextStep</span>
+        </div>
+        <nav class="nav-menu" id="navMenu">
+            <div class="nav-item" data-page="main"><span class="nav-icon">🏠</span> Главная</div>
+            <div class="nav-item active" data-page="catalog"><span class="nav-icon">📚</span> Каталог</div>
+            <div class="nav-item" data-page="mycourses"><span class="nav-icon">🎓</span> Мои курсы</div>
+            <div class="nav-item" data-page="projects" id="projectsNavItem"><span class="nav-icon" id="projectsIcon">📁</span> <span id="projectsText">Проекты</span></div>
+            <div class="nav-item" data-page="certificates"><span class="nav-icon">🏅</span> Сертификаты</div>
+        </nav>
+        <div class="sidebar-footer">NextStep Education © 2026</div>
+    </aside>
+
+    <main class="main-content">
+        <div class="catalog-story">
+            <div class="story-badge">🎓 NextStep Образование</div>
+            <div class="story-grid">
+                <div class="story-text">
+                    <div class="story-title">Выбери свой <span style="background: linear-gradient(120deg, #4422CA, #22B9CA); background-clip:text; -webkit-background-clip:text; color:transparent;">путь к образованию</span></div>
+                    <p>Наши курсы разработаны преподавателями. Погружение в 3D-моделирование, высшую математику, философию, веб-разработку, бизнес и IT — каждый найдет направление для себя.</p>
+                    <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div class="interactive-chip" id="storyExplore">🔍 Исследовать курсы</div>
+                        <div class="interactive-chip" id="storyAssistant">🤖 Спросить ассистента</div>
+                    </div>
+                </div>
+                <div class="story-highlight">
+                    <div class="highlight-number">8+</div>
+                    <div style="font-weight: 600;">экспертных направлений</div>
+                    <div style="font-size:0.7rem; margin-top:8px;">⭐ 4.8 средний рейтинг</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-chip active" data-filter="all">Все курсы</button>
+            <button class="filter-chip" data-filter="design">🎨 Дизайн & Разработка</button>
+            <button class="filter-chip" data-filter="math">📐 Математика & Бизнес</button>
+            <button class="filter-chip" data-filter="philosophy">📖 Философия & IT</button>
+        </div>
+
+        <div class="courses-catalog-grid" id="catalogGrid"></div>
+    </main>
+
+    <div id="courseModal" class="course-modal">
+        <div class="modal-content" id="modalContentInner"></div>
+    </div>
+
+    <button class="assistant-btn" id="assistantBtn">🤖 Помощник Next</button>
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <span>🤖 Next Assistant <span style="font-size:0.7rem;">online</span></span>
+            <button class="close-chat" id="closeChatBtn">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">✨ Привет! Я Next — твой гид по каталогу. Могу рассказать о курсах, подобрать направление или помочь с записью. Что тебя интересует?</div>
+        </div>
+        <div class="quick-buttons">
+            <button class="quick-btn">📚 Все курсы</button>
+            <button class="quick-btn">🎨 Дизайн</button>
+            <button class="quick-btn">📐 Математика</button>
+            <button class="quick-btn">📖 Философия</button>
+            <button class="quick-btn">💻 Веб-разработка</button>
+            <button class="quick-btn">💬 Как записаться?</button>
+            <button class="quick-btn">🏅 Сертификаты</button>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Спроси про курсы...">
+            <button id="sendBtn" class="send-btn">→</button>
+        </div>
+    </div>
+
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup-content">
+            <h3 id="popupTitle">Информация</h3>
+            <p id="popupMessage">Страница в разработке</p>
+            <button class="popup-close" onclick="closePopup()">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== ФУНКЦИИ ДЛЯ РАБОТЫ С РОЛЯМИ ==========
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        }
+
+        function updateProjectsMenuItem() {
+            const user = getCurrentUser();
+            const projectsItem = document.getElementById('projectsNavItem');
+            const projectsIcon = document.getElementById('projectsIcon');
+            const projectsText = document.getElementById('projectsText');
+            
+            if (user.role === 'teacher') {
+                projectsIcon.innerHTML = '📓';
+                projectsText.innerHTML = 'Дневник';
+                projectsItem.dataset.page = 'diary';
+            } else {
+                projectsIcon.innerHTML = '📁';
+                projectsText.innerHTML = 'Проекты';
+                projectsItem.dataset.page = 'projects';
+            }
+        }
+
+        function showPopup(message, title = "Информация") {
+            const overlay = document.getElementById('popupOverlay');
+            document.getElementById('popupTitle').innerText = title;
+            document.getElementById('popupMessage').innerHTML = message;
+            overlay.style.display = 'flex';
+        }
+        function closePopup() {
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+        document.getElementById('popupOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closePopup();
+        });
+
+        function openProfileByRole() {
+            const user = getCurrentUser();
+            if (user.role === 'teacher') {
+                window.location.href = 'панель преподавателя.html';
+            } else if (user.role === 'student') {
+                window.location.href = 'панель студента.html';
+            } else {
+                showPopup('Пожалуйста, войдите в аккаунт', 'Вход');
+                setTimeout(() => {
+                    window.location.href = 'вход некст.html';
+                }, 1500);
+            }
+        }
+
+        function navigateTo(page) {
+            const pages = {
+                'main': 'главная некст.html',
+                'catalog': 'каталог некст.html',
+                'mycourses': 'мои курсы некст.html',
+                'projects': 'мои проекты.html',
+                'diary': 'дневник преподавателя.html',
+                'certificates': 'сертификаты.html'
+            };
+            if (pages[page]) {
+                window.location.href = pages[page];
+            } else {
+                showPopup('Страница временно недоступна');
+            }
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const page = item.dataset.page;
+                if (page === 'catalog') return;
+                navigateTo(page);
+            });
+        });
+
+        document.getElementById('logoHome').addEventListener('click', () => {
+            window.location.href = 'главная некст.html';
+        });
+
+        document.getElementById('profileBtn').addEventListener('click', openProfileByRole);
+        document.getElementById('messagesBtn').addEventListener('click', () => {
+            showPopup('Сообщения с преподавателями появятся после регистрации', 'Сообщения');
+        });
+
+        // ========== ДАННЫЕ КУРСОВ ==========
+        const fullCourses = [
+            { id: 1, title: "3D-моделирование", category: "design", duration: "8 недель", lessons: 42, rating: 4.8, students: 3450, img: "3d.png", desc: "Создание 3D-персонажей, окружения и анимация. Blender, 3D Max, текстурирование.", features: "Практические проекты + портфолио", level: "Средний", projects: 4, hours: 64, page: "3д моделирование курс.html" },
+            { id: 2, title: "Высшая математика", category: "math", duration: "6 недель", lessons: 36, rating: 4.9, students: 5120, img: "математика.png", desc: "Линейная алгебра, матанализ. Интерактивные симуляции и тренажеры.", features: "Подготовка к экзаменам и олимпиадам", level: "Продвинутый", projects: 6, hours: 72, page: "высшая математика курс.html" },
+            { id: 3, title: "Основы философии", category: "philosophy", duration: "5 недель", lessons: 30, rating: 4.7, students: 2780, img: "философия.png", desc: "Античность до постмодерна: дискуссии, эссе, разбор трудов великих мыслителей.", features: "Дебаты и сертификат о критическом мышлении", level: "Начальный", projects: 5, hours: 50, page: "основы философии.html" },
+            { id: 4, title: "HTML-вёрстка", category: "design", duration: "7 недель", lessons: 38, rating: 4.9, students: 4100, img: "верстка.png", desc: "Современная вёрстка сайтов: HTML5, CSS3, Flexbox, Grid, адаптивный дизайн.", features: "5 реальных проектов + портфолио", level: "Начальный", projects: 5, hours: 56, page: "верстка курс.html" },
+            { id: 5, title: "Бизнес-планирование", category: "math", duration: "6 недель", lessons: 32, rating: 4.8, students: 2950, img: "бизнес.png", desc: "Стратегическое планирование, финансовые модели, анализ рынка и рисков.", features: "Реальный бизнес-план под ключ", level: "Средний", projects: 4, hours: 60, page: "бизнес планирование курс.html" },
+            { id: 6, title: "Теория вероятностей", category: "math", duration: "5 недель", lessons: 28, rating: 4.7, students: 3200, img: "вероятность.png", desc: "Основы теории вероятностей, случайные величины, статистические методы.", features: "Практические задачи + анализ данных", level: "Средний", projects: 4, hours: 48, page: "теория вероятности курс.html" },
+            { id: 7, title: "Оптимизация приложений", category: "design", duration: "8 недель", lessons: 44, rating: 4.9, students: 3800, img: "оптимизация.png", desc: "Оптимизация производительности, кэширование, профилирование кода.", features: "Реальные кейсы оптимизации", level: "Продвинутый", projects: 5, hours: 70, page: "оптимизация курс.html" },
+            { id: 8, title: "Культура речи", category: "philosophy", duration: "4 недели", lessons: 24, rating: 4.8, students: 2100, img: "культура.png", desc: "Риторика, ораторское искусство, техники убеждения и публичных выступлений.", features: "Мастер-классы и дебаты", level: "Начальный", projects: 3, hours: 40, page: "культура курс.html" },
+            { id: 9, title: "Безопасность IT", category: "philosophy", duration: "7 недель", lessons: 40, rating: 4.9, students: 4600, img: "безопасность.png", desc: "Кибербезопасность, шифрование, защита сетей, этичный хакинг.", features: "Лабораторные работы + сертификат", level: "Продвинутый", projects: 6, hours: 68, page: "безопасность курс.html" }
+        ];
+
+        function enrollInCourse(course) {
+            let myCourses = JSON.parse(localStorage.getItem('nextstep_my_courses') || '[]');
+            if (!myCourses.some(c => c.courseId === course.id)) {
+                myCourses.push({
+                    courseId: course.id,
+                    courseTitle: course.title,
+                    progress: 0,
+                    completed: false
+                });
+                localStorage.setItem('nextstep_my_courses', JSON.stringify(myCourses));
+                showPopup(`✨ Вы успешно записаны на курс "${course.title}"!`, 'Запись оформлена');
+                setTimeout(() => {
+                    window.location.href = 'мои курсы некст.html';
+                }, 1500);
+            } else {
+                showPopup(`📌 Вы уже записаны на курс "${course.title}".`, 'Уже записаны');
+            }
+        }
+
+        function openCourseModal(course) {
+            const modal = document.getElementById('courseModal');
+            const modalInner = document.getElementById('modalContentInner');
+            const completionPercent = Math.floor(Math.random() * 25) + 70;
+            
+            modalInner.innerHTML = `
+                <button class="close-modal" id="closeModalBtn">×</button>
+                <div class="modal-title">${course.title}</div>
+                <img src="${course.img}" alt="${course.title}" class="modal-image" onerror="this.src='https://placehold.co/700x300/7c3aed/white?text=${encodeURIComponent(course.title)}'">
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                    <span class="feature-tag">🏷️ ${course.level}</span>
+                    <span class="feature-tag">📅 ${course.duration}</span>
+                    <span class="feature-tag">⭐ ${course.rating} / 5</span>
+                </div>
+                <p style="color:#334155; line-height:1.5; font-size:1rem;">${course.desc}</p>
+                <div class="modal-stats-grid">
+                    <div class="stat-infocard"><div class="stat-number-modal">${course.lessons}</div><div style="color:#64748b; font-size:0.85rem;">видео-уроков</div></div>
+                    <div class="stat-infocard"><div class="stat-number-modal">${course.projects}</div><div style="color:#64748b; font-size:0.85rem;">практических работ</div></div>
+                    <div class="stat-infocard"><div class="stat-number-modal">${course.hours}+</div><div style="color:#64748b; font-size:0.85rem;">часов контента</div></div>
+                </div>
+                <div>
+                    <strong style="color:#1e293b;">🎯 Востребованность курса</strong>
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" style="width: ${completionPercent}%;"></div>
+                    </div>
+                    <div style="font-size:0.75rem; text-align:right; color:#64748b;">${completionPercent}% студентов рекомендуют</div>
+                </div>
+                <div class="feature-list">
+                    <span class="feature-tag">🏆 ${course.features}</span>
+                    <span class="feature-tag">📜 Сертификат по окончании</span>
+                    <span class="feature-tag">👩‍🏫 Поддержка преподавателей</span>
+                    <span class="feature-tag">👥 ${course.students}+ студентов</span>
+                </div>
+                <button class="modal-enroll-btn" id="modalEnrollBtn">🔥 Записаться на курс</button>
+            `;
+            
+            modal.style.display = 'flex';
+            document.getElementById('closeModalBtn').onclick = () => modal.style.display = 'none';
+            modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+            document.getElementById('modalEnrollBtn').addEventListener('click', () => {
+                enrollInCourse(course);
+                modal.style.display = 'none';
+            });
+        }
+
+        function renderCatalog(filter = "all") {
+            const container = document.getElementById('catalogGrid');
+            let filtered = [];
+            if (filter === "all") {
+                filtered = [...fullCourses];
+            } else {
+                filtered = fullCourses.filter(c => c.category === filter);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px; background:rgba(255,255,255,0.7); border-radius:48px;">🔍 Курсы не найдены, попробуйте другой фильтр</div>`;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(course => `
+                <div class="course-fancy-card" data-id="${course.id}">
+                    <div class="card-media">
+                        <img src="${course.img}" alt="${course.title}" onerror="this.src='https://placehold.co/400x200/7c3aed/white?text=${encodeURIComponent(course.title)}'">
+                        <div class="card-badge">⭐ ${course.rating}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="course-title">${course.title}</div>
+                        <div class="course-desc">${course.desc.substring(0, 85)}${course.desc.length > 85 ? '...' : ''}</div>
+                        <div class="course-stats">
+                            <span>⏱ ${course.duration}</span>
+                            <span>📹 ${course.lessons} уроков</span>
+                            <span>👥 ${course.students}+</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="details-btn" data-course='${JSON.stringify(course)}'>📖 Подробнее</button>
+                            <button class="enroll-btn" data-course='${JSON.stringify(course)}'>Записаться</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.details-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const courseData = JSON.parse(btn.getAttribute('data-course'));
+                    openCourseModal(courseData);
+                });
+            });
+            
+            document.querySelectorAll('.enroll-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const courseData = JSON.parse(btn.getAttribute('data-course'));
+                    enrollInCourse(courseData);
+                });
+            });
+        }
+
+        let currentFilter = "all";
+        function initFilters() {
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentFilter = chip.dataset.filter;
+                    renderCatalog(currentFilter);
+                });
+            });
+        }
+
+        // Чат-бот для каталога
+        function getCatalogAssistantAnswer(message) {
+            const msg = message.toLowerCase().trim();
+            if(msg.match(/привет|здравствуй/)) return "🌟 Привет! Я помощник каталога NextStep. У нас 9+ курсов: дизайн, математика, философия, IT и бизнес. Что тебя интересует?";
+            if(msg.match(/все курсы|список|какие курсы есть/)) return "📚 В каталоге: 3D-моделирование, Высшая математика, Философия, HTML-вёрстка, Бизнес-планирование, Теория вероятностей, Оптимизация приложений, Культура речи, Безопасность IT. Используй фильтры!";
+            if(msg.match(/3d|моделирование/)) return "🎨 «3D-моделирование»: 42 урока, 8 недель, создание персонажей и анимации. По окончании — портфолио.";
+            if(msg.match(/математика|высшая математика|теория вероятностей/)) return "📐 У нас есть «Высшая математика» (4.9★) и «Теория вероятностей» (4.7★). Разбор матанализа, статистики!";
+            if(msg.match(/философия|культура речи/)) return "📖 В разделе философии: «Основы философии» и «Культура речи» (риторика, ораторское искусство).";
+            if(msg.match(/html|вёрстка|веб|разработка/)) return "💻 Веб-направление: «HTML-вёрстка» (7 нед) — создавай сайты!";
+            if(msg.match(/бизнес|планирование/)) return "📊 «Бизнес-планирование»: 6 недель, финансовые модели, анализ рынка. Создашь реальный бизнес-план!";
+            if(msg.match(/безопасность|it безопасность|кибер/)) return "🔐 «Безопасность IT»: 7 недель, кибербезопасность, шифрование, этичный хакинг.";
+            if(msg.match(/записаться|как записаться/)) return "✅ Чтобы записаться, нажми «Записаться» на карточке курса или «Подробнее», чтобы узнать больше.";
+            if(msg.match(/сертификат|сертификаты/)) return "🏅 Сертификат выдаётся после прохождения всех модулей. Хранится в разделе «Сертификаты» в меню.";
+            return "🤖 У нас 9 курсов! Спроси: «все курсы», «3D-моделирование», «математика», «философия», «веб-разработка», «как записаться» или «сертификаты».";
+        }
+
+        const chatModalEl = document.getElementById('chatModal');
+        const chatMessagesDiv = document.getElementById('chatMessages');
+        const chatInputField = document.getElementById('chatInput');
+        
+        function addMessage(text, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            msgDiv.textContent = text;
+            chatMessagesDiv.appendChild(msgDiv);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+        
+        function showTyping() {
+            const td = document.createElement('div');
+            td.className = 'typing-indicator';
+            td.id = 'typingInd';
+            td.innerHTML = '<span></span><span></span><span></span>';
+            chatMessagesDiv.appendChild(td);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const el = document.getElementById('typingInd');
+            if(el) el.remove();
+        }
+        
+        function handleChat() {
+            const msg = chatInputField.value.trim();
+            if(!msg) return;
+            addMessage(msg, true);
+            chatInputField.value = '';
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                const ans = getCatalogAssistantAnswer(msg);
+                addMessage(ans, false);
+            }, 500);
+        }
+        
+        document.getElementById('sendBtn').onclick = handleChat;
+        chatInputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleChat(); });
+        
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.onclick = () => {
+                const q = btn.innerText;
+                addMessage(q, true);
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    let ans = '';
+                    if(q.includes('Все курсы')) ans = getCatalogAssistantAnswer('все курсы');
+                    else if(q.includes('Дизайн')) ans = getCatalogAssistantAnswer('3D-моделирование');
+                    else if(q.includes('Математика')) ans = getCatalogAssistantAnswer('математика');
+                    else if(q.includes('Философия')) ans = getCatalogAssistantAnswer('философия');
+                    else if(q.includes('Веб-разработка')) ans = getCatalogAssistantAnswer('html');
+                    else if(q.includes('записаться')) ans = getCatalogAssistantAnswer('как записаться');
+                    else if(q.includes('Сертификаты')) ans = getCatalogAssistantAnswer('сертификат');
+                    else ans = getCatalogAssistantAnswer(q);
+                    addMessage(ans, false);
+                }, 400);
+            };
+        });
+        
+        document.getElementById('assistantBtn').onclick = () => chatModalEl.style.display = 'flex';
+        document.getElementById('closeChatBtn').onclick = () => chatModalEl.style.display = 'none';
+        
+        document.getElementById('storyExplore').addEventListener('click', () => {
+            document.querySelector('.courses-catalog-grid').scrollIntoView({ behavior: 'smooth' });
+        });
+        document.getElementById('storyAssistant').addEventListener('click', () => {
+            chatModalEl.style.display = 'flex';
+        });
+
+                updateProjectsMenuItem();
+        initFilters();
+        renderCatalog('all');
+        
+        // КНОПКА ЧАТА
+        document.getElementById('messagesBtn')?.addEventListener('click', function() {
+            window.location.href = 'сообщения.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Сертификаты — NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #ffffff; font-family: 'Inter', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+        
+        .blur-circles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .blur-circle { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: 0; animation: smoothFloat 24s infinite ease-in-out; }
+        @keyframes smoothFloat { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(12px, -8px) scale(1.02); } 66% { transform: translate(-8px, 10px) scale(0.98); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+        .circle-center-1 { top: 30%; left: 20%; width: 350px; height: 350px; background: #4422CA; opacity: 0.15; filter: blur(130px); animation-delay: -5s; }
+        .circle-center-2 { bottom: 30%; right: 15%; width: 380px; height: 380px; background: #22B9CA; opacity: 0.12; filter: blur(140px); animation-delay: -8s; }
+        
+        .sidebar { position: fixed; top: 24px; left: 24px; width: 280px; background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 32px; padding: 28px 20px 32px; box-shadow: 0 20px 38px -12px rgba(0,0,0,0.08); border: 1px solid rgba(68,34,202,0.12); z-index: 30; }
+        .logo-area { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 36px; padding-bottom: 18px; border-bottom: 1px solid #edf2f7; cursor: pointer; }
+        .logo-area img { height: 44px; width: auto; }
+        .logo-area span { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #4422CA, #22B9CA); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-radius: 24px; font-weight: 500; font-size: 0.95rem; color: #1a2c3e; transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .nav-item:hover { background: rgba(68,34,202,0.08); color: #4422CA; transform: translateX(4px); }
+        .nav-item.active { background: linear-gradient(135deg, rgba(68,34,202,0.12), rgba(34,185,202,0.08)); color: #4422CA; font-weight: 600; }
+        .nav-icon { font-size: 1.2rem; width: 28px; text-align: center; opacity: 0.7; }
+        .sidebar-footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eef2f8; font-size: 0.7rem; color: #8a99b0; text-align: center; }
+        
+        .top-bar { position: fixed; top: 24px; right: 32px; display: flex; gap: 16px; z-index: 30; }
+        .icon-btn { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border: 1px solid rgba(68,34,202,0.12); border-radius: 40px; padding: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; }
+        .icon-btn:hover { background: rgba(68,34,202,0.08); transform: scale(1.05); }
+        .icon-btn svg { width: 22px; height: 22px; stroke: #4422CA; stroke-width: 1.8; fill: none; }
+        
+        .main-content { margin-left: 320px; padding: 40px 48px 100px 32px; min-height: 100vh; position: relative; z-index: 10; }
+        
+        .page-header { margin-bottom: 28px; animation: fadeInUp 0.8s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .page-header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #1e1b4b, #4422CA); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 8px; text-align: left; }
+        .page-header .subtitle { color: #64748b; font-size: 1.05rem; max-width: 700px; text-align: left; }
+        
+        .about-certificates { 
+            background: rgba(255,255,255,0.8); 
+            backdrop-filter: blur(8px); 
+            border-radius: 28px; 
+            padding: 32px 36px; 
+            border: 1px solid rgba(68,34,202,0.12); 
+            margin-bottom: 48px; 
+            display: flex; 
+            gap: 28px; 
+            align-items: flex-start;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.03);
+        }
+        .about-certificates .about-icon { font-size: 3.5rem; flex-shrink: 0; background: linear-gradient(135deg, rgba(68,34,202,0.08), rgba(34,185,202,0.08)); border-radius: 24px; padding: 20px; }
+        .about-certificates .about-text h3 { font-size: 1.3rem; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+        .about-certificates .about-text p { color: #475569; font-size: 0.95rem; line-height: 1.6; max-width: 650px; }
+        .about-highlights { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+        .about-highlight-item { display: flex; align-items: center; gap: 8px; background: rgba(68,34,202,0.05); padding: 8px 16px; border-radius: 30px; font-size: 0.8rem; color: #4422CA; font-weight: 500; border: 1px solid rgba(68,34,202,0.1); }
+        
+        .section-divider { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
+        .section-divider .line { flex: 1; height: 1px; background: #e2e8f0; }
+        .section-divider .label { font-size: 0.8rem; font-weight: 600; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; padding: 6px 16px; background: rgba(255,255,255,0.7); border-radius: 20px; border: 1px solid #e2e8f0; white-space: nowrap; }
+        
+        .certificates-grid { display: flex; flex-direction: column; gap: 48px; }
+        .certificate-item { background: rgba(255,255,255,0.6); border-radius: 32px; padding: 36px; border: 1px solid rgba(68,34,202,0.08); transition: all 0.3s; }
+        .certificate-item:hover { background: rgba(255,255,255,0.9); border-color: rgba(68,34,202,0.2); box-shadow: 0 12px 30px rgba(68,34,202,0.08); }
+        .certificate-item .course-label { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(68,34,202,0.08), rgba(34,185,202,0.08)); padding: 8px 20px; border-radius: 30px; font-size: 0.8rem; font-weight: 600; color: #4422CA; margin-bottom: 24px; }
+        
+        .certificate-wrapper { display: flex; justify-content: center; width: 100%; max-width: 800px; margin: 0 auto; }
+        .certificate-document { background: linear-gradient(160deg, #fefdf7 0%, #fdf9ed 30%, #fefce8 60%, #fdf9ed 100%); border: 5px solid #d4a843; border-radius: 20px; padding: 60px 55px 50px; width: 100%; text-align: center; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.06), inset 0 0 0 2px rgba(212,168,67,0.15); }
+        .certificate-document::before { content: ''; position: absolute; top: 16px; left: 16px; right: 16px; bottom: 16px; border: 2px solid rgba(212,168,67,0.35); border-radius: 12px; pointer-events: none; }
+        .certificate-document::after { content: ''; position: absolute; top: 22px; left: 22px; right: 22px; bottom: 22px; border: 1px solid rgba(212,168,67,0.18); border-radius: 8px; pointer-events: none; }
+        
+        .cert-badge { width: 90px; height: 90px; background: linear-gradient(135deg, #4422CA, #22B9CA); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2.8rem; box-shadow: 0 10px 30px rgba(68,34,202,0.25); position: relative; z-index: 1; }
+        .cert-ribbon-left, .cert-ribbon-right { position: absolute; top: 50px; width: 140px; height: 14px; z-index: 0; }
+        .cert-ribbon-left { left: 80px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.5), rgba(212,168,67,0.8)); border-radius: 0 7px 7px 0; }
+        .cert-ribbon-right { right: 80px; background: linear-gradient(270deg, transparent, rgba(212,168,67,0.5), rgba(212,168,67,0.8)); border-radius: 7px 0 0 7px; }
+        
+        .cert-heading { font-size: 2.6rem; font-weight: 800; color: #1e1b4b; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; position: relative; z-index: 1; }
+        .cert-subheading { font-size: 1rem; color: #64748b; margin-bottom: 20px; letter-spacing: 1px; }
+        .cert-divider { width: 100px; height: 3px; background: linear-gradient(90deg, transparent, #d4a843, transparent); margin: 0 auto 28px; border-radius: 3px; }
+        .cert-presented { font-size: 0.85rem; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+        .cert-student-name { font-size: 2.2rem; font-weight: 700; color: #4422CA; margin-bottom: 12px; font-family: 'Georgia', 'Times New Roman', serif; letter-spacing: 1px; position: relative; display: inline-block; }
+        .cert-student-name::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 70%; height: 2px; background: linear-gradient(90deg, transparent, #22B9CA, transparent); border-radius: 2px; }
+        .cert-for { font-size: 1rem; color: #64748b; margin: 20px 0 6px; }
+        .cert-course-name { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; letter-spacing: 1px; display: inline-block; padding: 6px 20px; background: rgba(68,34,202,0.05); border-radius: 30px; margin-bottom: 24px; }
+        .cert-date { font-size: 0.9rem; color: #64748b; margin-bottom: 8px; }
+        
+        .cert-signatures { display: flex; justify-content: space-between; margin-top: 40px; padding: 0 20px; position: relative; z-index: 1; }
+        .cert-signature-item { text-align: center; }
+        .cert-signature-line { width: 160px; height: 1px; background: #cbd5e1; margin: 0 auto 6px; }
+        .cert-signature-name { font-size: 0.75rem; color: #64748b; font-family: 'Georgia', serif; font-style: italic; }
+        .cert-signature-role { font-size: 0.65rem; color: #94a3b8; }
+        
+        .cert-seal { position: absolute; bottom: 70px; right: 80px; width: 75px; height: 75px; border: 3px solid rgba(212,168,67,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); opacity: 0.7; font-size: 0.55rem; color: #d4a843; text-align: center; font-weight: 700; line-height: 1.2; pointer-events: none; }
+        
+        .cert-actions-row { display: flex; gap: 16px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+        .cert-btn { padding: 14px 32px; border-radius: 40px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; border: none; display: inline-flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif; }
+        .cert-btn.primary { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; box-shadow: 0 8px 25px rgba(68,34,202,0.3); }
+        .cert-btn.primary:hover { transform: translateY(-3px); box-shadow: 0 14px 35px rgba(68,34,202,0.4); }
+        .cert-btn.secondary { background: white; color: #4422CA; border: 2px solid #4422CA; }
+        .cert-btn.secondary:hover { background: #f5f3ff; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(68,34,202,0.1); }
+        .cert-btn.outline { background: transparent; color: #64748b; border: 1.5px solid #e2e8f0; }
+        .cert-btn.outline:hover { border-color: #4422CA; color: #4422CA; transform: translateY(-3px); }
+        
+        .locked-certificate { background: rgba(255,255,255,0.6); border-radius: 32px; padding: 36px; border: 1px solid rgba(68,34,202,0.08); text-align: center; }
+        .locked-certificate .lock-icon { font-size: 3rem; margin-bottom: 12px; }
+        .locked-certificate h3 { font-size: 1.2rem; color: #0f172a; margin-bottom: 6px; }
+        .locked-certificate p { color: #64748b; font-size: 0.9rem; margin-bottom: 16px; }
+        .locked-certificate .btn-back { display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border-radius: 40px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; box-shadow: 0 6px 20px rgba(68,34,202,0.25); }
+        .locked-certificate .btn-back:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(68,34,202,0.35); }
+        
+        .empty-state { text-align: center; padding: 80px 40px; }
+        .empty-state .empty-icon { font-size: 5rem; margin-bottom: 20px; }
+        .empty-state h2 { font-size: 1.8rem; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+        .empty-state p { color: #64748b; margin-bottom: 24px; font-size: 1rem; }
+        
+        .assistant-btn { position: fixed; bottom: 28px; right: 28px; background: linear-gradient(135deg, #4422CA, #22B9CA); border: none; border-radius: 60px; padding: 14px 24px; color: white; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 40; box-shadow: 0 8px 20px rgba(68,34,202,0.3); transition: all 0.3s; font-family: 'Inter', sans-serif; }
+        .assistant-btn:hover { transform: scale(1.05); box-shadow: 0 12px 30px rgba(68,34,202,0.4); }
+        
+        .chat-modal { display: none; position: fixed; bottom: 100px; right: 28px; width: 380px; height: 550px; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 32px; z-index: 45; overflow: hidden; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(68,34,202,0.15); }
+        .chat-header { padding: 16px 20px; background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header span { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .close-chat { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; opacity: 0.8; transition: 0.2s; }
+        .close-chat:hover { opacity: 1; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: rgba(255,255,255,0.6); }
+        .message { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; line-height: 1.4; animation: fadeInMsg 0.3s ease; }
+        @keyframes fadeInMsg { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message { background: #4422CA; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bot-message { background: #f1f5f9; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .typing-indicator { display: flex; gap: 4px; padding: 8px 12px; background: #f1f5f9; border-radius: 18px; width: fit-content; align-self: flex-start; }
+        .typing-indicator span { width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s infinite; }
+        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
+        .quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-top: 1px solid #e2e8f0; background: white; }
+        .quick-btn { background: #f1f5f9; border: none; padding: 6px 12px; border-radius: 40px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .quick-btn:hover { background: #e2e8f0; transform: scale(1.02); }
+        .chat-input-area { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #e2e8f0; background: white; }
+        .chat-input { flex: 1; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 40px; outline: none; font-family: inherit; font-size: 0.85rem; }
+        .chat-input:focus { border-color: #4422CA; }
+        .send-btn { background: #4422CA; color: white; border: none; padding: 0 16px; border-radius: 40px; cursor: pointer; font-weight: 500; transition: 0.2s; font-family: 'Inter', sans-serif; }
+        .send-btn:hover { background: #361aa3; }
+        
+        .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; display: none; justify-content: center; align-items: center; }
+        .popup-content { background: white; border-radius: 32px; padding: 32px; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: fadeInUp 0.3s ease; }
+        .popup-content h3 { font-size: 1.5rem; margin-bottom: 12px; color: #4422CA; }
+        .popup-content p { color: #475569; margin-bottom: 24px; }
+        .popup-close { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; font-weight: 500; }
+        
+        @media (max-width: 900px) { 
+            .sidebar { position: relative; width: auto; margin: 16px; } 
+            .main-content { margin-left: 0; padding: 24px; } 
+            .top-bar { position: relative; justify-content: flex-end; margin: 16px; } 
+            .certificate-document { padding: 40px 24px 35px; } 
+            .cert-heading { font-size: 1.8rem; } 
+            .cert-student-name { font-size: 1.6rem; } 
+            .cert-signatures { flex-direction: column; gap: 16px; }
+            .cert-seal { bottom: 50px; right: 30px; width: 55px; height: 55px; font-size: 0.45rem; }
+            .cert-ribbon-left, .cert-ribbon-right { display: none; }
+            .about-certificates { flex-direction: column; text-align: center; align-items: center; }
+            .about-highlights { justify-content: center; }
+            .chat-modal { width: calc(100% - 40px); right: 20px; left: 20px; bottom: 100px; height: 500px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div><div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div><div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div><div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div><div class="blur-circle circle-bottom-right-2"></div>
+    <div class="blur-circle circle-center-1"></div><div class="blur-circle circle-center-2"></div>
+</div>
+
+<div class="top-bar">
+    <div class="icon-btn" id="profileBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="icon-btn" id="chatTopBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+</div>
+
+<aside class="sidebar">
+    <div class="logo-area" id="logoHome">
+        <img src="логотип.png" alt="NextStep" style="height:44px">
+        <span>NextStep</span>
+    </div>
+    <nav class="nav-menu" id="navMenu">
+        <a href="главная некст.html" class="nav-item"><span class="nav-icon">🏠</span> Главная</a>
+        <a href="каталог некст.html" class="nav-item"><span class="nav-icon">📚</span> Каталог</a>
+        <a href="мои курсы некст.html" class="nav-item"><span class="nav-icon">🎓</span> Мои курсы</a>
+        <div class="nav-item" data-page="projects" id="projectsNavItem"><span class="nav-icon" id="projectsIcon">📁</span> <span id="projectsText">Проекты</span></div>
+        <div class="nav-item active"><span class="nav-icon">🏅</span> Сертификаты</div>
+    </nav>
+    <div class="sidebar-footer">NextStep Education © 2026</div>
+</aside>
+
+<main class="main-content" id="mainContent">
+    <!-- Заполняется динамически -->
+</main>
+
+<button class="assistant-btn" id="assistantBtn">🤖 Помощник Next</button>
+
+<div id="chatModal" class="chat-modal">
+    <div class="chat-header">
+        <span>🤖 Next Assistant <span style="font-size:0.7rem;">online</span></span>
+        <button class="close-chat" id="closeChatBtn">×</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">✨ Привет! Я Next — твой помощник. Могу рассказать о сертификатах, подсказать, как получить документ, или помочь с навигацией. Чем могу помочь?</div>
+    </div>
+    <div class="quick-buttons">
+        <button class="quick-btn">🏅 Как получить сертификат?</button>
+        <button class="quick-btn">📜 Где мои сертификаты?</button>
+        <button class="quick-btn">📚 Какие курсы дают сертификат?</button>
+        <button class="quick-btn">💡 Зачем нужен сертификат?</button>
+        <button class="quick-btn">❓ Помощь</button>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Спроси о сертификатах...">
+        <button id="sendBtn" class="send-btn">→</button>
+    </div>
+</div>
+
+<div id="popupOverlay" class="popup-overlay">
+    <div class="popup-content">
+        <h3 id="popupTitle">Информация</h3>
+        <p id="popupMessage">Страница в разработке</p>
+        <button class="popup-close" onclick="closePopup()">Закрыть</button>
+    </div>
+</div>
+
+<script>
+    // ========== ФУНКЦИИ ДЛЯ РАБОТЫ С РОЛЯМИ ==========
+    function getCurrentUser() {
+        return JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+    }
+
+    function updateProjectsMenuItem() {
+        const user = getCurrentUser();
+        const projectsItem = document.getElementById('projectsNavItem');
+        const projectsIcon = document.getElementById('projectsIcon');
+        const projectsText = document.getElementById('projectsText');
+        
+        if (user.role === 'teacher') {
+            if (projectsIcon) projectsIcon.innerHTML = '📓';
+            if (projectsText) projectsText.innerHTML = 'Дневник';
+            if (projectsItem) projectsItem.dataset.page = 'diary';
+        } else {
+            if (projectsIcon) projectsIcon.innerHTML = '📁';
+            if (projectsText) projectsText.innerHTML = 'Проекты';
+            if (projectsItem) projectsItem.dataset.page = 'projects';
+        }
+    }
+
+    function navigateTo(page) {
+        const pages = {
+            'main': 'главная некст.html',
+            'catalog': 'каталог некст.html',
+            'mycourses': 'мои курсы некст.html',
+            'projects': 'мои проекты.html',
+            'diary': 'дневник преподавателя.html',
+            'certificates': 'сертификаты.html'
+        };
+        if (pages[page]) {
+            window.location.href = pages[page];
+        } else {
+            showPopup('Страница временно недоступна');
+        }
+    }
+
+    function showPopup(message, title = "Информация") {
+        const overlay = document.getElementById('popupOverlay');
+        document.getElementById('popupTitle').innerText = title;
+        document.getElementById('popupMessage').innerHTML = message;
+        overlay.style.display = 'flex';
+    }
+    function closePopup() {
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closePopup();
+    });
+
+    function openProfileByRole() {
+        const user = getCurrentUser();
+        if (user.role === 'teacher') {
+            window.location.href = 'панель преподавателя.html';
+        } else if (user.role === 'student') {
+            window.location.href = 'панель студента.html';
+        } else {
+            showPopup('Пожалуйста, войдите в аккаунт', 'Вход');
+            setTimeout(() => {
+                window.location.href = 'вход некст.html';
+            }, 1500);
+        }
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const page = item.dataset.page;
+            if (page === 'certificates') return;
+            navigateTo(page);
+        });
+    });
+
+    document.getElementById('logoHome').addEventListener('click', () => {
+        window.location.href = 'главная некст.html';
+    });
+
+    document.getElementById('profileBtn').addEventListener('click', openProfileByRole);
+    document.getElementById('chatTopBtn').addEventListener('click', () => {
+        document.getElementById('chatModal').style.display = 'flex';
+    });
+
+    // ========== ЧАТ АССИСТЕНТ ==========
+    const chatModalEl = document.getElementById('chatModal');
+    const chatMessagesDiv = document.getElementById('chatMessages');
+    const chatInputField = document.getElementById('chatInput');
+
+    function addMessage(text, isUser) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        msgDiv.textContent = text;
+        chatMessagesDiv.appendChild(msgDiv);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    }
+
+    function showTyping() {
+        const td = document.createElement('div');
+        td.className = 'typing-indicator';
+        td.id = 'typingInd';
+        td.innerHTML = '<span></span><span></span><span></span>';
+        chatMessagesDiv.appendChild(td);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    }
+
+    function hideTyping() {
+        const el = document.getElementById('typingInd');
+        if (el) el.remove();
+    }
+
+    function getCertificatesAssistantAnswer(message) {
+        const msg = message.toLowerCase().trim();
+        if (msg.match(/привет|здравствуй/)) {
+            return "🌟 Привет! Я твой помощник по сертификатам. Расскажу, как получить сертификат, где его найти и зачем он нужен. Чем могу помочь?";
+        }
+        if (msg.match(/получить сертификат|как получить|как получить сертификат/)) {
+            return "🏅 Чтобы получить сертификат, нужно полностью завершить все модули курса. После этого сертификат появится на этой странице. Его можно скачать в формате HTML и распечатать!";
+        }
+        if (msg.match(/где мои сертификаты|где сертификаты|найти сертификаты/)) {
+            return "📜 Все ваши полученные сертификаты отображаются на этой странице. Если вы завершили курс, но не видите сертификат — обновите страницу. Сертификаты появляются автоматически!";
+        }
+        if (msg.match(/какие курсы дают сертификат|за какие курсы|какие курсы/)) {
+            return "📚 Сертификаты выдаются за все курсы на платформе: 3D-моделирование, Высшая математика, Философия, HTML-вёрстка, Бизнес-планирование, Теория вероятностей, Оптимизация приложений, Культура речи, Безопасность IT. Завершите любой — получите сертификат!";
+        }
+        if (msg.match(/зачем нужен сертификат|для чего сертификат|польза/)) {
+            return "💡 Сертификат NextStep — это официальное подтверждение ваших знаний. Он помогает при трудоустройстве, поступлении на стажировки и формировании профессионального портфолио. Делитесь им в соцсетях и добавляйте в резюме!";
+        }
+        if (msg.match(/помощь|что умеешь/)) {
+            return "❓ Я могу:\n• Рассказать, как получить сертификат\n• Показать, где найти ваши сертификаты\n• Перечислить курсы с сертификацией\n• Объяснить, зачем нужен сертификат";
+        }
+        return "🤔 Я могу помочь с сертификатами. Спросите: «как получить сертификат», «где мои сертификаты», «какие курсы дают сертификат» или «зачем нужен сертификат».";
+    }
+
+    function handleChat() {
+        const msg = chatInputField.value.trim();
+        if (!msg) return;
+        addMessage(msg, true);
+        chatInputField.value = '';
+        showTyping();
+        setTimeout(() => {
+            hideTyping();
+            const ans = getCertificatesAssistantAnswer(msg);
+            addMessage(ans, false);
+        }, 500);
+    }
+
+    document.getElementById('sendBtn').onclick = handleChat;
+    chatInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleChat(); });
+
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+        btn.onclick = () => {
+            const q = btn.innerText;
+            addMessage(q, true);
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                let ans = '';
+                if (q.includes('получить сертификат')) ans = getCertificatesAssistantAnswer('как получить сертификат');
+                else if (q.includes('Где мои сертификаты')) ans = getCertificatesAssistantAnswer('где мои сертификаты');
+                else if (q.includes('Какие курсы')) ans = getCertificatesAssistantAnswer('какие курсы дают сертификат');
+                else if (q.includes('Зачем нужен')) ans = getCertificatesAssistantAnswer('зачем нужен сертификат');
+                else if (q.includes('Помощь')) ans = getCertificatesAssistantAnswer('помощь');
+                else ans = getCertificatesAssistantAnswer(q);
+                addMessage(ans, false);
+            }, 400);
+        };
+    });
+
+    document.getElementById('assistantBtn').onclick = () => chatModalEl.style.display = 'flex';
+    document.getElementById('closeChatBtn').onclick = () => chatModalEl.style.display = 'none';
+
+    // ========== ВСЕ КУРСЫ ДЛЯ СЕРТИФИКАТОВ ==========
+    const allCourses = [
+        {
+            id: '3d-modeling',
+            name: '3D-моделирование',
+            icon: '🎨',
+            storageKey: 'course3d_final',
+            teacherName: 'Розалия Ахтямова',
+            coursePage: '3д моделирование курс.html',
+            description: 'Blender • 8 недель • от новичка до профи'
+        },
+        {
+            id: 'higher-math',
+            name: 'Высшая математика',
+            icon: '📐',
+            storageKey: 'courseMath_final',
+            teacherName: 'Елизавета Лытаева',
+            coursePage: 'высшая математика курс.html',
+            description: 'Матанализ • Линейная алгебра • 6 недель'
+        },
+        {
+            id: 'philosophy',
+            name: 'Основы философии',
+            icon: '📖',
+            storageKey: 'coursePhilo_final',
+            teacherName: 'Никита Орлов',
+            coursePage: 'основы философии.html',
+            description: 'Античность • Средневековье • 5 недель'
+        },
+        {
+            id: 'html-layout',
+            name: 'HTML-вёрстка',
+            icon: '💻',
+            storageKey: 'courseHtml_final',
+            teacherName: 'Анна Смирнова',
+            coursePage: 'верстка курс.html',
+            description: 'HTML5 • CSS3 • Flexbox • Grid • 7 недель'
+        },
+        {
+            id: 'business-planning',
+            name: 'Бизнес-планирование',
+            icon: '📊',
+            storageKey: 'courseBusiness_final',
+            teacherName: 'Дмитрий Волков',
+            coursePage: 'бизнес планирование курс.html',
+            description: 'Стратегия • Финансы • 6 недель'
+        },
+        {
+            id: 'probability-theory',
+            name: 'Теория вероятностей',
+            icon: '🎲',
+            storageKey: 'courseProbTheory_final',
+            teacherName: 'Елизавета Лытаева',
+            coursePage: 'теория вероятности курс.html',
+            description: 'Случайные события • Статистика • 5 недель'
+        },
+        {
+            id: 'optimization',
+            name: 'Оптимизация приложений',
+            icon: '⚡',
+            storageKey: 'courseOptimization_final',
+            teacherName: 'Анна Смирнова',
+            coursePage: 'оптимизация курс.html',
+            description: 'Производительность • Кэширование • 8 недель'
+        },
+        {
+            id: 'speech-culture',
+            name: 'Культура речи',
+            icon: '🗣️',
+            storageKey: 'courseSpeech_final',
+            teacherName: 'Никита Орлов',
+            coursePage: 'культура курс.html',
+            description: 'Риторика • Орфоэпия • 4 недели'
+        },
+        {
+            id: 'it-security',
+            name: 'Безопасность IT',
+            icon: '🔐',
+            storageKey: 'courseSecurity_final',
+            teacherName: 'Дмитрий Волков',
+            coursePage: 'безопасность курс.html',
+            description: 'Кибербезопасность • Шифрование • 7 недель'
+        }
+    ];
+
+    function isCourseCompleted(storageKey) {
+        try {
+            const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            if (Array.isArray(data) && data.length > 0) {
+                return data.every(block => block.completed === true);
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    function getCompletionDate(storageKey) {
+        const dates = JSON.parse(localStorage.getItem('certificate_dates') || '{}');
+        if (!dates[storageKey] && isCourseCompleted(storageKey)) {
+            dates[storageKey] = new Date().toLocaleDateString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+            localStorage.setItem('certificate_dates', JSON.stringify(dates));
+        }
+        return dates[storageKey] || null;
+    }
+
+    function downloadCertificateHTML(course, studentName, completionDate) {
+        const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Сертификат - ${course.name}</title>
+<style>
+    body { font-family: 'Inter', 'Georgia', serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f3ff; margin: 0; padding: 40px; }
+    .cert { max-width: 750px; width: 100%; padding: 55px 50px 45px; background: linear-gradient(160deg, #fefdf7, #fdf9ed, #fefce8, #fdf9ed); border: 5px solid #d4a843; border-radius: 20px; text-align: center; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+    .cert::before { content: ''; position: absolute; top: 16px; left: 16px; right: 16px; bottom: 16px; border: 2px solid rgba(212,168,67,0.35); border-radius: 12px; pointer-events: none; }
+    .cert::after { content: ''; position: absolute; top: 22px; left: 22px; right: 22px; bottom: 22px; border: 1px solid rgba(212,168,67,0.18); border-radius: 8px; pointer-events: none; }
+    .badge { width: 80px; height: 80px; background: linear-gradient(135deg, #4422CA, #22B9CA); border-radius: 50%; margin: 0 auto 20px; font-size: 2.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(68,34,202,0.25); position: relative; z-index: 1; }
+    h1 { font-size: 2.2rem; color: #1e1b4b; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; position: relative; z-index: 1; }
+    .sub { color: #64748b; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 16px; }
+    .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #d4a843, transparent); margin: 0 auto 24px; }
+    .name { font-size: 2rem; color: #4422CA; font-weight: 700; font-family: 'Georgia', serif; margin-bottom: 8px; display: inline-block; padding-bottom: 4px; border-bottom: 2px solid #22B9CA; }
+    .course { font-size: 1.3rem; color: #1e1b4b; font-weight: 700; margin: 18px 0 20px; display: inline-block; padding: 4px 18px; background: rgba(68,34,202,0.05); border-radius: 30px; }
+    .date { color: #64748b; font-size: 0.85rem; }
+    .footer { margin-top: 35px; color: #94a3b8; font-size: 0.7rem; }
+</style></head>
+<body>
+    <div class="cert">
+        <div class="badge">🏆</div>
+        <h1>Сертификат</h1>
+        <p class="sub">подтверждает, что</p>
+        <div class="divider"></div>
+        <div class="name">${studentName}</div>
+        <p class="sub">успешно завершил(а) курс</p>
+        <div class="course">«${course.name}»</div>
+        <p class="date">📅 Дата выдачи: ${completionDate}</p>
+        <div class="footer">Платформа NextStep Education • ${completionDate}</div>
+    </div>
+</body>
+</html>`;
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Сертификат_${course.name.replace(/\s/g, '_')}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function shareCertificate(course, studentName) {
+        const text = `🏆 Я завершил курс «${course.name}» на платформе NextStep! Студент: ${studentName}`;
+        if (navigator.share) {
+            navigator.share({ title: 'Мой сертификат NextStep', text: text, url: window.location.href }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(text).then(() => alert('✅ Текст для публикации скопирован в буфер обмена!'));
+        }
+    }
+
+    function renderPage() {
+        const main = document.getElementById('mainContent');
+        const user = getCurrentUser();
+        const studentName = user.fullName || user.email || 'Студент NextStep';
+        
+        const completedCourses = allCourses.filter(c => isCourseCompleted(c.storageKey));
+        const lockedCourses = allCourses.filter(c => !isCourseCompleted(c.storageKey));
+        
+        let html = `
+            <div class="page-header">
+                <h1>🏅 Сертификаты</h1>
+                <p class="subtitle">Ваши достижения и подтверждённые квалификации на платформе NextStep</p>
+            </div>
+            
+            <div class="about-certificates">
+                <div class="about-icon">🎓</div>
+                <div class="about-text">
+                    <h3>Почему важны сертификаты?</h3>
+                    <p>Сертификаты NextStep — это официальное подтверждение ваших знаний и навыков. Они помогают при трудоустройстве, поступлении на стажировки и формировании профессионального портфолио. Каждый сертификат содержит уникальные данные для проверки подлинности.</p>
+                    <div class="about-highlights">
+                        <div class="about-highlight-item">✅ Подтверждение навыков</div>
+                        <div class="about-highlight-item">📄 HTML-версия для печати</div>
+                        <div class="about-highlight-item">🔗 Делитесь в соцсетях</div>
+                        <div class="about-highlight-item">🏢 Ценится работодателями</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        if (completedCourses.length === 0 && lockedCourses.length === 0) {
+            html += `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h2>Нет доступных курсов</h2>
+                    <p>На платформе пока нет курсов, для которых можно получить сертификат. Загляните в каталог!</p>
+                    <a href="каталог некст.html" class="cert-btn primary" style="text-decoration:none;">📚 Перейти в каталог</a>
+                </div>
+            `;
+        } else {
+            html += `<div class="certificates-grid">`;
+            
+            completedCourses.forEach(course => {
+                const completionDate = getCompletionDate(course.storageKey);
+                const safeStudentName = studentName.replace(/'/g, "\\'");
+                
+                html += `
+                    <div class="certificate-item">
+                        <div class="course-label">${course.icon} ${course.name} <span style="background:#d1fae5;color:#065f46;padding:2px 10px;border-radius:20px;font-size:0.7rem;">✓ Завершён</span></div>
+                        <div class="certificate-wrapper">
+                            <div class="certificate-document">
+                                <div class="cert-ribbon-left"></div>
+                                <div class="cert-ribbon-right"></div>
+                                <div class="cert-badge">🏆</div>
+                                <div class="cert-heading">Сертификат</div>
+                                <div class="cert-subheading">подтверждает, что</div>
+                                <div class="cert-divider"></div>
+                                <div class="cert-presented">настоящий сертификат вручается</div>
+                                <div class="cert-student-name">${studentName}</div>
+                                <div class="cert-for">за успешное завершение курса</div>
+                                <div class="cert-course-name">«${course.name}»</div>
+                                <div class="cert-date">📅 Дата выдачи: ${completionDate}</div>
+                                <div class="cert-signatures">
+                                    <div class="cert-signature-item">
+                                        <div class="cert-signature-line"></div>
+                                        <div class="cert-signature-name">${course.teacherName}</div>
+                                        <div class="cert-signature-role">Преподаватель курса</div>
+                                    </div>
+                                    <div class="cert-signature-item">
+                                        <div class="cert-signature-line"></div>
+                                        <div class="cert-signature-name">NextStep</div>
+                                        <div class="cert-signature-role">Образовательная платформа</div>
+                                    </div>
+                                </div>
+                                <div class="cert-seal">NextStep<br>Verified</div>
+                            </div>
+                        </div>
+                        <div class="cert-actions-row">
+                            <button class="cert-btn primary" onclick="downloadCertificateHTML(allCourses.find(c=>c.id==='${course.id}'), '${safeStudentName}', '${completionDate}')">📥 Скачать сертификат</button>
+                            <button class="cert-btn secondary" onclick="shareCertificate(allCourses.find(c=>c.id==='${course.id}'), '${safeStudentName}')">📤 Поделиться</button>
+                            <button class="cert-btn outline" onclick="window.print()">🖨️ Распечатать</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            lockedCourses.forEach(course => {
+                html += `
+                    <div class="certificate-item">
+                        <div class="course-label">${course.icon} ${course.name} <span style="background:#f1f5f9;color:#64748b;padding:2px 10px;border-radius:20px;font-size:0.7rem;">🔒 Не завершён</span></div>
+                        <div class="locked-certificate">
+                            <div class="lock-icon">🔒</div>
+                            <h3>Сертификат пока недоступен</h3>
+                            <p>Завершите все блоки курса «${course.name}», чтобы получить сертификат.</p>
+                            <a href="${course.coursePage}" class="btn-back">← Перейти к курсу</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+        }
+        
+        main.innerHTML = html;
+    }
+
+    window.downloadCertificateHTML = downloadCertificateHTML;
+    window.shareCertificate = shareCertificate;
+    window.allCourses = allCourses;
+
+            updateProjectsMenuItem();
+        renderPage();
+        
+        // КНОПКА ЧАТА
+        document.getElementById('chatTopBtn')?.addEventListener('click', function() {
+            window.location.href = 'сообщения.html';
+        });
+</script>
+</body>
+</html>

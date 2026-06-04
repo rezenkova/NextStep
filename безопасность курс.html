@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Безопасность IT — курс NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #fafbff; font-family: 'Inter', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+        .blur-circles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .blur-circle { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: 0; animation: smoothFloat 24s infinite ease-in-out; }
+        @keyframes smoothFloat { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(12px, -8px) scale(1.02); } 66% { transform: translate(-8px, 10px) scale(0.98); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 32px 48px 80px; position: relative; z-index: 10; }
+        .course-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+        .title-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e1b4b, #2d4a5c, #4422CA); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 8px; }
+        .title-section p { color: #475569; font-size: 1rem; }
+        .progress-overview { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 32px; padding: 16px 28px; border: 1px solid rgba(68,34,202,0.15); min-width: 280px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+        .progress-stats { display: flex; gap: 32px; justify-content: space-between; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #4422CA, #22B9CA); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.7rem; color: #64748b; letter-spacing: 0.5px; }
+        .blocks-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 60px; padding: 8px 20px; border: 1px solid rgba(68,34,202,0.1); }
+        .block-tab { background: transparent; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: #334155; }
+        .block-tab.active { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; box-shadow: 0 6px 14px rgba(68,34,202,0.25); }
+        .block-tab.locked { opacity: 0.5; cursor: not-allowed; background: #e2e8f0; color: #94a3b8; }
+        .block-tab.completed { background: #10b98120; border: 1px solid #10b981; color: #065f46; }
+        .block-container { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 48px; padding: 40px 44px; border: 1px solid rgba(68,34,202,0.15); margin-bottom: 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05); }
+        .block-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; letter-spacing: -0.3px; }
+        .block-subtitle { color: #64748b; margin-bottom: 32px; border-left: 4px solid #4422CA; padding-left: 18px; font-size: 0.9rem; }
+        h3 { font-size: 1.4rem; font-weight: 600; margin: 32px 0 20px 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        h3:first-of-type { margin-top: 0; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 20px; }
+        .video-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid #eef2ff; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(68,34,202,0.15); border-color: rgba(68,34,202,0.3); }
+        .video-preview { background: linear-gradient(145deg, #1e1b4b, #0f172a); height: 190px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem; position: relative; border-radius: 24px 24px 0 0; }
+        .preview-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 24px 24px 0 0; }
+        .video-card:hover .preview-overlay { background: rgba(68,34,202,0.6); }
+        .play-icon-big { width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4422CA; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.2s; }
+        .video-card:hover .play-icon-big { transform: scale(1.1); background: white; }
+        .video-info { padding: 18px; }
+        .video-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; }
+        .watch-status { display: inline-block; font-size: 0.7rem; padding: 4px 12px; border-radius: 30px; background: #f1f5f9; color: #475569; }
+        .watch-status.watched { background: #10b98115; color: #059669; }
+        .lectures-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .lecture-item { background: #f8fafc; border-radius: 20px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #eef2ff; }
+        .lecture-item:hover { border-color: #4422CA; background: white; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .lecture-name { font-weight: 500; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; color: #334155; }
+        .lecture-badge { background: #4422CA10; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; color: #4422CA; font-weight: 600; }
+        .lecture-download { color: #4422CA; font-size: 0.8rem; font-weight: 500; }
+        .quiz-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; border: 1px solid #eef2ff; }
+        .quiz-question { font-weight: 700; font-size: 1.05rem; margin-bottom: 18px; color: #0f172a; }
+        .quiz-option { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 60px; background: #fafcff; margin-bottom: 8px; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; color: #334155; }
+        .quiz-option.selected { border-color: #4422CA; background: #f5f3ff; box-shadow: 0 2px 6px rgba(68,34,202,0.05); }
+        .quiz-option:hover { border-color: #22B9CA; background: #f0fdfe; }
+        .quiz-actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+        .quiz-submit { background: #4422CA; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .quiz-submit:hover { background: #361aa3; transform: translateY(-2px); }
+        .quiz-cancel { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 9px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .quiz-cancel:hover { background: #eef2ff; }
+        .quiz-feedback { margin-top: 16px; font-size: 0.85rem; padding: 10px 16px; border-radius: 24px; display: none; }
+
+        .investigation-card { background: white; border-radius: 32px; padding: 28px; margin-bottom: 24px; border: 1px solid #eef2ff; }
+        .inv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+        .inv-badge { background: #ef4444; color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        .inv-badge.solved { background: #10b981; }
+        .inv-scenario { background: #f8fafc; border-radius: 16px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #4422CA; }
+        .inv-scenario h4 { color: #0f172a; margin-bottom: 8px; }
+        .inv-scenario p { color: #475569; font-size: 0.9rem; line-height: 1.5; }
+        .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .evidence-card { background: #f8fafc; border-radius: 16px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: all 0.2s; position: relative; }
+        .evidence-card:hover { border-color: #4422CA; transform: translateY(-2px); }
+        .evidence-card.collected { border-color: #4422CA; background: #f5f3ff; }
+        .evidence-card.collected::after { content: '✓'; position: absolute; top: 10px; right: 14px; color: #4422CA; font-weight: 700; font-size: 1.1rem; }
+        .evidence-icon { font-size: 2rem; margin-bottom: 8px; }
+        .evidence-name { font-weight: 600; color: #0f172a; font-size: 0.9rem; margin-bottom: 4px; }
+        .evidence-desc { color: #64748b; font-size: 0.75rem; line-height: 1.4; }
+        .log-viewer { background: #1e293b; border-radius: 16px; padding: 16px; margin-bottom: 20px; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #22B9CA; max-height: 200px; overflow-y: auto; white-space: pre-wrap; display: none; }
+        .log-viewer.show { display: block; }
+        .suspects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .suspect-card { background: #f8fafc; border-radius: 16px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .suspect-card:hover { border-color: #ef4444; transform: translateY(-2px); }
+        .suspect-card.accused { border-color: #ef4444; background: #fef2f2; }
+        .suspect-card.innocent { border-color: #10b981; background: #f0fdf4; }
+        .suspect-avatar { font-size: 2.5rem; margin-bottom: 8px; }
+        .suspect-name { font-weight: 600; color: #0f172a; }
+        .suspect-role { font-size: 0.75rem; color: #64748b; }
+        .investigation-buttons { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .inv-btn { padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; font-family: 'Inter', sans-serif; }
+        .inv-btn.primary { background: #4422CA; color: white; }
+        .inv-btn.primary:hover:not(:disabled) { background: #361aa3; }
+        .inv-btn.secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .inv-btn.secondary:hover { background: #eef2ff; }
+        .inv-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .inv-result { margin-top: 16px; padding: 16px; border-radius: 16px; display: none; font-size: 0.9rem; line-height: 1.5; }
+        .inv-result.show { display: block; }
+
+        .complete-block-btn { background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 16px 32px; border-radius: 60px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 32px; width: 100%; transition: 0.2s; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+        .complete-block-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; box-shadow: none; }
+        .complete-block-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16,185,129,0.35); }
+        .certificate-section { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #f0f9ff, #f5f3ff); border-radius: 24px; border: 2px solid rgba(68,34,202,0.2); text-align: center; display: none; }
+        .certificate-section.visible { display: block; animation: fadeInUp 0.5s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .certificate-icon { font-size: 4rem; margin-bottom: 16px; }
+        .certificate-title { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; margin-bottom: 8px; }
+        .certificate-description { color: #64748b; margin-bottom: 20px; font-size: 0.95rem; }
+        .certificate-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 14px 32px; border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(68,34,202,0.3); margin: 0 8px; }
+        .certificate-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(68,34,202,0.4); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 40px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 28px; position: relative; box-shadow: 0 25px 40px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eef2ff; }
+        .modal-header h3 { margin: 0; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .close-modal:hover { color: #dc2626; }
+        .modal-body { white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+        .back-to-courses { display: inline-flex; align-items: center; gap: 10px; background: white; backdrop-filter: blur(8px); border: 1px solid rgba(68,34,202,0.2); padding: 12px 28px; border-radius: 50px; color: #4422CA; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: all 0.3s ease; margin-top: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .back-to-courses:hover { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; transform: translateX(-6px); border-color: transparent; box-shadow: 0 8px 20px rgba(68,34,202,0.25); }
+        .back-to-courses::before { content: "←"; font-size: 1.2rem; transition: transform 0.2s; }
+        .back-to-courses:hover::before { transform: translateX(-4px); }
+        @media (max-width: 780px) { .main-content { padding: 24px; } .block-container { padding: 24px; } .blocks-nav { overflow-x: auto; flex-wrap: nowrap; } .video-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div><div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div><div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div><div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div><div class="blur-circle circle-bottom-right-2"></div>
+</div>
+<div class="main-content">
+    <div class="course-header">
+        <div class="title-section"><h1>🔐 Безопасность IT</h1><p>Кибербезопасность • Шифрование • Этичный хакинг • 7 недель</p></div>
+        <div class="progress-overview"><div class="progress-stats">
+            <div class="stat-item"><div class="stat-number" id="totalProgress">0</div><div class="stat-label">% курса</div></div>
+            <div class="stat-item"><div class="stat-number" id="passedBlocks">0</div><div class="stat-label">блоков</div></div>
+            <div class="stat-item"><div class="stat-number" id="quizAvg">0</div><div class="stat-label">ср. балл</div></div>
+        </div></div>
+    </div>
+    <div class="blocks-nav" id="blocksNav"></div>
+    <div id="blockContent"></div>
+    <div class="certificate-section" id="certificateSection">
+        <div class="certificate-icon">🏆</div>
+        <div class="certificate-title">Поздравляем с завершением курса!</div>
+        <div class="certificate-description">Все блоки пройдены. Получите сертификат «Безопасность IT».</div>
+        <button class="certificate-btn" onclick="window.location.href='сертификаты.html'">📜 Просмотреть сертификат</button>
+    </div>
+    <a href="мои курсы некст.html" class="back-to-courses">Вернуться в мои курсы</a>
+</div>
+<div id="lectureModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 id="modalTitle">📄 Конспект</h3><button class="close-modal" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modalBody"></div></div></div>
+
+<script>
+    const lectureTexts = {
+        lecture1: "КОНСПЕКТ 1: Основы кибербезопасности\n\nКибербезопасность — защита систем, сетей и данных от цифровых атак.\n\nТриада CIA:\n• Confidentiality — конфиденциальность\n• Integrity — целостность\n• Availability — доступность\n\nОсновные угрозы:\n• Malware (вирусы, трояны, ransomware)\n• Phishing — фишинговые атаки\n• DDoS — отказ в обслуживании\n• SQL Injection\n• XSS — межсайтовый скриптинг\n\nПринципы защиты:\n• Defence in Depth — эшелонированная оборона\n• Least Privilege — минимальные привилегии\n• Zero Trust — не доверяй никому",
+        lecture2: "КОНСПЕКТ 2: Криптография\n\nШифрование — преобразование данных для защиты.\n\nСимметричное (один ключ): AES\nАсимметричное (пара ключей): RSA, ECC\n\nХеширование: SHA-256, bcrypt — необратимо.\nПротоколы: HTTPS = HTTP + TLS",
+        lecture3: "КОНСПЕКТ 3: Сетевые атаки\n\nDDoS — атака отказа в обслуживании.\nВиды: Volumetric, Protocol, Application.\nЗащита: CDN, Rate limiting, WAF.\nMITM — перехват трафика. Защита: HTTPS, VPN.",
+        lecture4: "КОНСПЕКТ 4: Веб-уязвимости\n\nOWASP Top 10 — главные угрозы веб-приложений.\nSQL Injection: ' OR '1'='1' --\nЗащита: parameterized queries\nXSS — внедрение скриптов. Защита: escaping, CSP",
+        lecture5: "КОНСПЕКТ 5: Этичный хакинг\n\nPenetration Testing — тестирование на проникновение.\nЭтапы: Reconnaissance, Scanning, Exploitation.\nИнструменты: Nmap, Burp Suite, Metasploit.",
+        lecture6: "КОНСПЕКТ 6: Анализ логов\n\nТипы логов: Access, Error, Auth, System.\nПоиск аномалий: подозрительные IP, brute-force.\nSIEM: Splunk, ELK Stack.",
+        lecture7: "КОНСПЕКТ 7: Безопасность паролей\n\nПравила: минимум 12 символов, уникальный пароль.\nМенеджеры паролей: Bitwarden.\n2FA: TOTP, SMS, биометрия.",
+        lecture8: "КОНСПЕКТ 8: Построение защиты\n\nSDL: Threat Modeling, Secure Coding.\nIncident Response: Preparation, Identification, Containment."
+    };
+
+    function getLectureContent(bi, li) { 
+        var nums = [1, 4, 7];
+        return lectureTexts['lecture' + (nums[bi] + li)] || 'Содержание появится позже...';
+    }
+    function showModal(t, c) {
+        document.getElementById('modalTitle').innerText = t;
+        document.getElementById('modalBody').innerHTML = c.replace(/\n/g, '<br>');
+        document.getElementById('lectureModal').style.display = 'flex';
+    }
+    window.closeModal = function() { document.getElementById('lectureModal').style.display = 'none'; };
+    window.onclick = function(e) { if (e.target === document.getElementById('lectureModal')) closeModal(); };
+
+    var investigations = [
+        {
+            scenario: "Бухгалтер компании «TechCorp» получила письмо от «директора» с просьбой срочно перевести 500 000 рублей. Перевод сделан. Это мошенники.",
+            evidence: [
+                { id: "email", icon: "📧", name: "Фишинговое письмо", desc: "Адрес: director@techcorp-secure.com (настоящий: director@techcorp.com)" },
+                { id: "ip", icon: "🌐", name: "IP-адрес", desc: "185.220.101.xxx — выходной узел Tor" },
+                { id: "log", icon: "📋", name: "Логи сервера", desc: "SPF: FAIL. DKIM: не подписан." },
+                { id: "domain", icon: "🔗", name: "WHOIS домена", desc: "Зарегистрирован 3 дня назад анонимно." }
+            ],
+            logLines: "09:23:45 MAIL FROM: attacker@mail.ru\n09:23:46 SPF check: FAIL\n09:23:48 IP: 185.220.101.xx\n09:35:00 Transaction: 500 000 RUB",
+            suspects: [
+                { id: "hacker", name: "Внешний хакер", role: "Неизвестный", avatar: "🦹" },
+                { id: "insider", name: "Сисадмин Иван", role: "IT-отдел", avatar: "👨‍💻" },
+                { id: "competitor", name: "Конкурент", role: "ООО «Техно»", avatar: "🏢" }
+            ],
+            correctEvidence: ["email", "ip", "log", "domain"],
+            correctSuspect: "hacker",
+            explanation: "Это BEC-атака. Злоумышленник зарегистрировал похожий домен и отправил письмо через Tor. SPF и DKIM не прошли.",
+            attackType: "Фишинг / BEC-атака"
+        },
+        {
+            scenario: "Сайт «ShopOnline» перестал отвечать. Тысячи запросов в секунду с разных IP. Сервер работает, но страницы не грузятся.",
+            evidence: [
+                { id: "traffic", icon: "📊", name: "График трафика", desc: "Скачок с 200 до 15 000 запросов/сек" },
+                { id: "ips", icon: "🗺️", name: "География", desc: "80% из Китая и России, магазин в Москве" },
+                { id: "pattern", icon: "🔄", name: "Паттерн", desc: "Одинаковые GET /search?q=... каждые 0.01 сек" }
+            ],
+            logLines: "14:00:00 Traffic spike: 15000 req/s\n14:00:05 GET /search?q=aaaa from 45.33.x.x\n14:02:30 Server response: 35000ms",
+            suspects: [
+                { id: "ddos", name: "DDoS-атака", role: "Ботнет", avatar: "🤖" },
+                { id: "bug", name: "Баг в коде", role: "Ошибка", avatar: "🐛" },
+                { id: "hacker", name: "Хакер", role: "Взломщик", avatar: "🦹" }
+            ],
+            correctEvidence: ["traffic", "ips", "pattern"],
+            correctSuspect: "ddos",
+            explanation: "DDoS HTTP Flood. Ботнет отправляет запросы к поиску, перегружая сервер.",
+            attackType: "DDoS / HTTP Flood"
+        },
+        {
+            scenario: "Утечка в «MedApp»: пароли 50 000 пользователей в открытом доступе. Пароли хранились без шифрования.",
+            evidence: [
+                { id: "db", icon: "🗄️", name: "Дамп базы", desc: "Пароли в открытом виде" },
+                { id: "code", icon: "💻", name: "Код", desc: "db.save(user) — без хеширования" },
+                { id: "access", icon: "🔑", name: "Журнал", desc: "SELECT * FROM users с IP 198.51.100.xx" }
+            ],
+            logLines: "03:15:00 SELECT * FROM users (IP: 198.51.100.xx)\n03:15:05 50000 rows returned",
+            suspects: [
+                { id: "sqli", name: "SQL-инъекция", role: "Уязвимость", avatar: "💉" },
+                { id: "dev", name: "Разработчик", role: "Backend", avatar: "👨‍💻" },
+                { id: "admin", name: "Бывший админ", role: "Уволен", avatar: "👤" }
+            ],
+            correctEvidence: ["db", "code", "access"],
+            correctSuspect: "sqli",
+            explanation: "SQL-инъекция. Злоумышленник получил доступ ко всей базе через уязвимость.",
+            attackType: "SQL Injection"
+        }
+    ];
+
+    var blocks = [
+        { id: 0, name: "Основы кибербезопасности", completed: false, unlocked: true,
+            tests: [
+                { question: "Что означает C в триаде CIA?", options: ["Confidentiality", "Communication", "Cryptography", "Control"], correct: 0, userAnswer: null, answered: false },
+                { question: "Какой тип атаки подделывает отправителя письма?", options: ["DDoS", "SQL Injection", "Phishing", "XSS"], correct: 2, userAnswer: null, answered: false },
+                { question: "Что означает принцип Zero Trust?", options: ["Доверять всем", "Не доверять никому", "Доверять админам", "Доверять после проверки"], correct: 1, userAnswer: null, answered: false },
+                { question: "Как расшифровывается DDoS?", options: ["Distributed Denial of Service", "Direct Data of Server", "Digital Defense System", "Dynamic DNS"], correct: 0, userAnswer: null, answered: false }
+            ],
+            investigation: investigations[0],
+            videos: [
+                { id: "sv1", title: "Введение в кибербезопасность", url: "https://rutube.ru/video/efd3eadadc9c98bba063a748c56e8ff2/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "sv2", title: "Криптография и шифрование", url: "https://rutube.ru/video/ff84e3be38596e3e6d196e07143441b2/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+            ],
+            lectures: [
+                { title: "Основы кибербезопасности", textKey: 0, downloaded: false },
+                { title: "Криптография", textKey: 1, downloaded: false },
+                { title: "Сетевые атаки", textKey: 2, downloaded: false }
+            ]
+        },
+        { id: 1, name: "Веб-уязвимости и пентест", completed: false, unlocked: false,
+            tests: [
+                { question: "Какая атака внедряет скрипт на страницу?", options: ["SQL Injection", "XSS", "DDoS", "MITM"], correct: 1, userAnswer: null, answered: false },
+                { question: "Какой инструмент для сканирования сети?", options: ["Burp Suite", "Nmap", "Photoshop", "Docker"], correct: 1, userAnswer: null, answered: false },
+                { question: "OWASP Top 10 — это:", options: ["Топ хакеров", "10 главных уязвимостей", "Антивирусы", "Пароли"], correct: 1, userAnswer: null, answered: false },
+                { question: "Что такое Metasploit?", options: ["Фреймворк для пентеста", "Антивирус", "Браузер", "База данных"], correct: 0, userAnswer: null, answered: false }
+            ],
+            investigation: investigations[1],
+            videos: [
+                { id: "sv3", title: "Веб-уязвимости OWASP", url: "https://rutube.ru/video/7678e83e7380bf04d26f0f138fabeae9/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "sv4", title: "Этичный хакинг", url: "https://rutube.ru/video/5581f5ac2e660788d867865cdb07810b/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+            ],
+            lectures: [
+                { title: "Веб-уязвимости", textKey: 3, downloaded: false },
+                { title: "Этичный хакинг", textKey: 4, downloaded: false },
+                { title: "Анализ логов", textKey: 5, downloaded: false }
+            ]
+        },
+        { id: 2, name: "Защита и реагирование", completed: false, unlocked: false,
+            tests: [
+                { question: "Минимально безопасная длина пароля?", options: ["6 символов", "8 символов", "12 символов", "4 символа"], correct: 2, userAnswer: null, answered: false },
+                { question: "2FA — это:", options: ["Двойной файрвол", "Двухфакторная аутентификация", "Второй антивирус", "Два админа"], correct: 1, userAnswer: null, answered: false },
+                { question: "Первый этап Incident Response?", options: ["Containment", "Preparation", "Eradication", "Recovery"], correct: 1, userAnswer: null, answered: false },
+                { question: "Что такое SIEM?", options: ["Антивирус", "Система сбора логов", "Файрвол", "Менеджер паролей"], correct: 1, userAnswer: null, answered: false }
+            ],
+            investigation: investigations[2],
+            videos: [
+                { id: "sv5", title: "Безопасность паролей", url: "https://rutube.ru/video/acb352fe740f1187c841a6735db30fb4/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+                { id: "sv6", title: "Incident Response", url: "https://rutube.ru/video/d51e6d343c0debe83681d61460fe7240/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #4422CA, #22B9CA)" }
+            ],
+            lectures: [
+                { title: "Безопасность паролей", textKey: 6, downloaded: false },
+                { title: "Построение защиты", textKey: 7, downloaded: false }
+            ]
+        }
+    ];
+
+        var currentBlock = 0;
+    var invState = { collected: [], accused: null, solved: false };
+
+    function saveProgress() {
+        var d = blocks.map(function(b) {
+            return {
+                completed: b.completed, unlocked: b.unlocked,
+                tests: b.tests.map(function(t) { return { userAnswer: t.userAnswer, answered: t.answered }; }),
+                invSubmitted: b.invSubmitted || false, invReviewed: b.invReviewed || false,
+                videos: b.videos.map(function(v) { return { watched: v.watched }; }),
+                lectures: b.lectures.map(function(l) { return { downloaded: l.downloaded }; })
+            };
+        });
+        localStorage.setItem('courseSecurity_v3', JSON.stringify(d));
+        checkAllBlocksCompleted();
+    }
+
+    function checkAllBlocksCompleted() {
+        var all = blocks.every(function(b) { return b.completed; });
+        document.getElementById('certificateSection').classList.toggle('visible', all);
+    }
+
+    function loadProgress() {
+    // ========== ПРОВЕРКА АВТОРИЗАЦИИ (с повторной проверкой) ==========
+    let currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+    
+    function doRedirect() {
+        window.location.href = 'вход некст.html';
+    }
+    
+    if (!currentUser.email || currentUser.role !== 'student') {
+        setTimeout(() => {
+            let user2 = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+            if (!user2.email || user2.role !== 'student') {
+                doRedirect();
+            }
+        }, 20);
+        return;
+    }
+    // ========== КОНЕЦ ПРОВЕРКИ ==========
+    
+    const saved = localStorage.getItem('courseSecurity_v3');
+    if(!saved) return;
+    try {
+        const data = JSON.parse(saved);
+        for(let i=0; i<blocks.length && i<data.length; i++) {
+            if(data[i]) {
+                blocks[i].completed = data[i].completed || false;
+                blocks[i].unlocked = data[i].unlocked || (i===0);
+                if(data[i].tests) {
+                    for(let t=0; t<blocks[i].tests.length; t++) {
+                        if(data[i].tests[t]) {
+                            blocks[i].tests[t].userAnswer = data[i].tests[t].userAnswer;
+                            blocks[i].tests[t].answered = data[i].tests[t].answered;
+                        }
+                    }
+                }
+                if(data[i].assignments) {
+                    for(let a=0; a<blocks[i].assignments.length; a++) {
+                        if(data[i].assignments[a]) {
+                            blocks[i].assignments[a].submitted = data[i].assignments[a].submitted || false;
+                            blocks[i].assignments[a].reviewed = data[i].assignments[a].reviewed || false;
+                            blocks[i].assignments[a].feedback = data[i].assignments[a].feedback || '';
+                            blocks[i].assignments[a].grade = data[i].assignments[a].grade || null;
+                        }
+                    }
+                }
+                if(data[i].videos) {
+                    for(let v=0; v<blocks[i].videos.length; v++) {
+                        if(data[i].videos[v]) blocks[i].videos[v].watched = data[i].videos[v].watched || false;
+                    }
+                }
+                if(data[i].lectures) {
+                    for(let l=0; l<blocks[i].lectures.length; l++) {
+                        if(data[i].lectures[l]) blocks[i].lectures[l].downloaded = data[i].lectures[l].downloaded || false;
+                    }
+                }
+            }
+        }
+        for(let i=1; i<blocks.length; i++) {
+            if(blocks[i-1].completed && !blocks[i].unlocked) blocks[i].unlocked = true;
+        }
+    } catch(e) { console.warn(e); }
+    updateStats();
+    loadSubmissionStatuses();
+    checkAllBlocksCompleted();
+}
+    function loadSubmissionStatuses() {
+        var subs = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+        var user = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        blocks.forEach(function(b) {
+            var sub = subs.find(function(s) {
+                return s.userEmail === user.email && s.assignmentTitle === 'Кибер-расследование: ' + b.name && s.courseName === "Безопасность IT";
+            });
+            if (sub) {
+                if (sub.reviewed) { b.invReviewed = true; b.invSubmitted = true; }
+                else if (sub.submitted) { b.invSubmitted = true; b.invReviewed = false; }
+            }
+        });
+        saveProgress();
+    }
+
+    function updateStats() {
+        var completed = blocks.filter(function(b) { return b.completed; }).length;
+        document.getElementById('totalProgress').innerText = Math.round((completed / blocks.length) * 100);
+        document.getElementById('passedBlocks').innerText = completed + '/' + blocks.length;
+        var score = 0, cnt = 0;
+        blocks.forEach(function(b) {
+            b.tests.forEach(function(t) {
+                if (t.answered) { cnt++; if (t.userAnswer === t.correct) score++; }
+            });
+        });
+        document.getElementById('quizAvg').innerText = cnt ? Math.round((score / cnt) * 100) : 0;
+    }
+
+    function checkBlockCompletion(idx) {
+        var b = blocks[idx];
+        var ok = b.videos.every(function(v) { return v.watched; }) &&
+                 b.lectures.every(function(l) { return l.downloaded; }) &&
+                 b.tests.every(function(t) { return t.answered && t.userAnswer === t.correct; }) &&
+                 b.invReviewed;
+        if (ok && !b.completed) {
+            b.completed = true;
+            if (idx + 1 < blocks.length) blocks[idx + 1].unlocked = true;
+            saveProgress(); updateStats(); renderBlocksNav();
+            if (currentBlock === idx) renderCurrentBlock();
+        }
+        saveProgress(); updateStats();
+    }
+
+    function renderBlocksNav() {
+        var html = '';
+        blocks.forEach(function(b, i) {
+            var cls = 'block-tab';
+            if (i === currentBlock) cls += ' active';
+            if (b.completed) cls += ' completed';
+            else if (!b.unlocked && i) cls += ' locked';
+            html += '<button class="' + cls + '" data-idx="' + i + '" ' + (!b.unlocked && i ? 'disabled' : '') + '>' + b.name + ' ' + (b.completed ? '✓' : '') + '</button>';
+        });
+        document.getElementById('blocksNav').innerHTML = html;
+        document.querySelectorAll('.block-tab:not([disabled])').forEach(function(btn) {
+            btn.onclick = function() {
+                currentBlock = parseInt(this.dataset.idx);
+                renderCurrentBlock();
+                renderBlocksNav();
+            };
+        });
+    }
+
+    window.collectEvidence = function(id) {
+        if (invState.solved) return;
+        if (invState.collected.indexOf(id) === -1) invState.collected.push(id);
+        updateInvUI();
+    };
+
+    window.accuseSuspect = function(id) {
+        if (invState.solved) return;
+        invState.accused = id;
+        var inv = blocks[currentBlock].investigation;
+        var allDone = inv.correctEvidence.every(function(e) { return invState.collected.indexOf(e) !== -1; });
+        if (!allDone) {
+            var res = document.getElementById('invResult');
+            res.classList.add('show');
+            res.style.background = '#fef3c7';
+            res.style.color = '#92400e';
+            res.innerHTML = '⚠️ Сначала соберите все улики!';
+            return;
+        }
+        invState.solved = true;
+        var correct = id === inv.correctSuspect;
+        var res = document.getElementById('invResult');
+        res.classList.add('show');
+        if (correct) {
+            res.style.background = '#d1fae5';
+            res.style.color = '#065f46';
+            res.innerHTML = '🎉 Верно! Это <strong>' + inv.attackType + '</strong>.<br><br>' + inv.explanation;
+            document.querySelector('.inv-badge').classList.add('solved');
+            document.querySelector('.inv-badge').textContent = '✅ РАСКРЫТО';
+            document.getElementById('invSubmitBtn').disabled = false;
+        } else {
+            res.style.background = '#fee2e2';
+            res.style.color = '#991b1b';
+            res.innerHTML = '❌ Неверно! Проанализируйте улики ещё раз.';
+            document.getElementById('invSubmitBtn').disabled = true;
+        }
+        updateInvUI();
+    };
+
+    function updateInvUI() {
+        document.querySelectorAll('.evidence-card').forEach(function(c) {
+            if (invState.collected.indexOf(c.dataset.evid) !== -1) c.classList.add('collected');
+        });
+        var inv = blocks[currentBlock].investigation;
+        var allDone = inv.correctEvidence.every(function(e) { return invState.collected.indexOf(e) !== -1; });
+        var logEl = document.getElementById('logViewer');
+        if (logEl) logEl.classList.toggle('show', allDone);
+        document.querySelectorAll('.suspect-card').forEach(function(c) {
+            c.classList.remove('accused', 'innocent');
+            if (invState.accused === c.dataset.suspectId) {
+                if (invState.solved) {
+                    c.classList.add(c.dataset.suspectId === inv.correctSuspect ? 'innocent' : 'accused');
+                } else {
+                    c.classList.add('accused');
+                }
+            }
+        });
+    }
+
+    window.resetInvestigation = function() {
+        invState = { collected: [], accused: null, solved: false };
+        var res = document.getElementById('invResult');
+        if (res) res.classList.remove('show');
+        var btn = document.getElementById('invSubmitBtn');
+        if (btn) btn.disabled = true;
+        var logEl = document.getElementById('logViewer');
+        if (logEl) logEl.classList.remove('show');
+        var badge = document.querySelector('.inv-badge');
+        if (badge) { badge.classList.remove('solved'); badge.textContent = '🔴 АКТИВНО'; }
+        document.querySelectorAll('.evidence-card').forEach(function(c) { c.classList.remove('collected'); });
+        document.querySelectorAll('.suspect-card').forEach(function(c) { c.classList.remove('accused', 'innocent'); });
+    };
+
+    window.submitInvestigation = function() {
+        var b = blocks[currentBlock];
+        var cu = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        if (!cu.email) return alert('Войдите в аккаунт');
+        var subs = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+        var f = subs.filter(function(s) {
+            return !(s.userEmail === cu.email && s.assignmentTitle === 'Кибер-расследование: ' + b.name && s.courseName === "Безопасность IT");
+        });
+        f.push({
+            id: Date.now(), userEmail: cu.email, studentName: cu.fullName || cu.email,
+            courseName: "Безопасность IT", blockName: b.name,
+            assignmentTitle: 'Кибер-расследование: ' + b.name,
+            invData: { evidence: invState.collected, suspect: invState.accused },
+            submitted: true, submittedAt: new Date().toISOString(), reviewed: false, grade: null, feedback: null
+        });
+        localStorage.setItem('nextstep_submissions', JSON.stringify(f));
+        b.invSubmitted = true;
+        saveProgress();
+        renderCurrentBlock();
+        alert('✅ Расследование отправлено на проверку!');
+    };
+
+    function attachTestHandlers() {
+        var b = blocks[currentBlock];
+        b.tests.forEach(function(q, qi) {
+            var card = document.querySelector('.quiz-card[data-qidx="' + qi + '"]');
+            if (!card) return;
+            card.querySelectorAll('.quiz-option').forEach(function(o) {
+                o.onclick = function() {
+                    q.userAnswer = parseInt(this.dataset.opt);
+                    q.answered = false;
+                    card.querySelectorAll('.quiz-option').forEach(function(x) { x.classList.remove('selected'); });
+                    this.classList.add('selected');
+                };
+            });
+            card.querySelector('.quiz-submit').onclick = function() {
+                if (q.userAnswer === null || q.userAnswer === undefined) return alert('Выберите ответ');
+                q.answered = true;
+                var fb = document.getElementById('fb-' + qi);
+                fb.style.display = 'block';
+                if (q.userAnswer === q.correct) {
+                    fb.innerHTML = '✅ Верно!';
+                    fb.style.background = '#d1fae5';
+                } else {
+                    fb.innerHTML = '❌ Правильно: ' + q.options[q.correct];
+                    fb.style.background = '#fee2e2';
+                }
+                saveProgress();
+                checkBlockCompletion(currentBlock);
+                renderCurrentBlock();
+            };
+            card.querySelector('.quiz-cancel').onclick = function() {
+                q.userAnswer = null;
+                q.answered = false;
+                saveProgress();
+                renderCurrentBlock();
+            };
+            // Восстановление состояния
+            if (q.userAnswer !== null && q.userAnswer !== undefined) {
+                var opt = card.querySelector('.quiz-option[data-opt="' + q.userAnswer + '"]');
+                if (opt) opt.classList.add('selected');
+                if (q.answered) {
+                    var fb = document.getElementById('fb-' + qi);
+                    fb.style.display = 'block';
+                    if (q.userAnswer === q.correct) {
+                        fb.innerHTML = '✅ Верно!';
+                        fb.style.background = '#d1fae5';
+                    } else {
+                        fb.innerHTML = '❌ Правильно: ' + q.options[q.correct];
+                        fb.style.background = '#fee2e2';
+                    }
+                }
+            }
+        });
+    }
+
+    function renderCurrentBlock() {
+        var b = blocks[currentBlock];
+        var c = document.getElementById('blockContent');
+        invState = { collected: [], accused: null, solved: false };
+
+        var vidsHtml = '';
+        if (b.videos.length) {
+            vidsHtml = '<div class="video-grid">';
+            b.videos.forEach(function(v, i) {
+                vidsHtml += '<div class="video-card" data-vidx="' + i + '"><div class="video-preview" style="background:' + v.previewColor + '"><div class="preview-overlay"><div class="play-icon-big">▶️</div></div></div><div class="video-info"><div class="video-title">' + v.title + '</div><span class="watch-status ' + (v.watched ? 'watched' : '') + '">' + (v.watched ? '✓ Просмотрено' : '📹 Новое') + '</span></div></div>';
+            });
+            vidsHtml += '</div>';
+        }
+
+        var lecsHtml = '';
+        if (b.lectures.length) {
+            lecsHtml = '<div class="lectures-list">';
+            b.lectures.forEach(function(l, i) {
+                lecsHtml += '<div class="lecture-item" data-lidx="' + i + '"><div class="lecture-name"><span class="lecture-badge">📄 ' + l.title + '</span></div><div class="lecture-download">' + (l.downloaded ? '✅ Прочитан' : '📥 Открыть') + '</div></div>';
+            });
+            lecsHtml += '</div>';
+        }
+
+        var testsHtml = '';
+        b.tests.forEach(function(q, i) {
+            testsHtml += '<div class="quiz-card" data-qidx="' + i + '"><div class="quiz-question">' + (i + 1) + '. ' + q.question + '</div>';
+            q.options.forEach(function(o, j) {
+                testsHtml += '<div class="quiz-option" data-opt="' + j + '"><span>' + String.fromCharCode(65 + j) + '.</span> ' + o + '</div>';
+            });
+            testsHtml += '<div class="quiz-feedback" id="fb-' + i + '"></div><div class="quiz-actions"><button class="quiz-submit">✅ Ответить</button><button class="quiz-cancel">↺ Сбросить</button></div></div>';
+        });
+
+        var inv = b.investigation;
+        var invHtml = '<div class="investigation-card"><div class="inv-header"><h3>🕵️ Кибер-расследование</h3><span class="inv-badge">🔴 АКТИВНО</span></div>';
+        invHtml += '<div class="inv-scenario"><h4>📋 Инцидент</h4><p>' + inv.scenario + '</p></div>';
+        invHtml += '<h4 style="margin-bottom:12px;">🔍 Соберите улики (кликайте):</h4><div class="evidence-grid">';
+        inv.evidence.forEach(function(ev) {
+            invHtml += '<div class="evidence-card" data-evid="' + ev.id + '" onclick="collectEvidence(\'' + ev.id + '\')"><div class="evidence-icon">' + ev.icon + '</div><div class="evidence-name">' + ev.name + '</div><div class="evidence-desc">' + ev.desc + '</div></div>';
+        });
+        invHtml += '</div><div class="log-viewer" id="logViewer"><strong>📋 Логи сервера:</strong>\n' + inv.logLines + '</div>';
+        invHtml += '<h4 style="margin-bottom:12px;">👤 Подозреваемые (выберите виновного):</h4><div class="suspects-grid">';
+        inv.suspects.forEach(function(s) {
+            invHtml += '<div class="suspect-card" data-suspect-id="' + s.id + '" onclick="accuseSuspect(\'' + s.id + '\')"><div class="suspect-avatar">' + s.avatar + '</div><div class="suspect-name">' + s.name + '</div><div class="suspect-role">' + s.role + '</div></div>';
+        });
+        invHtml += '</div><div class="investigation-buttons"><button class="inv-btn secondary" onclick="resetInvestigation()">↺ Начать заново</button><button class="inv-btn primary" id="invSubmitBtn" disabled onclick="submitInvestigation()">📨 Отправить отчёт</button>';
+        if (b.invReviewed) invHtml += '<span style="color:#059669;font-weight:600;">✅ Проверено</span>';
+        else if (b.invSubmitted) invHtml += '<span style="color:#d97706;font-weight:600;">⏳ На проверке</span>';
+        invHtml += '</div><div class="inv-result" id="invResult"></div></div>';
+
+        var canComplete = b.videos.every(function(v) { return v.watched; }) &&
+                         b.lectures.every(function(l) { return l.downloaded; }) &&
+                         b.tests.every(function(t) { return t.answered && t.userAnswer === t.correct; }) &&
+                         b.invReviewed;
+
+        c.innerHTML = '<div class="block-container"><div class="block-title">' + b.name + '</div><div class="block-subtitle">✅ Видео | ✅ Конспекты | ✅ Тесты | ✅ Кибер-расследование</div>' +
+            (vidsHtml ? '<h3>🎥 Видеоуроки</h3>' + vidsHtml : '') +
+            (lecsHtml ? '<h3>📚 Конспекты</h3>' + lecsHtml : '') +
+            '<h3>📝 Тесты</h3>' + testsHtml + invHtml +
+            '<button class="complete-block-btn" id="completeBtn" ' + (b.completed || !canComplete ? 'disabled' : '') + '>' + (b.completed ? '✅ Блок пройден' : '🎉 Завершить блок') + '</button></div>';
+
+        // Назначаем обработчики
+        c.querySelectorAll('.video-card').forEach(function(card) {
+            card.onclick = function() {
+                var i = parseInt(this.dataset.vidx);
+                window.open(b.videos[i].url, '_blank');
+                if (!b.videos[i].watched) { b.videos[i].watched = true; checkBlockCompletion(currentBlock); renderCurrentBlock(); }
+            };
+        });
+        c.querySelectorAll('.lecture-item').forEach(function(lec) {
+            lec.onclick = function() {
+                var i = parseInt(this.dataset.lidx);
+                showModal(b.lectures[i].title, getLectureContent(currentBlock, i));
+                if (!b.lectures[i].downloaded) { b.lectures[i].downloaded = true; checkBlockCompletion(currentBlock); renderCurrentBlock(); }
+            };
+        });
+
+        // ВАЖНО: назначаем обработчики тестов через отдельную функцию
+        attachTestHandlers();
+
+        var completeBtn = document.getElementById('completeBtn');
+        if (completeBtn) {
+            completeBtn.onclick = function() {
+                if (canComplete) {
+                    b.completed = true;
+                    if (currentBlock + 1 < blocks.length) blocks[currentBlock + 1].unlocked = true;
+                    saveProgress();
+                    updateStats();
+                    renderBlocksNav();
+                    renderCurrentBlock();
+                    alert('🎉 Блок "' + b.name + '" пройден!');
+                }
+            };
+        }
+        updateStats();
+    }
+
+    loadProgress();
+    renderBlocksNav();
+    renderCurrentBlock();
+</script>
+</body>
+</html>

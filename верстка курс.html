@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>HTML-вёрстка — курс NextStep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #fafbff; font-family: 'Inter', sans-serif; min-height: 100vh; position: relative; overflow-x: hidden; }
+        
+        .blur-circles-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .blur-circle { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35; z-index: 0; animation: smoothFloat 24s infinite ease-in-out; }
+        @keyframes smoothFloat { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(12px, -8px) scale(1.02); } 66% { transform: translate(-8px, 10px) scale(0.98); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .circle-top-left-1 { top: -150px; left: -150px; width: 500px; height: 500px; background: #4422CA; }
+        .circle-top-left-2 { top: -50px; left: 80px; width: 380px; height: 380px; background: #22B9CA; animation-delay: -3s; }
+        .circle-top-right-1 { top: -180px; right: -180px; width: 550px; height: 550px; background: #22B9CA; animation-delay: -6s; }
+        .circle-top-right-2 { top: 40px; right: 20px; width: 420px; height: 420px; background: #4422CA; animation-delay: -9s; }
+        .circle-bottom-left-1 { bottom: -160px; left: -160px; width: 520px; height: 520px; background: #22B9CA; animation-delay: -4s; }
+        .circle-bottom-left-2 { bottom: 60px; left: 70px; width: 400px; height: 400px; background: #4422CA; animation-delay: -7s; }
+        .circle-bottom-right-1 { bottom: -200px; right: -200px; width: 600px; height: 600px; background: #4422CA; animation-delay: -2s; }
+        .circle-bottom-right-2 { bottom: 50px; right: 100px; width: 450px; height: 450px; background: #22B9CA; animation-delay: -11s; }
+        
+        .main-content { max-width: 1400px; margin: 0 auto; padding: 32px 48px 80px; position: relative; z-index: 10; }
+        .course-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; }
+        .title-section h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, #1e1b4b, #2d4a5c, #4422CA); background-clip: text; -webkit-background-clip: text; color: transparent; margin-bottom: 8px; }
+        .title-section p { color: #475569; font-size: 1rem; }
+        .progress-overview { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 32px; padding: 16px 28px; border: 1px solid rgba(68,34,202,0.15); min-width: 280px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+        .progress-stats { display: flex; gap: 32px; justify-content: space-between; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #4422CA, #22B9CA); background-clip: text; -webkit-background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.7rem; color: #64748b; letter-spacing: 0.5px; }
+        
+        .blocks-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px); border-radius: 60px; padding: 8px 20px; border: 1px solid rgba(68,34,202,0.1); }
+        .block-tab { background: transparent; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; color: #334155; }
+        .block-tab.active { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; box-shadow: 0 6px 14px rgba(68,34,202,0.25); }
+        .block-tab.locked { opacity: 0.5; cursor: not-allowed; background: #e2e8f0; color: #94a3b8; }
+        .block-tab.completed { background: #10b98120; border: 1px solid #10b981; color: #065f46; }
+        
+        .block-container { background: rgba(255,255,255,0.94); backdrop-filter: blur(12px); border-radius: 48px; padding: 40px 44px; border: 1px solid rgba(68,34,202,0.15); margin-bottom: 32px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.05); }
+        .block-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; letter-spacing: -0.3px; }
+        .block-subtitle { color: #64748b; margin-bottom: 32px; border-left: 4px solid #4422CA; padding-left: 18px; font-size: 0.9rem; }
+        
+        h3 { font-size: 1.4rem; font-weight: 600; margin: 32px 0 20px 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        h3:first-of-type { margin-top: 0; }
+        
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 20px; }
+        .video-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid #eef2ff; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(68,34,202,0.15); border-color: rgba(68,34,202,0.3); }
+        .video-preview { background: linear-gradient(145deg, #1e1b4b, #0f172a); height: 190px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3.5rem; position: relative; border-radius: 24px 24px 0 0; }
+        .preview-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 24px 24px 0 0; }
+        .video-card:hover .preview-overlay { background: rgba(68,34,202,0.6); }
+        .play-icon-big { width: 60px; height: 60px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4422CA; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.2s; }
+        .video-card:hover .play-icon-big { transform: scale(1.1); background: white; }
+        .video-info { padding: 18px; }
+        .video-title { font-weight: 700; margin-bottom: 12px; font-size: 1rem; }
+        .watch-status { display: inline-block; font-size: 0.7rem; padding: 4px 12px; border-radius: 30px; background: #f1f5f9; color: #475569; }
+        .watch-status.watched { background: #10b98115; color: #059669; }
+        
+        .lectures-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .lecture-item { background: #f8fafc; border-radius: 20px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; border: 1px solid #eef2ff; }
+        .lecture-item:hover { border-color: #4422CA; background: white; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .lecture-name { font-weight: 500; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .lecture-badge { background: #4422CA10; padding: 4px 14px; border-radius: 40px; font-size: 0.7rem; color: #4422CA; font-weight: 600; }
+        .lecture-download { color: #4422CA; font-size: 0.8rem; font-weight: 500; }
+        
+        .quiz-card { background: white; border-radius: 28px; padding: 24px; margin-bottom: 20px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .quiz-question { font-weight: 700; font-size: 1.05rem; margin-bottom: 18px; color: #0f172a; }
+        .quiz-option { display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-radius: 60px; background: #fafcff; margin-bottom: 8px; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .quiz-option.selected { border-color: #4422CA; background: #f5f3ff; box-shadow: 0 2px 6px rgba(68,34,202,0.05); }
+        .quiz-option:hover { border-color: #22B9CA; background: #f0fdfe; }
+        .quiz-actions { display: flex; gap: 12px; margin-top: 20px; align-items: center; }
+        .quiz-submit { background: #4422CA; color: white; border: none; padding: 10px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .quiz-submit:hover { background: #361aa3; transform: translateY(-2px); }
+        .quiz-cancel { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 9px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .quiz-cancel:hover { background: #eef2ff; }
+        .quiz-feedback { margin-top: 16px; font-size: 0.85rem; padding: 10px 16px; border-radius: 24px; display: none; }
+        
+        .assignment-card { background: white; border-radius: 32px; padding: 28px; margin-bottom: 24px; border: 1px solid #eef2ff; transition: 0.2s; }
+        .assignment-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: #0f172a; }
+        .tz-block { background: #f8fafc; border-radius: 20px; padding: 18px; margin: 12px 0; border-left: 4px solid #4422CA; font-size: 0.85rem; line-height: 1.5; color: #334155; }
+        .upload-area { border: 2px dashed #cbd5e1; border-radius: 28px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s; margin: 16px 0; background: #fafcff; }
+        .upload-area:hover { border-color: #4422CA; background: #f5f3ff; }
+        .assignment-buttons { display: flex; gap: 12px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
+        .submit-assignment { background: #22B9CA; border: none; padding: 10px 24px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .submit-assignment:hover:not(:disabled) { background: #1a9aaa; transform: translateY(-2px); }
+        .submit-assignment:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; }
+        .cancel-assignment { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 9px 22px; border-radius: 40px; color: #475569; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .cancel-assignment:hover:not(:disabled) { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+        .cancel-assignment:disabled { opacity: 0.5; cursor: not-allowed; background: #f1f5f9; }
+        .assignment-status { display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.75rem; background: #f1f5f9; color: #475569; }
+        .assignment-status.approved { background: #10b98120; color: #065f46; }
+        .assignment-status.pending { background: #fef3c7; color: #92400e; }
+        
+        .complete-block-btn { background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 16px 32px; border-radius: 60px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 32px; width: 100%; transition: 0.2s; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+        .complete-block-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #94a3b8; box-shadow: none; }
+        .complete-block-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(16,185,129,0.35); }
+        
+        .certificate-section { margin-top: 32px; padding: 24px; background: linear-gradient(135deg, #f0f9ff, #f5f3ff); border-radius: 24px; border: 2px solid rgba(68,34,202,0.2); text-align: center; display: none; }
+        .certificate-section.visible { display: block; animation: fadeInUp 0.5s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .certificate-icon { font-size: 4rem; margin-bottom: 16px; }
+        .certificate-title { font-size: 1.5rem; font-weight: 700; color: #1e1b4b; margin-bottom: 8px; }
+        .certificate-description { color: #64748b; margin-bottom: 20px; font-size: 0.95rem; }
+        .certificate-btn { background: linear-gradient(135deg, #4422CA, #22B9CA); color: white; border: none; padding: 14px 32px; border-radius: 60px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(68,34,202,0.3); margin: 0 8px; }
+        .certificate-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(68,34,202,0.4); }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 40px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 28px; position: relative; box-shadow: 0 25px 40px rgba(0,0,0,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eef2ff; }
+        .modal-header h3 { margin: 0; }
+        .close-modal { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .close-modal:hover { color: #dc2626; }
+        .modal-body { white-space: pre-wrap; line-height: 1.6; color: #334155; font-size: 0.95rem; }
+        
+        .back-to-courses {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: white; backdrop-filter: blur(8px);
+            border: 1px solid rgba(68,34,202,0.2); padding: 12px 28px;
+            border-radius: 50px; color: #4422CA; font-weight: 600;
+            font-size: 0.9rem; text-decoration: none; transition: all 0.3s ease;
+            margin-top: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .back-to-courses:hover {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            color: white; transform: translateX(-6px);
+            border-color: transparent; box-shadow: 0 8px 20px rgba(68,34,202,0.25);
+        }
+        .back-to-courses::before { content: "←"; font-size: 1.2rem; transition: transform 0.2s; }
+        .back-to-courses:hover::before { transform: translateX(-4px); }
+        
+        .file-status { margin-top: 8px; font-size: 0.8rem; }
+        .file-status.success { color: #059669; }
+        .file-status.pending { color: #d97706; }
+        
+        .sync-status-btn {
+            background: linear-gradient(135deg, #4422CA, #22B9CA);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(68,34,202,0.25);
+            backdrop-filter: blur(4px);
+            font-family: 'Inter', sans-serif;
+        }
+        .sync-status-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(68,34,202,0.4);
+            background: linear-gradient(135deg, #361aa3, #1a9aaa);
+        }
+        .sync-status-btn:active { transform: translateY(0); }
+        .sync-status-btn:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+        .sync-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+        .sync-icon { font-size: 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .button-group { display: flex; gap: 12px; justify-content: flex-end; margin-bottom: 20px; flex-wrap: wrap; }
+        
+        @media (max-width: 780px) { 
+            .main-content { padding: 24px; } 
+            .block-container { padding: 24px; } 
+            .blocks-nav { overflow-x: auto; flex-wrap: nowrap; } 
+            .video-grid { grid-template-columns: 1fr; }
+            .button-group { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="blur-circles-container">
+    <div class="blur-circle circle-top-left-1"></div><div class="blur-circle circle-top-left-2"></div>
+    <div class="blur-circle circle-top-right-1"></div><div class="blur-circle circle-top-right-2"></div>
+    <div class="blur-circle circle-bottom-left-1"></div><div class="blur-circle circle-bottom-left-2"></div>
+    <div class="blur-circle circle-bottom-right-1"></div><div class="blur-circle circle-bottom-right-2"></div>
+</div>
+
+<div class="main-content">
+    <div class="course-header">
+        <div class="title-section">
+            <h1>💻 HTML-вёрстка</h1>
+            <p>HTML5 • CSS3 • JavaScript • 7 недель практики</p>
+        </div>
+        <div class="progress-overview">
+            <div class="progress-stats">
+                <div class="stat-item"><div class="stat-number" id="totalProgress">0</div><div class="stat-label">% курса</div></div>
+                <div class="stat-item"><div class="stat-number" id="passedBlocks">0</div><div class="stat-label">блоков</div></div>
+                <div class="stat-item"><div class="stat-number" id="quizAvg">0</div><div class="stat-label">ср. балл</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ГРУППА КНОПОК СИНХРОНИЗАЦИИ -->
+    <div class="button-group">
+        <button class="sync-status-btn" id="syncStatusBtn" style="background: linear-gradient(135deg, #4422CA, #22B9CA);">
+            <span class="sync-icon">🔄</span>
+            <span>Обновить статус</span>
+        </button>
+        <button class="sync-status-btn" id="forceSyncBtn" style="background: #10b981;">
+            <span class="sync-icon">⚡</span>
+            <span>Проверить сейчас</span>
+        </button>
+    </div>
+
+    <div class="blocks-nav" id="blocksNav"></div>
+    <div id="blockContent"></div>
+    
+    <div class="certificate-section" id="certificateSection">
+        <div class="certificate-icon">🏆</div>
+        <div class="certificate-title">Поздравляем с завершением курса!</div>
+        <div class="certificate-description">Все блоки успешно пройдены. Вы можете получить сертификат об окончании курса «HTML-вёрстка».</div>
+        <button class="certificate-btn" onclick="window.location.href='сертификаты.html'">📜 Просмотреть сертификат</button>
+    </div>
+    
+    <a href="мои курсы некст.html" class="back-to-courses">← Вернуться в мои курсы</a>
+</div>
+
+<div id="lectureModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">📄 Конспект</h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody">Загрузка...</div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // КОНСПЕКТЫ
+    // ============================================================
+    const lectureTexts = {
+        lecture1: "КОНСПЕКТ 1: Основы HTML\n\nHTML (HyperText Markup Language) — язык разметки.\n\nБазовая структура:\n&lt;!DOCTYPE html&gt;\n&lt;html lang=&quot;ru&quot;&gt;\n&lt;head&gt;\n  &lt;meta charset=&quot;UTF-8&quot;&gt;\n  &lt;title&gt;Заголовок&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n  &lt;h1&gt;Привет!&lt;/h1&gt;\n&lt;/body&gt;\n&lt;/html&gt;\n\nОсновные теги:\n• &lt;h1&gt;–&lt;h6&gt; — заголовки\n• &lt;p&gt; — абзац\n• &lt;a&gt; — ссылка\n• &lt;img&gt; — изображение\n• &lt;div&gt; — контейнер\n• &lt;span&gt; — строчный контейнер",
+        lecture2: "КОНСПЕКТ 2: CSS-селекторы\n\nCSS (Cascading Style Sheets) — каскадные таблицы стилей.\n\nТипы селекторов:\n• По тегу: p { color: blue; }\n• По классу: .highlight { background: yellow; }\n• По ID: #header { font-size: 24px; }\n• Вложенные: .card p { margin: 0; }\n\nКаскад и специфичность:\n!important > inline-стиль > #id > .class > тег",
+        lecture3: "КОНСПЕКТ 3: Flexbox\n\nFlexbox — модуль для создания одномерных макетов.\n\nСвойства контейнера:\n• display: flex;\n• flex-direction: row | column\n• justify-content: center | space-between\n• align-items: center\n• gap: 16px;\n\nСвойства элементов:\n• flex: 1;\n• align-self: center;",
+        lecture4: "КОНСПЕКТ 4: CSS Grid\n\nGrid — система двумерной сетки.\n\nСвойства контейнера:\n• display: grid;\n• grid-template-columns: 1fr 2fr 1fr;\n• gap: 20px;\n\nРазмещение элементов:\n• grid-column: 1 / 3;\n• grid-row: span 2;",
+        lecture5: "КОНСПЕКТ 5: Адаптивная вёрстка\n\nМедиа-запросы — основа адаптивного дизайна.\n\n@media (max-width: 768px) {\n  .container { flex-direction: column; }\n}\n\nБрейкпоинты:\n• 320-480px — телефоны\n• 481-768px — планшеты\n• 769px+ — десктопы",
+        lecture6: "КОНСПЕКТ 6: JavaScript для верстальщика\n\nПеременные:\nlet name = 'Мир';\nconst PI = 3.14159;\n\nФункции:\nfunction greet(name) {\n  return 'Привет, ' + name;\n}\n\nУсловия:\nif (score >= 90) {\n  grade = 'Отлично';\n}",
+        lecture7: "КОНСПЕКТ 7: DOM-манипуляции\n\nПоиск элементов:\n• document.querySelector('.class')\n• document.getElementById('id')\n\nИзменение содержимого:\n• element.textContent = 'Новый текст'\n• element.innerHTML = '&lt;strong&gt;Жирный&lt;/strong&gt;'\n\nИзменение стилей:\n• element.classList.add('active')",
+        lecture8: "КОНСПЕКТ 8: События и формы\n\nОбработчики событий:\nbutton.addEventListener('click', () => {\n  alert('Клик!');\n});\n\nРабота с формами:\nform.addEventListener('submit', (event) => {\n  event.preventDefault();\n  const formData = new FormData(form);\n});"
+    };
+
+    function getLectureContent(blockIndex, lectureIndex) {
+        const blockNumbers = [1, 4, 7];
+        const num = blockNumbers[blockIndex] + lectureIndex;
+        const key = `lecture${num}`;
+        return lectureTexts[key] || `Конспект ${num}\n\nСодержание скоро появится...`;
+    }
+
+    function showModal(title, content) {
+        const modal = document.getElementById('lectureModal');
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerHTML = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\n/g, '<br>');
+        modal.style.display = 'flex';
+    }
+
+    window.closeModal = function() {
+        document.getElementById('lectureModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('lectureModal');
+        if (event.target === modal) modal.style.display = 'none';
+    }
+
+    // ============================================================
+    // БЛОКИ КУРСА
+    // ============================================================
+    const blocks = [
+        { id: 0, name: "Основы HTML и CSS", completed: false, unlocked: true,
+          tests: [
+            { question: "Какой тег создаёт заголовок первого уровня?", options: ["&lt;h1&gt;", "&lt;header&gt;", "&lt;title&gt;", "&lt;p&gt;"], correct: 0, userAnswer: null, answered: false },
+            { question: "Как подключить внешний CSS-файл?", options: ["&lt;style src='...'&gt;", "&lt;link rel='stylesheet' href='...'&gt;", "&lt;css&gt;", "@import в HTML"], correct: 1, userAnswer: null, answered: false },
+            { question: "Какой display у элемента &lt;div&gt; по умолчанию?", options: ["inline", "block", "flex", "grid"], correct: 1, userAnswer: null, answered: false },
+            { question: "Какой селектор выберет элемент с class='btn'?", options: ["#btn", ".btn", "btn", "class.btn"], correct: 1, userAnswer: null, answered: false }
+          ], 
+          assignments: [
+            { id: "code1", title: "Первая HTML-страница", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+              tz: "📋 ТЗ: Создайте страницу с заголовком «Привет, NextStep!», абзацем и кнопкой. Стилизуйте через CSS." },
+            { id: "code2", title: "Flexbox-карточка", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+              tz: "📋 ТЗ: Создайте карточку товара с изображением, названием, описанием и ценой. Используйте Flexbox." }
+          ], 
+          videos: [
+            { id: "v1", title: "Введение в HTML", url: "https://rutube.ru/video/fe37bb741a08d38399b5e178c8405bd8/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+            { id: "v2", title: "CSS: селекторы и свойства", url: "https://rutube.ru/video/7666a4ccbdd1d2e4bc2b16cc3aab2fb7/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+          ], 
+          lectures: [
+            { title: "Основы HTML", textKey: 0, downloaded: false },
+            { title: "CSS-селекторы", textKey: 1, downloaded: false },
+            { title: "Flexbox", textKey: 2, downloaded: false }
+          ] 
+        },
+        { id: 1, name: "Продвинутая вёрстка", completed: false, unlocked: false,
+          tests: [
+            { question: "Какой медиа-запрос для экранов меньше 768px?", options: ["@media (max-width: 768px)", "@media (min-width: 768px)", "@screen mobile", "@mobile"], correct: 0, userAnswer: null, answered: false },
+            { question: "Сколько колонок создаст: grid-template-columns: 1fr 1fr 1fr;", options: ["1", "2", "3", "Зависит от контента"], correct: 2, userAnswer: null, answered: false },
+            { question: "Какая единица измерения относительно шрифта в &lt;html&gt;?", options: ["px", "em", "rem", "%"], correct: 2, userAnswer: null, answered: false }
+          ], 
+          assignments: [
+            { id: "code3", title: "Адаптивная сетка", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+              tz: "📋 ТЗ: Создайте сетку: 3 колонки на десктопе, 2 на планшете, 1 на телефоне. Используйте Grid и медиа-запросы." }
+          ], 
+          videos: [
+            { id: "v3", title: "Grid Layout", url: "https://rutube.ru/video/f69da8b33ed12a49c94a47e4272746e7/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" },
+            { id: "v4", title: "Адаптивная вёрстка", url: "https://rutube.ru/video/86dc242a4747b3407a1dd46decaecc37/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #2d4a5c, #4422CA)" }
+          ], 
+          lectures: [
+            { title: "CSS Grid", textKey: 3, downloaded: false },
+            { title: "Адаптивная вёрстка", textKey: 4, downloaded: false }
+          ] 
+        },
+        { id: 2, name: "JavaScript и финал", completed: false, unlocked: false,
+          tests: [
+            { question: "Как объявить переменную в современном JS?", options: ["variable x", "let x", "int x", "dim x"], correct: 1, userAnswer: null, answered: false },
+            { question: "Как правильно обработать клик по кнопке?", options: [".onClick = func", ".addEventListener('click', func)", ".click(func)", ".on('click', func)"], correct: 1, userAnswer: null, answered: false },
+            { question: "Как найти элемент по id='main'?", options: ["document.querySelector('#main')", "document.getElement('main')", "document.id('main')", "document.find('#main')"], correct: 0, userAnswer: null, answered: false }
+          ], 
+          assignments: [
+            { id: "code4", title: "Интерактивный счётчик", file: null, submitted: false, reviewed: false, feedback: "", grade: null,
+              tz: "📋 ТЗ: Создайте счётчик с кнопками +1, -1 и Сброс. Используйте JavaScript для обновления значения." }
+          ], 
+          videos: [
+            { id: "v5", title: "JavaScript для верстальщика", url: "https://rutube.ru/video/d2588b02db85f0b92dba9c38971913c4/?r=wd", watched: false, previewColor: "linear-gradient(135deg, #1e293b, #2d4a5c)" }
+          ], 
+          lectures: [
+            { title: "JavaScript основы", textKey: 5, downloaded: false },
+            { title: "DOM-манипуляции", textKey: 6, downloaded: false },
+            { title: "События и формы", textKey: 7, downloaded: false }
+          ] 
+        }
+    ];
+
+    let currentBlock = 0;
+
+    function showFloatingNotification(msg, isError = false) {
+        let notif = document.getElementById('floatingNotification');
+        if (!notif) {
+            notif = document.createElement('div');
+            notif.id = 'floatingNotification';
+            notif.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#1e293b;color:white;padding:12px 24px;border-radius:40px;z-index:10000;font-size:0.85rem;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:opacity 0.3s;opacity:0;pointer-events:none;';
+            document.body.appendChild(notif);
+        }
+        notif.style.backgroundColor = isError ? '#dc2626' : '#1e293b';
+        notif.textContent = msg;
+        notif.style.opacity = '1';
+        setTimeout(() => { notif.style.opacity = '0'; }, 3000);
+    }
+
+    function saveProgress() {
+        const saveData = blocks.map(b => ({
+            completed: b.completed, unlocked: b.unlocked,
+            tests: b.tests.map(t => ({ userAnswer: t.userAnswer, answered: t.answered })),
+            assignments: b.assignments.map(a => ({ submitted: a.submitted, reviewed: a.reviewed, feedback: a.feedback, grade: a.grade, fileName: a.file ? a.file.name : null })),
+            videos: b.videos.map(v => ({ watched: v.watched })),
+            lectures: b.lectures.map(l => ({ downloaded: l.downloaded }))
+        }));
+        localStorage.setItem('courseHTML_FINAL', JSON.stringify(saveData));
+        checkAllBlocksCompleted();
+    }
+
+    function checkAllBlocksCompleted() {
+        const allCompleted = blocks.every(b => b.completed === true);
+        const certSection = document.getElementById('certificateSection');
+        if (allCompleted) {
+            certSection.classList.add('visible');
+        } else {
+            certSection.classList.remove('visible');
+        }
+    }
+
+    function loadSubmissionStatuses() {
+        const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+        const currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+        
+        if (!currentUser.email) return;
+        
+        let updated = false;
+        
+        for(let b of blocks) {
+            if (!b.assignments) continue;
+            for(let a of b.assignments) {
+                const submission = submissions.find(s => 
+                    s.userEmail === currentUser.email && 
+                    s.assignmentTitle === a.title &&
+                    s.courseName === "HTML-вёрстка"
+                );
+                if(submission) {
+                    if(submission.reviewed === true && !a.reviewed) {
+                        a.reviewed = true;
+                        a.submitted = true;
+                        a.feedback = submission.feedback || '';
+                        a.grade = submission.grade;
+                        updated = true;
+                        console.log(`✅ Задание "${a.title}" проверено! Оценка: ${a.grade}`);
+                    } else if(submission.submitted === true && !a.submitted) {
+                        a.submitted = true;
+                        a.reviewed = false;
+                        updated = true;
+                        console.log(`📤 Задание "${a.title}" отправлено на проверку`);
+                    }
+                }
+            }
+        }
+        
+        if (updated) {
+            saveProgress();
+            if (typeof renderCurrentBlock === 'function') renderCurrentBlock();
+            if (typeof updateStats === 'function') updateStats();
+            if (typeof checkBlockCompletion === 'function') checkBlockCompletion(currentBlock);
+            showFloatingNotification('📢 Статус заданий обновлён!');
+        }
+    }
+
+    function loadProgress() {
+        const saved = localStorage.getItem('courseHTML_FINAL');
+        if(!saved) return;
+        try {
+            const data = JSON.parse(saved);
+            for(let i=0; i<blocks.length && i<data.length; i++) {
+                if(data[i]) {
+                    blocks[i].completed = data[i].completed || false;
+                    blocks[i].unlocked = data[i].unlocked || (i===0);
+                    if(data[i].tests) {
+                        for(let t=0; t<blocks[i].tests.length; t++) {
+                            if(data[i].tests[t]) {
+                                blocks[i].tests[t].userAnswer = data[i].tests[t].userAnswer;
+                                blocks[i].tests[t].answered = data[i].tests[t].answered;
+                            }
+                        }
+                    }
+                    if(data[i].assignments) {
+                        for(let a=0; a<blocks[i].assignments.length; a++) {
+                            if(data[i].assignments[a]) {
+                                blocks[i].assignments[a].submitted = data[i].assignments[a].submitted || false;
+                                blocks[i].assignments[a].reviewed = data[i].assignments[a].reviewed || false;
+                                blocks[i].assignments[a].feedback = data[i].assignments[a].feedback || '';
+                                blocks[i].assignments[a].grade = data[i].assignments[a].grade || null;
+                            }
+                        }
+                    }
+                    if(data[i].videos) {
+                        for(let v=0; v<blocks[i].videos.length; v++) {
+                            if(data[i].videos[v]) blocks[i].videos[v].watched = data[i].videos[v].watched || false;
+                        }
+                    }
+                    if(data[i].lectures) {
+                        for(let l=0; l<blocks[i].lectures.length; l++) {
+                            if(data[i].lectures[l]) blocks[i].lectures[l].downloaded = data[i].lectures[l].downloaded || false;
+                        }
+                    }
+                }
+            }
+            for(let i=1; i<blocks.length; i++) {
+                if(blocks[i-1].completed && !blocks[i].unlocked) blocks[i].unlocked = true;
+            }
+        } catch(e) { console.warn(e); }
+        updateStats();
+        loadSubmissionStatuses();
+        checkAllBlocksCompleted();
+    }
+
+    function updateStats() {
+        let completedCount = blocks.filter(b => b.completed).length;
+        let totalPercent = Math.round((completedCount / blocks.length) * 100);
+        document.getElementById('totalProgress').innerText = totalPercent;
+        document.getElementById('passedBlocks').innerText = completedCount + '/' + blocks.length;
+        
+        let totalScore = 0, testCount = 0;
+        for(let b of blocks) {
+            for(let t of b.tests) {
+                if(t.answered) {
+                    testCount++;
+                    if(t.userAnswer === t.correct) totalScore++;
+                }
+            }
+        }
+        let avg = testCount > 0 ? Math.round((totalScore / testCount) * 100) : 0;
+        document.getElementById('quizAvg').innerText = avg;
+    }
+
+    function checkBlockCompletion(blockIdx) {
+        const block = blocks[blockIdx];
+        const allVideosWatched = block.videos.every(v => v.watched === true);
+        const allLecturesRead = block.lectures.every(l => l.downloaded === true);
+        const allTestsPassed = block.tests.every(t => t.answered === true && t.userAnswer === t.correct);
+        const allAssignmentsReviewed = block.assignments.every(a => a.reviewed === true);
+        
+        if(allVideosWatched && allLecturesRead && allTestsPassed && allAssignmentsReviewed) {
+            if(!block.completed) {
+                block.completed = true;
+                if(blockIdx+1 < blocks.length) {
+                    blocks[blockIdx+1].unlocked = true;
+                }
+                saveProgress();
+                updateStats();
+                renderBlocksNav();
+                if(currentBlock === blockIdx) renderCurrentBlock();
+                showFloatingNotification(`🎉 Поздравляем! Блок "${block.name}" пройден!`);
+                return true;
+            }
+        }
+        saveProgress();
+        updateStats();
+        return false;
+    }
+
+    function renderBlocksNav() {
+        const nav = document.getElementById('blocksNav');
+        nav.innerHTML = blocks.map((b, idx) => {
+            let classes = 'block-tab';
+            if(idx === currentBlock) classes += ' active';
+            if(b.completed) classes += ' completed';
+            else if(!b.unlocked && idx !== 0) classes += ' locked';
+            return `<button class="${classes}" data-idx="${idx}" ${(!b.unlocked && idx!==0) ? 'disabled' : ''}>${b.name} ${b.completed ? '✓' : ''}</button>`;
+        }).join('');
+        document.querySelectorAll('.block-tab:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = parseInt(btn.dataset.idx);
+                if(blocks[idx].unlocked || idx===0) {
+                    currentBlock = idx;
+                    renderCurrentBlock();
+                    renderBlocksNav();
+                }
+            });
+        });
+    }
+
+    function resetQuiz(block, qi, cardDiv) {
+        block.tests[qi].userAnswer = null;
+        block.tests[qi].answered = false;
+        const options = cardDiv.querySelectorAll('.quiz-option');
+        options.forEach(opt => opt.classList.remove('selected'));
+        const feedbackDiv = document.getElementById(`quizFeedback-${qi}`);
+        if(feedbackDiv) feedbackDiv.style.display = 'none';
+        saveProgress();
+    }
+
+    function renderCurrentBlock() {
+        const block = blocks[currentBlock];
+        const container = document.getElementById('blockContent');
+        
+        let videosHtml = `<div class="video-grid">` + block.videos.map((v, vi) => `
+            <div class="video-card" data-video-url="${v.url}" data-video-idx="${vi}">
+                <div class="video-preview" style="background: ${v.previewColor || 'linear-gradient(135deg, #1e293b, #0f172a)'}">
+                    <div class="preview-overlay">
+                        <div class="play-icon-big">▶️</div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">${v.title}</div>
+                    <span class="watch-status ${v.watched ? 'watched' : ''}">${v.watched ? '✓ Просмотрено' : '📹 Не просмотрено'}</span>
+                </div>
+            </div>
+        `).join('') + `</div>`;
+        
+        let lecturesHtml = `<div class="lectures-list">` + block.lectures.map((l, li) => `
+            <div class="lecture-item" data-lecture-idx="${li}" data-block-idx="${currentBlock}">
+                <div class="lecture-name"><span class="lecture-badge">📄 ${l.title}</span></div>
+                <div class="lecture-download">${l.downloaded ? '✅ Прочитан' : '📥 Открыть'}</div>
+            </div>
+        `).join('') + `</div>`;
+        
+        let testsHtml = block.tests.map((q, qi) => `
+            <div class="quiz-card" data-quiz-idx="${qi}">
+                <div class="quiz-question">${qi+1}. ${q.question}</div>
+                ${q.options.map((opt, oi) => `<div class="quiz-option" data-opt="${oi}"><span>${String.fromCharCode(65+oi)}.</span> ${opt}</div>`).join('')}
+                <div class="quiz-feedback" id="quizFeedback-${qi}"></div>
+                <div class="quiz-actions">
+                    <button class="quiz-submit" data-quiz-idx="${qi}">✅ Ответить</button>
+                    <button class="quiz-cancel" data-quiz-cancel="${qi}">↺ Сбросить ответ</button>
+                </div>
+            </div>
+        `).join('');
+        
+        let assignmentsHtml = block.assignments.map((a, ai) => `
+            <div class="assignment-card">
+                <div class="assignment-title">📎 Задание ${ai+1}: ${a.title}</div>
+                <div class="tz-block"><strong>📋 Техническое задание:</strong><br>${a.tz}</div>
+                <div class="upload-area" data-assign-idx="${ai}">
+                    ${a.file ? `📁 Файл: ${a.file.name}` : (a.submitted ? '✅ Файл отправлен' : '➕ Нажмите, чтобы загрузить файл')}
+                </div>
+                <div class="file-status ${a.reviewed ? 'success' : (a.submitted ? 'pending' : '')}">
+                    ${a.reviewed ? '✅ Проверено преподавателем' : (a.submitted ? '⏳ Отправлено на проверку' : '📭 Файл не загружен')}
+                </div>
+                ${a.grade ? `<div style="margin-top:8px; font-weight:600; color:#4422CA;">⭐ Оценка: ${a.grade}/100</div>` : ''}
+                <div class="assignment-buttons">
+                    ${!a.submitted ? `
+                        <button class="submit-assignment" data-assign-idx="${ai}" ${!a.file ? 'disabled' : ''}>📨 Отправить на проверку</button>
+                    ` : ''}
+                    ${a.submitted && !a.reviewed ? `
+                        <button class="cancel-assignment" data-cancel-idx="${ai}" style="background:#fee2e2; color:#dc2626; border-color:#fecaca;">🗑 Отменить отправку</button>
+                    ` : ''}
+                    ${!a.submitted && a.file ? `
+                        <button class="cancel-assignment" data-cancel-idx="${ai}">🗑 Удалить файл</button>
+                    ` : ''}
+                    <span class="assignment-status ${a.reviewed ? 'approved' : (a.submitted ? 'pending' : '')}">
+                        ${a.reviewed ? '★ Зачтено' : (a.submitted ? 'Ожидает проверки' : 'Черновик')}
+                    </span>
+                </div>
+                ${a.feedback ? `<div style="margin-top:16px; background:#eef2ff; border-radius:20px; padding:10px 16px;">📝 Комментарий преподавателя: ${a.feedback}</div>` : ''}
+            </div>
+        `).join('');
+        
+        const allVideosDone = block.videos.every(v=>v.watched);
+        const allLecturesDone = block.lectures.every(l=>l.downloaded);
+        const allTestsDone = block.tests.every(t=>t.answered === true && t.userAnswer === t.correct);
+        const allAssignmentsReviewed = block.assignments.every(a=>a.reviewed === true);
+        const canComplete = allVideosDone && allLecturesDone && allTestsDone && allAssignmentsReviewed;
+        
+        let completeBtn = `<button class="complete-block-btn" id="completeBlockBtn" ${block.completed || !canComplete ? 'disabled' : ''}>${block.completed ? '✅ Блок пройден' : '🎉 Завершить блок'}</button>`;
+        
+        container.innerHTML = `
+            <div class="block-container">
+                <div class="block-title">${block.name}</div>
+                <div class="block-subtitle">✅ Просмотрите видео | ✅ Прочитайте конспекты | ✅ Ответьте на тесты | ✅ Отправьте задания</div>
+                <h3>🎥 Видеоуроки</h3>${videosHtml}
+                <h3>📚 Конспекты</h3>${lecturesHtml}
+                <h3>📝 Тесты</h3>${testsHtml}
+                <h3>📂 Итоговые задания</h3>${assignmentsHtml}
+                ${completeBtn}
+                ${!canComplete && !block.completed ? `
+                    <div style="margin-top:12px; padding:12px; background:#fef3c7; border-radius:16px; font-size:0.85rem; color:#92400e;">
+                        ⚠️ Чтобы завершить блок, необходимо: 
+                        ${!allVideosDone ? '• посмотреть все видео ' : ''}
+                        ${!allLecturesDone ? '• прочитать все конспекты ' : ''}
+                        ${!allTestsDone ? '• правильно ответить на все тесты ' : ''}
+                        ${!allAssignmentsReviewed ? '• получить проверку всех заданий ' : ''}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        // Видео
+        document.querySelectorAll('.video-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const idx = parseInt(card.dataset.videoIdx);
+                const url = card.dataset.videoUrl;
+                if(url) window.open(url, '_blank');
+                if(!block.videos[idx].watched) {
+                    block.videos[idx].watched = true;
+                    checkBlockCompletion(currentBlock);
+                    renderCurrentBlock();
+                }
+            });
+        });
+        
+        // Конспекты
+        document.querySelectorAll('.lecture-item').forEach(lec => {
+            lec.addEventListener('click', async () => {
+                let idx = parseInt(lec.dataset.lectureIdx);
+                let blockIdx = parseInt(lec.dataset.blockIdx);
+                let lecture = blocks[blockIdx].lectures[idx];
+                let content = getLectureContent(blockIdx, idx);
+                showModal(lecture.title, content);
+                if(!lecture.downloaded) {
+                    lecture.downloaded = true;
+                    checkBlockCompletion(currentBlock);
+                    renderCurrentBlock();
+                }
+            });
+        });
+        
+        // Тесты
+        for(let qi = 0; qi < block.tests.length; qi++) {
+            const q = block.tests[qi];
+            const cardDiv = document.querySelector(`.quiz-card[data-quiz-idx="${qi}"]`);
+            if(!cardDiv) continue;
+            
+            const options = cardDiv.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const val = parseInt(opt.dataset.opt);
+                    q.userAnswer = val;
+                    q.answered = false;
+                    options.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    const fbDiv = document.getElementById(`quizFeedback-${qi}`);
+                    if(fbDiv) fbDiv.style.display = 'none';
+                });
+            });
+            
+            const submitBtn = cardDiv.querySelector('.quiz-submit');
+            submitBtn.addEventListener('click', () => {
+                if(q.userAnswer === undefined || q.userAnswer === null) {
+                    alert("Выберите вариант ответа!");
+                    return;
+                }
+                const isCorrect = (q.userAnswer === q.correct);
+                q.answered = true;
+                const feedbackDiv = document.getElementById(`quizFeedback-${qi}`);
+                feedbackDiv.style.display = "block";
+                if(isCorrect) {
+                    feedbackDiv.innerHTML = "✅ Верно! Отличный ответ!";
+                    feedbackDiv.style.background = "#d1fae5";
+                    feedbackDiv.style.color = "#065f46";
+                } else {
+                    feedbackDiv.innerHTML = `❌ Неправильно. Правильный ответ: ${q.options[q.correct]}`;
+                    feedbackDiv.style.background = "#fee2e2";
+                    feedbackDiv.style.color = "#991b1b";
+                }
+                saveProgress();
+                checkBlockCompletion(currentBlock);
+                renderCurrentBlock();
+            });
+            
+            const cancelBtn = cardDiv.querySelector('.quiz-cancel');
+            cancelBtn.addEventListener('click', () => {
+                resetQuiz(block, qi, cardDiv);
+            });
+            
+            if(q.userAnswer !== undefined && q.userAnswer !== null) {
+                const selectedOpt = cardDiv.querySelector(`.quiz-option[data-opt="${q.userAnswer}"]`);
+                if(selectedOpt) selectedOpt.classList.add('selected');
+                if(q.answered) {
+                    const isCorrect = (q.userAnswer === q.correct);
+                    const feedbackDiv = document.getElementById(`quizFeedback-${qi}`);
+                    feedbackDiv.style.display = "block";
+                    if(isCorrect) {
+                        feedbackDiv.innerHTML = "✅ Верно! Отличный ответ!";
+                        feedbackDiv.style.background = "#d1fae5";
+                        feedbackDiv.style.color = "#065f46";
+                    } else {
+                        feedbackDiv.innerHTML = `❌ Неправильно. Правильный ответ: ${q.options[q.correct]}`;
+                        feedbackDiv.style.background = "#fee2e2";
+                        feedbackDiv.style.color = "#991b1b";
+                    }
+                }
+            }
+        }
+        
+        // Задания
+        for(let ai = 0; ai < block.assignments.length; ai++) {
+            const assign = block.assignments[ai];
+            const uploadArea = document.querySelector(`.upload-area[data-assign-idx="${ai}"]`);
+            
+            if(uploadArea && !assign.submitted) {
+                uploadArea.addEventListener('click', () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.html,.css,.js,.zip,.pdf,.png,.jpg';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if(file) {
+                            assign.file = file;
+                            assign.submitted = false;
+                            assign.reviewed = false;
+                            uploadArea.innerHTML = `📁 Файл: ${file.name}`;
+                            saveProgress();
+                            renderCurrentBlock();
+                        }
+                    };
+                    input.click();
+                });
+            }
+            
+            const submitBtn = document.querySelector(`.submit-assignment[data-assign-idx="${ai}"]`);
+            if(submitBtn) {
+                submitBtn.addEventListener('click', () => {
+                    if(!assign.file) { alert("Сначала загрузите файл"); return; }
+                    
+                    const currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+                    if (!currentUser.email) {
+                        alert("Пожалуйста, войдите в аккаунт");
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+                        
+                        const filteredSubmissions = submissions.filter(s => 
+                            !(s.userEmail === currentUser.email && 
+                              s.assignmentTitle === assign.title && 
+                              s.courseName === "HTML-вёрстка")
+                        );
+                        
+                        filteredSubmissions.push({
+                            id: Date.now(),
+                            userEmail: currentUser.email,
+                            studentName: currentUser.fullName || currentUser.email,
+                            courseName: "HTML-вёрстка",
+                            blockName: block.name,
+                            assignmentTitle: assign.title,
+                            fileName: assign.file.name,
+                            fileData: e.target.result,
+                            submitted: true,
+                            submittedAt: new Date().toISOString(),
+                            reviewed: false,
+                            grade: null,
+                            feedback: null
+                        });
+                        
+                        localStorage.setItem('nextstep_submissions', JSON.stringify(filteredSubmissions));
+                        
+                        assign.submitted = true;
+                        assign.file = null;
+                        saveProgress();
+                        renderCurrentBlock();
+                        alert("✅ Работа отправлена на проверку преподавателю! Ожидайте оценки.");
+                    };
+                    reader.readAsDataURL(assign.file);
+                });
+            }
+            
+            const cancelAssignBtn = document.querySelector(`.cancel-assignment[data-cancel-idx="${ai}"]`);
+            if(cancelAssignBtn) {
+                cancelAssignBtn.addEventListener('click', () => {
+                    const currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+                    
+                    if (assign.submitted && !assign.reviewed) {
+                        if (confirm('Вы уверены, что хотите отменить отправку этого задания?')) {
+                            const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+                            const updatedSubmissions = submissions.filter(s => 
+                                !(s.userEmail === currentUser.email && 
+                                  s.assignmentTitle === assign.title && 
+                                  s.courseName === "HTML-вёрстка")
+                            );
+                            localStorage.setItem('nextstep_submissions', JSON.stringify(updatedSubmissions));
+                            
+                            assign.submitted = false;
+                            assign.reviewed = false;
+                            assign.file = null;
+                            assign.feedback = '';
+                            assign.grade = null;
+                            saveProgress();
+                            renderCurrentBlock();
+                            alert('✅ Отправка отменена. Вы можете загрузить новый файл.');
+                        }
+                    } else if (!assign.submitted && assign.file) {
+                        assign.file = null;
+                        saveProgress();
+                        renderCurrentBlock();
+                    }
+                });
+            }
+        }
+        
+        const completeBtnElem = document.getElementById('completeBlockBtn');
+        if(completeBtnElem && !block.completed) {
+            completeBtnElem.addEventListener('click', () => {
+                const allV = block.videos.every(v=>v.watched);
+                const allL = block.lectures.every(l=>l.downloaded);
+                const allQ = block.tests.every(t=>t.answered === true && t.userAnswer === t.correct);
+                const allA = block.assignments.every(a=>a.reviewed === true);
+                if(allV && allL && allQ && allA) {
+                    block.completed = true;
+                    if(currentBlock+1 < blocks.length) blocks[currentBlock+1].unlocked = true;
+                    saveProgress();
+                    updateStats();
+                    renderBlocksNav();
+                    renderCurrentBlock();
+                    showFloatingNotification(`🎉 Поздравляем! Блок "${block.name}" пройден!`);
+                } else {
+                    let msg = "❌ Невозможно завершить блок:\n";
+                    if(!allV) msg += "• Посмотрите все видео\n";
+                    if(!allL) msg += "• Прочитайте все конспекты\n";
+                    if(!allQ) msg += "• Ответьте правильно на все тесты\n";
+                    if(!allA) msg += "• Дождитесь проверки всех заданий от преподавателя\n";
+                    alert(msg);
+                }
+            });
+        }
+        updateStats();
+    }
+    
+    // ========== МГНОВЕННАЯ СИНХРОНИЗАЦИЯ ==========
+    function syncNow() {
+        const btn = document.getElementById('forceSyncBtn');
+        const originalText = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.innerHTML = '<span class="sync-spinner"></span> Проверка...';
+            btn.disabled = true;
+        }
+        
+        try {
+            const currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+            if (!currentUser.email) {
+                showFloatingNotification('⚠️ Войдите в аккаунт', true);
+                if (btn) { btn.innerHTML = originalText; btn.disabled = false; }
+                return;
+            }
+            
+            const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+            const userSubmissions = submissions.filter(s => s.userEmail === currentUser.email && s.courseName === "HTML-вёрстка");
+            
+            let updatedCount = 0;
+            
+            for (let b of blocks) {
+                if (b.assignments) {
+                    for (let a of b.assignments) {
+                        const submission = userSubmissions.find(s => s.assignmentTitle === a.title);
+                        
+                        if (submission && submission.reviewed === true && !a.reviewed) {
+                            a.reviewed = true;
+                            a.submitted = true;
+                            a.feedback = submission.feedback || '';
+                            a.grade = submission.grade;
+                            updatedCount++;
+                            console.log(`✅ Задание "${a.title}" проверено! Оценка: ${a.grade}`);
+                        }
+                    }
+                }
+            }
+            
+            if (updatedCount > 0) {
+                saveProgress();
+                renderCurrentBlock();
+                updateStats();
+                renderBlocksNav();
+                showFloatingNotification(`✅ Обновлено ${updatedCount} заданий!`);
+            } else {
+                const pending = userSubmissions.filter(s => s.submitted && !s.reviewed);
+                if (pending.length > 0) {
+                    showFloatingNotification(`⏳ ${pending.length} заданий на проверке. Преподаватель ещё не оценил.`);
+                } else {
+                    showFloatingNotification(`🔄 Нет новых проверенных заданий`);
+                }
+            }
+            
+        } catch(e) {
+            console.error('Ошибка:', e);
+            showFloatingNotification('❌ Ошибка синхронизации', true);
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    }
+    
+    // Обычная синхронизация
+    function syncSubmissionStatus() {
+        const btn = document.getElementById('syncStatusBtn');
+        if (!btn) return;
+        
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="sync-spinner"></span> Синхронизация...';
+        btn.disabled = true;
+        
+        try {
+            const currentUser = JSON.parse(localStorage.getItem('nextstep_current_user') || '{}');
+            if (!currentUser.email) {
+                showFloatingNotification('⚠️ Войдите в аккаунт', true);
+                return;
+            }
+            
+            const submissions = JSON.parse(localStorage.getItem('nextstep_submissions') || '[]');
+            const userSubmissions = submissions.filter(s => s.userEmail === currentUser.email && s.courseName === "HTML-вёрстка");
+            
+            let updatedCount = 0;
+            
+            for (let b of blocks) {
+                if (b.assignments) {
+                    for (let a of b.assignments) {
+                        const submission = userSubmissions.find(s => s.assignmentTitle === a.title);
+                        
+                        if (submission && submission.reviewed === true && !a.reviewed) {
+                            a.reviewed = true;
+                            a.submitted = true;
+                            a.feedback = submission.feedback || '';
+                            a.grade = submission.grade;
+                            updatedCount++;
+                        } else if (submission && submission.submitted === true && !a.submitted) {
+                            a.submitted = true;
+                            updatedCount++;
+                        }
+                    }
+                }
+            }
+            
+            if (updatedCount > 0) {
+                saveProgress();
+                renderCurrentBlock();
+                updateStats();
+                renderBlocksNav();
+                showFloatingNotification(`✅ Обновлено ${updatedCount} заданий!`);
+            } else {
+                showFloatingNotification(`🔄 Синхронизация выполнена`);
+            }
+            
+        } catch(e) {
+            console.error('Ошибка:', e);
+            showFloatingNotification('❌ Ошибка синхронизации', true);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+    
+    // Слушаем события
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'nextstep_submissions') {
+            syncNow();
+        }
+    });
+    
+    // При фокусе на вкладке - мгновенная проверка
+    window.addEventListener('focus', () => {
+        console.log('🔄 Вкладка активна, проверяем статус...');
+        syncNow();
+    });
+    
+    // Инициализация
+    loadProgress();
+    renderBlocksNav();
+    renderCurrentBlock();
+    
+    // Привязываем кнопки
+    document.getElementById('syncStatusBtn')?.addEventListener('click', syncSubmissionStatus);
+    document.getElementById('forceSyncBtn')?.addEventListener('click', syncNow);
+    
+    // Автосинхронизация
+    setInterval(syncSubmissionStatus, 30000);
+</script>
+</body>
+</html>
